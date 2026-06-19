@@ -23,7 +23,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'maven' # Speeds up subsequent runs
 
       # 3. Set up Python Environment
       - name: Set up Python 3.12
