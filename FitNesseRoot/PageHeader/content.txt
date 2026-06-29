@@ -93,10 +93,10 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 #icici-login-logo img { height: 48px; margin-bottom: 10px; display: block; margin: 0 auto 10px; }
 #icici-login-title    { color:#fff; font-size:18px; font-weight:700; letter-spacing:.5px; }
 #icici-login-subtitle { color:rgba(255,255,255,.75); font-size:12px; margin-top:3px; }
-#icici-login-form     { padding: 28px 32px 24px; }
-.icici-field          { margin-bottom: 16px; }
-.icici-field label    { display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:5px; text-transform:uppercase; letter-spacing:.4px; }
-.icici-field input    { width:100%; box-sizing:border-box; padding:10px 12px; border:1.5px solid #ddd; border-radius:5px; font-size:14px; outline:none; transition:border-color .2s; }
+#icici-login-form     { padding: 28px 32px 24px; text-align: left !important; }
+.icici-field          { margin-bottom: 16px; text-align: left !important; }
+.icici-field label    { display:block !important; text-align: left !important; font-size:12px; font-weight:600; color:#555; margin-bottom:5px; text-transform:uppercase; letter-spacing:.4px; }
+.icici-field input    { width:100% !important; display:block !important; text-align: left !important; box-sizing:border-box; padding:10px 12px; border:1.5px solid #ddd; border-radius:5px; font-size:14px; outline:none; transition:border-color .2s; }
 .icici-field input:focus { border-color:#A6192E; }
 #icici-login-btn {
   width:100%; padding:12px; background:#A6192E; color:#fff;

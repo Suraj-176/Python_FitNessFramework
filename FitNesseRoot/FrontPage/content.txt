@@ -139,14 +139,6 @@
 
 <div class="ici-dash">
 
-  <!-- ── HERO ── -->
-  <div class="ici-hero">
-    <div class="ici-hero-icon">🛡️</div>
-    <div class="ici-hero-text">
-      <h1>ICICI Prudential AML — Test Automation</h1>
-    </div>
-  </div>
-
   <!-- ── ENVIRONMENT SELECTOR ── -->
   <div class="ici-section-title">🌐 Environment Manager</div>
   <div class="ici-env-card">
