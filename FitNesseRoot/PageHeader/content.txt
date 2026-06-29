@@ -184,6 +184,7 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       { label: "▶ Test Page",   href: function(){ return p() + "?test"; } },
       { label: "✎ Edit",        href: function(){ return p() + "?edit"; },       adminOnly: true },
       { label: "+ Add Child",   href: function(){ return p() + "?new"; },        adminOnly: true },
+      { label: "❌ Delete Page", href: function(){ return p() + "?deletePage"; }, adminOnly: true },
       { label: "⚙ Tools",       href: function(){ return p() + "?refactor"; },   adminOnly: true },
       { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true }
     ],

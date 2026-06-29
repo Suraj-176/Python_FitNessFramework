@@ -22,8 +22,7 @@
   border-radius: 50%;
 }
 .ici-hero-icon { font-size: 52px; flex-shrink: 0; }
-.ici-hero-text h1 { color: #fff; margin: 0 0 6px; font-size: 26px; font-weight: 700; }     
-.ici-hero-text p  { color: rgba(255,255,255,0.78); margin: 0; font-size: 14px; line-height: 1.6; }
+.ici-hero-text h1 { color: #fff; margin: 0; font-size: 26px; font-weight: 700; }     
 
 /* Section headers */
 .ici-section-title {
@@ -36,19 +35,65 @@
   background: linear-gradient(90deg, #E06336, transparent);
 }
 
-/* Empty State Card */
-.ici-empty-card {
+/* Environment Selector Card */
+.ici-env-card {
   background: #ffffff;
   border-radius: 8px;
-  border: 1px dashed #c0b49c;
-  padding: 48px 32px;
-  text-align: center;
+  border: 1px solid #e8e3db;
+  border-top: 4px solid #004A80;
+  padding: 24px 32px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.ici-env-left { display: flex; align-items: center; gap: 14px; }
+.ici-env-icon { font-size: 32px; }
+.ici-env-title h3 { font-size: 16px; font-weight: 700; color: #2c2c2c; margin: 0 0 4px; }
+.ici-env-title p { font-size: 12px; color: #666; margin: 0; }
+.ici-env-right { display: flex; align-items: center; gap: 10px; }
+.ici-env-select {
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #004A80;
+  background: #f8fafc;
+  border: 1.5px solid #004A80;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  min-width: 140px;
+}
+.ici-env-select:hover { background: #e0f0ff; }
+
+/* Dynamic Content Card */
+.ici-dynamic-card {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e8e3db;
+  border-top: 4px solid #A6192E;
+  padding: 24px 32px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   margin-bottom: 32px;
 }
-.ici-empty-icon { font-size: 48px; margin-bottom: 16px; }
-.ici-empty-title { font-size: 18px; font-weight: 700; color: #2c2c2c; margin-bottom: 8px; }
-.ici-empty-desc { font-size: 14px; color: #666; max-width: 600px; margin: 0 auto 24px; line-height: 1.6; }
+.ici-card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ici-card-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
 
 .ici-run-btn {
   display: inline-block; padding: 10px 24px; background: #A6192E; color: #fff;
@@ -58,6 +103,38 @@
   border: none;
 }
 .ici-run-btn:hover { background: #E06336; color: #fff; text-decoration: none; }
+.ici-run-btn.btn-blue { background: #004A80; }
+.ici-run-btn.btn-blue:hover { background: #003060; }
+
+/* Modal overlay styling */
+.ici-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none; align-items: center; justify-content: center;
+  z-index: 10000;
+}
+.ici-modal-box {
+  background: #fff; border-radius: 8px; width: 550px; padding: 28px 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  border-top: 4px solid #E06336;
+}
+.ici-modal-title { font-size: 18px; font-weight: 700; color: #2c2c2c; margin-bottom: 16px; }
+
+/* Environments Edit Table inside Modal */
+.ici-env-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+.ici-env-table th, .ici-env-table td { text-align: left; padding: 8px 10px; font-size: 13px; border-bottom: 1px solid #eee; }
+.ici-env-table th { font-weight: 700; color: #555; text-transform: uppercase; font-size: 11px; }
+.ici-env-input { width: 100%; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
+.ici-env-input:focus { border-color: #E06336; outline: none; }
+.ici-row-btn { background: transparent; border: none; font-size: 15px; cursor: pointer; padding: 4px; }
+.ici-row-btn:hover { transform: scale(1.15); }
+
+.ici-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 16px; }
+.ici-modal-btn { padding: 8px 16px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+.ici-modal-btn.cancel { background: #eee; color: #333; }
+.ici-modal-btn.cancel:hover { background: #ddd; }
+.ici-modal-btn.save { background: #E06336; color: #fff; }
+.ici-modal-btn.save:hover { background: #c0441a; }
 </style>
 
 <div class="ici-dash">
@@ -67,19 +144,253 @@
     <div class="ici-hero-icon">🛡️</div>
     <div class="ici-hero-text">
       <h1>ICICI Prudential AML — Test Automation</h1>
-      <p>A secure, high-performance, pure-Python REST API testing platform powered by FitNesse SLIM.</p>
+    </div>
+  </div>
+
+  <!-- ── ENVIRONMENT SELECTOR ── -->
+  <div class="ici-section-title">🌐 Environment Manager</div>
+  <div class="ici-env-card">
+    <div class="ici-env-left">
+      <div class="ici-env-icon">📡</div>
+      <div class="ici-env-title">
+        <h3 id="ici-active-env-display">Active Environment: Dev</h3>
+        <p id="ici-active-url-display">URL: http://192.168.4.187/trubi25v2rel</p>
+      </div>
+    </div>
+    <div class="ici-env-right">
+      <select id="ici-env-dropdown" class="ici-env-select" onchange="iciSwitchEnv(this.value)">
+        <!-- Options injected dynamically by JS -->
+      </select>
+      <button class="ici-run-btn btn-blue" style="padding: 8px 16px; font-size: 12px;" onclick="iciOpenManageEnvModal()">⚙️ Manage Envs</button>
     </div>
   </div>
 
   <!-- ── MASTER SUITE ── -->
   <div class="ici-section-title">🧪 API Test Suites</div>
   
-  <div class="ici-empty-card">
-    <div class="ici-empty-icon">📂</div>
-    <div class="ici-empty-title">Ready to Add Your First API Test Suite!</div>
-    <div class="ici-empty-desc">Your Python SLIM request engines, auth systems, and mock server utilities are fully configured. Create your very first corporate AML API test page or suite right now!</div>
+  <div class="ici-dynamic-card">
+    <div class="ici-card-title">📂 Available Suites & Test Cases</div>
+    <div class="ici-card-desc">Create your corporate AML API test pages or suites natively in 1 click. Any test page or suite you add will automatically and dynamically appear in the list below:</div>
+    
+    <div style="font-size: 14px; color: #2c2c2c; line-height: 1.8; margin-bottom: 24px; padding-left: 10px;">
+-!
+!contents -R2 -g -p -h
+!-
+    </div>
+    
     <a class="ici-run-btn" href="FrontPage?new">➕ Create New Test Page / Suite</a>
   </div>
 
 </div>
+
+<!-- ── MANAGE ENVIRONMENTS MODAL ── -->
+<div id="ici-env-modal" class="ici-modal-overlay">
+  <div class="ici-modal-box">
+    <div class="ici-modal-title">Manage Environments</div>
+    
+    <table class="ici-env-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Env Name</th>
+          <th style="width: 65%;">Base URL</th>
+          <th style="width: 10%; text-align: center;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="ici-modal-table-body">
+        <!-- Rows injected dynamically by JS -->
+      </tbody>
+    </table>
+
+    <div class="ici-modal-title" style="font-size: 14px; margin-top: 16px; border-top: 1px dashed #eee; padding-top: 16px;">Add New Environment</div>
+    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+      <input type="text" id="ici-add-env-name" class="ici-env-input" style="width: 30%;" placeholder="e.g. STAGING" />
+      <input type="text" id="ici-add-env-url" class="ici-env-input" style="width: 70%;" placeholder="e.g. http://192.168.4.189/api" />
+    </div>
+
+    <div class="ici-modal-actions">
+      <button class="ici-modal-btn cancel" onclick="iciCloseManageEnvModal()">Cancel</button>
+      <button class="ici-modal-btn save" onclick="iciSaveEnvironments()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var STORAGE_KEY = "ici_env_config";
+  
+  var DEFAULT_CONFIG = {
+    active: "Dev",
+    environments: {
+      "Dev": "http://192.168.4.187/trubi25v2rel",
+      "QA": "http://qa-api.icicipru.com/api",
+      "UAT": "http://uat-api.icicipru.com/api",
+      "Prod": "https://api.icicipru.com/api"
+    }
+  };
+
+  // Temp buffer used when editing inside the modal
+  var tempEnvironments = {};
+
+  function loadConfig() {
+    var stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_CONFIG));
+      return DEFAULT_CONFIG;
+    }
+    try { return JSON.parse(stored); } catch(e) { return DEFAULT_CONFIG; }
+  }
+
+  function saveConfig(config) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  }
+
+  function populateUI() {
+    var config = loadConfig();
+    var dropdown = document.getElementById("ici-env-dropdown");
+    if (!dropdown) return;
+    
+    dropdown.innerHTML = "";
+    
+    for (var env in config.environments) {
+      var opt = document.createElement("option");
+      opt.value = env;
+      opt.textContent = env;
+      if (env === config.active) {
+        opt.selected = true;
+      }
+      dropdown.appendChild(opt);
+    }
+    
+    document.getElementById("ici-active-env-display").textContent = "Active Environment: " + config.active;
+    document.getElementById("ici-active-url-display").textContent = "URL: " + config.environments[config.active];
+  }
+
+  window.iciSwitchEnv = function(selectedEnv) {
+    var config = loadConfig();
+    if (!config.environments[selectedEnv]) return;
+    
+    config.active = selectedEnv;
+    saveConfig(config);
+    
+    var activeUrl = config.environments[selectedEnv];
+    
+    var formData = new URLSearchParams();
+    formData.append("responder", "saveData");
+    formData.append("pageContent", "!define BASE_URL {" + activeUrl + "}\n");
+    
+    fetch("/VariablePage", {
+      method: "POST",
+      body: formData,
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    })
+    .then(function() {
+      location.reload();
+    })
+    .catch(function(err) {
+      console.error("Failed to write to VariablePage:", err);
+      location.reload();
+    });
+  };
+
+  /* ── Modal Manager ──────────────────────────────────────────────── */
+  
+  window.iciOpenManageEnvModal = function() {
+    var config = loadConfig();
+    tempEnvironments = Object.assign({}, config.environments); // Clone to temp buffer
+    
+    document.getElementById("ici-add-env-name").value = "";
+    document.getElementById("ici-add-env-url").value = "";
+    
+    renderModalTable();
+    document.getElementById("ici-env-modal").style.display = "flex";
+  };
+
+  window.iciCloseManageEnvModal = function() {
+    document.getElementById("ici-env-modal").style.display = "none";
+  };
+
+  function renderModalTable() {
+    var tbody = document.getElementById("ici-modal-table-body");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    
+    var index = 0;
+    for (var env in tempEnvironments) {
+      var tr = document.createElement("tr");
+      
+      // Name (Non-editable column)
+      var tdName = document.createElement("td");
+      tdName.style.fontWeight = "bold";
+      tdName.textContent = env;
+      tr.appendChild(tdName);
+      
+      // URL (Editable input field!)
+      var tdUrl = document.createElement("td");
+      var input = document.createElement("input");
+      input.type = "text";
+      input.className = "ici-env-input";
+      input.value = tempEnvironments[env];
+      input.setAttribute("data-env", env);
+      input.onchange = function(e) {
+        var envName = e.target.getAttribute("data-env");
+        tempEnvironments[envName] = e.target.value.trim();
+      };
+      tdUrl.appendChild(input);
+      tr.appendChild(tdUrl);
+      
+      // Delete Action
+      var tdAction = document.createElement("td");
+      tdAction.style.textAlign = "center";
+      var delBtn = document.createElement("button");
+      delBtn.className = "ici-row-btn";
+      delBtn.innerHTML = "❌";
+      delBtn.title = "Delete Environment";
+      delBtn.setAttribute("data-env", env);
+      delBtn.onclick = function(e) {
+        var envName = e.target.getAttribute("data-env");
+        delete tempEnvironments[envName];
+        renderModalTable(); // Re-render table locally
+      };
+      tdAction.appendChild(delBtn);
+      tr.appendChild(tdAction);
+      
+      tbody.appendChild(tr);
+      index++;
+    }
+  }
+
+  window.iciSaveEnvironments = function() {
+    var addName = (document.getElementById("ici-add-env-name").value || "").trim();
+    var addUrl = (document.getElementById("ici-add-env-url").value || "").trim();
+    
+    // Add the new environment to the buffer if both fields are entered
+    if (addName && addUrl) {
+      addName = addName.toUpperCase().replace(/\s+/g, "_");
+      tempEnvironments[addName] = addUrl;
+    }
+    
+    // Check if the buffer is empty
+    if (Object.keys(tempEnvironments).length === 0) {
+      alert("At least one environment must exist.");
+      return;
+    }
+    
+    var config = loadConfig();
+    config.environments = tempEnvironments;
+    
+    // If the old active environment was deleted, fall back to the first available one
+    if (!config.environments[config.active]) {
+      config.active = Object.keys(tempEnvironments)[0];
+    }
+    
+    saveConfig(config);
+    iciCloseManageEnvModal();
+    iciSwitchEnv(config.active); // Apply change and refresh
+  };
+
+  document.addEventListener("DOMContentLoaded", populateUI);
+  populateUI();
+
+})();
+</script>
 -!
