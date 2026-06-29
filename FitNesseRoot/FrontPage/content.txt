@@ -56,4 +56,86 @@
   </div>
 
 </div>
+
+<!-- ── DYNAMIC LIST FORMATTER & TEST COUNTER ── -->
+<script>
+(function() {
+  function iciFormatPageList() {
+    var items = document.querySelectorAll(".wiki li, .toc-item, .contents li");
+    items.forEach(function(li) {
+      // Find nested list
+      var childList = li.querySelector("ul");
+      
+      // Calculate immediate text content only (ignoring nested list items)
+      var immediateText = "";
+      for (var i = 0; i < li.childNodes.length; i++) {
+        var node = li.childNodes[i];
+        if (node.nodeType === Node.TEXT_NODE) {
+          immediateText += node.textContent;
+        } else if (node.tagName === "A") {
+          immediateText += node.textContent;
+        }
+      }
+      
+      // ── 1. Check if this is a Suite Page (Contains '*' symbol)
+      if (immediateText.indexOf("*") !== -1) {
+        var a = li.querySelector("a");
+        if (a) {
+          var name = a.textContent.replace(/\s*\*+/, "").trim();
+          
+          // Count the number of nested <li> test cases inside this suite
+          var testCount = 0;
+          if (childList) {
+            testCount = childList.querySelectorAll("li").length;
+          }
+          
+          // Re-write text as: "📁 Chat (2)"
+          a.textContent = "📁 " + name + " (" + testCount + ")";
+          a.style.fontWeight = "bold";
+          a.style.color = "#004A80";
+          a.style.fontSize = "15px";
+          
+          // Hide the messy nested lists recursively to keep dashboard extremely clean!
+          if (childList) {
+            childList.style.display = "none";
+          }
+        }
+        
+        // Strip any residual raw text '*' symbols
+        for (var i = 0; i < li.childNodes.length; i++) {
+          var node = li.childNodes[i];
+          if (node.nodeType === Node.TEXT_NODE && node.textContent.indexOf("*") !== -1) {
+            node.textContent = node.textContent.replace(/\s*\*+/, "");
+          }
+        }
+      }
+      
+      // ── 2. Check if this is a Single Test Page (Contains '+' symbol)
+      else if (immediateText.indexOf("+") !== -1) {
+        var a = li.querySelector("a");
+        if (a) {
+          var name = a.textContent.replace(/\s*\++/, "").trim();
+          
+          // Re-write text as: "📄 Dev Login Auth" (no ugly '+' symbol!)
+          a.textContent = "📄 " + name;
+          a.style.color = "#444";
+          a.style.fontSize = "14px";
+          a.style.fontWeight = "500";
+        }
+        
+        // Strip any residual raw text '+' symbols
+        for (var i = 0; i < li.childNodes.length; i++) {
+          var node = li.childNodes[i];
+          if (node.nodeType === Node.TEXT_NODE && node.textContent.indexOf("+") !== -1) {
+            node.textContent = node.textContent.replace(/\s*\++/, "");
+          }
+        }
+      }
+    });
+  }
+
+  // Run automatically as soon as FitNesse compiles the list on screen!
+  setTimeout(iciFormatPageList, 100);
+})();
+</script>
 -!
