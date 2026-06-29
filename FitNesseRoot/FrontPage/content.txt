@@ -37,6 +37,43 @@
   border: none;
 }
 .ici-run-btn:hover { background: #E06336; color: #fff; text-decoration: none; }
+
+/* ── Pagination Controls Styling ───────────────────── */
+.ici-pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 24px;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 16px;
+}
+.ici-pag-btn {
+  padding: 6px 14px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ici-pag-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+.ici-pag-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ici-pag-info {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  min-width: 90px;
+  text-align: center;
+}
 </style>
 
 <div class="ici-dash">
@@ -46,7 +83,7 @@
     <div class="ici-card-title">📂 Available Suites & Test Cases</div>
     <div class="ici-card-desc">Create your corporate AML API test pages or suites natively in 1 click. Any test page or suite you add will automatically and dynamically appear in the list below:</div>
     
-    <div style="font-size: 14px; color: #2c2c2c; line-height: 1.8; margin-bottom: 24px; padding-left: 10px;">
+    <div id="ici-contents-wrapper" style="font-size: 14px; color: #2c2c2c; line-height: 1.8; margin-bottom: 24px; padding-left: 10px;">
 -!
 !contents -R2 -g -p -h
 !-
@@ -57,11 +94,20 @@
 
 </div>
 
-<!-- ── DYNAMIC LIST FORMATTER & TEST COUNTER ── -->
+<!-- ── DYNAMIC LIST FORMATTER, TEST COUNTER & PAGINATION ── -->
 <script>
 (function() {
+  var pageSize = 10;
+  var currentPage = 1;
+  var allLIs = [];
+
   function iciFormatPageList() {
-    var items = document.querySelectorAll(".wiki li, .toc-item, .contents li");
+    var items = document.querySelectorAll("#ici-contents-wrapper li, .contents li, .toc-item li");
+    
+    // Find the outer main UL container (immediate child of the wrapper block)
+    var mainUL = document.querySelector("#ici-contents-wrapper > ul, .contents > ul, .toc-item > ul");
+    if (!mainUL) return;
+
     items.forEach(function(li) {
       // Find nested list
       var childList = li.querySelector("ul");
@@ -132,6 +178,75 @@
         }
       }
     });
+
+    // ── 3. Apply Dynamic Client-Side Pagination (Max 10 entries, No scroll!) ──
+    // Get only the direct top-level LI children of the main outer UL
+    allLIs = Array.from(mainUL.children);
+    if (allLIs.length > pageSize) {
+      setupPaginationControls(mainUL);
+      renderPage(1);
+    }
+  }
+
+  function renderPage(page) {
+    currentPage = page;
+    var startIndex = (page - 1) * pageSize;
+    var endIndex = startIndex + pageSize;
+
+    // Show only the 10 entries of the current page, hide the rest
+    allLIs.forEach(function(li, idx) {
+      if (idx >= startIndex && idx < endIndex) {
+        li.style.display = ""; // Default display
+      } else {
+        li.style.display = "none"; // Hide
+      }
+    });
+
+    // Update pagination controls text and button states
+    var totalPages = Math.ceil(allLIs.length / pageSize);
+    document.getElementById("ici-pag-info").textContent = "Page " + page + " of " + totalPages;
+    document.getElementById("ici-prev-btn").disabled = (page === 1);
+    document.getElementById("ici-next-btn").disabled = (page >= totalPages);
+  }
+
+  function setupPaginationControls(parentContainer) {
+    // Return if already appended
+    if (document.getElementById("ici-pagination-controls")) return;
+
+    var controls = document.createElement("div");
+    controls.id = "ici-pagination-controls";
+    controls.className = "ici-pagination-controls";
+
+    // Previous Button
+    var prevBtn = document.createElement("button");
+    prevBtn.id = "ici-prev-btn";
+    prevBtn.className = "ici-pag-btn";
+    prevBtn.textContent = "◀ Previous";
+    prevBtn.onclick = function() {
+      if (currentPage > 1) renderPage(currentPage - 1);
+    };
+    controls.appendChild(prevBtn);
+
+    // Page Info text
+    var info = document.createElement("span");
+    info.id = "ici-pag-info";
+    info.className = "ici-pag-info";
+    info.textContent = "Page 1 of 1";
+    controls.appendChild(info);
+
+    // Next Button
+    var nextBtn = document.createElement("button");
+    nextBtn.id = "ici-next-btn";
+    nextBtn.className = "ici-pag-btn";
+    nextBtn.textContent = "Next ▶";
+    nextBtn.onclick = function() {
+      var totalPages = Math.ceil(allLIs.length / pageSize);
+      if (currentPage < totalPages) renderPage(currentPage + 1);
+    };
+    controls.appendChild(nextBtn);
+
+    // Append directly below the list
+    parentContainer.parentNode.appendChild(controls);
   }
 
   // Run automatically as soon as FitNesse compiles the list on screen!
