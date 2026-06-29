@@ -13,14 +13,22 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   margin-bottom: 32px;
 }
+.ici-card-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 16px;
+  flex-direction: row !important;
+  width: 100% !important;
+}
 .ici-card-title {
   font-size: 16px;
   font-weight: bold;
   color: #2c2c2c;
-  margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0 !important;
 }
 .ici-card-desc {
   font-size: 13px;
@@ -30,11 +38,12 @@
 }
 
 .ici-run-btn {
-  display: inline-block; padding: 10px 24px; background: #A6192E; color: #fff;
-  border-radius: 4px; font-size: 14px; font-weight: 600; text-decoration: none;
+  display: inline-block; padding: 8px 16px; background: #A6192E; color: #fff;
+  border-radius: 4px; font-size: 13px; font-weight: 600; text-decoration: none;
   transition: background 0.18s;
   cursor: pointer;
   border: none;
+  white-space: nowrap !important;
 }
 .ici-run-btn:hover { background: #E06336; color: #fff; text-decoration: none; }
 
@@ -80,7 +89,13 @@
 
   <!-- ── MASTER SUITE ── -->
   <div class="ici-dynamic-card">
-    <div class="ici-card-title">📂 Available Suites & Test Cases</div>
+    
+    <!-- Unified Card Header with Title on Left and Create Button on Right Top -->
+    <div class="ici-card-header">
+      <h2 class="ici-card-title">📂 Available Suites & Test Cases</h2>
+      <a class="ici-run-btn" href="FrontPage?new">➕ Create New Test Page / Suite</a>
+    </div>
+
     <div class="ici-card-desc">Create your corporate AML API test pages or suites natively in 1 click. Any test page or suite you add will automatically and dynamically appear in the list below:</div>
     
     <div id="ici-contents-wrapper" style="font-size: 14px; color: #2c2c2c; line-height: 1.8; margin-bottom: 24px; padding-left: 10px;">
@@ -89,7 +104,6 @@
 !-
     </div>
     
-    <a class="ici-run-btn" href="FrontPage?new">➕ Create New Test Page / Suite</a>
   </div>
 
 </div>
