@@ -186,12 +186,14 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       { label: "+ Add Child",   href: function(){ return p() + "?new"; },        adminOnly: true },
       { label: "❌ Delete Page", href: function(){ return p() + "?deletePage"; }, adminOnly: true },
       { label: "⚙ Tools",       href: function(){ return p() + "?refactor"; },   adminOnly: true },
-      { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true }
+      { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true },
+      { label: "📋 Execution Log", href: function(){ return p() + "?executionLog"; } }
     ],
     user: [
       { label: "Home",          href: function(){ return "/"; } },
       { label: "▶ Run Suite",   href: function(){ return "/ApiTests?suite"; } },
-      { label: "▶ Test Page",   href: function(){ return p() + "?test"; } }
+      { label: "▶ Test Page",   href: function(){ return p() + "?test"; } },
+      { label: "📋 Execution Log", href: function(){ return p() + "?executionLog"; } }
     ]
   };
 
@@ -214,6 +216,20 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     var nav = document.getElementById("icici-header-nav");
     if (!nav) return;
     nav.innerHTML = "";
+    
+    // Prepend a beautiful Back Button if we are currently viewing the Execution Log!
+    if (/[?&]executionLog/.test(location.search)) {
+      var backBtn = document.createElement("a");
+      backBtn.href = p();
+      backBtn.className = "icici-nav-btn admin-only";
+      backBtn.style.background = "#E06336";
+      backBtn.style.borderColor = "#E06336";
+      backBtn.style.color = "#fff";
+      backBtn.style.fontWeight = "bold";
+      backBtn.textContent = "⬅ Go Back to Test";
+      nav.appendChild(backBtn);
+    }
+    
     links.forEach(function(l) {
       var a = document.createElement("a");
       a.href = typeof l.href === "function" ? l.href() : l.href;

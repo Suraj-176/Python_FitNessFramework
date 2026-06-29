@@ -1,5 +1,0 @@
-!define TEST_SYSTEM {slim}
-
-!|fixtures.PostRequestFixture|
-|url|bodyJson|statusCodes?|responseBody?|
-|${BASE_URL}/auth/login|{"username":"emilys","password":"emilyspass"}|200||

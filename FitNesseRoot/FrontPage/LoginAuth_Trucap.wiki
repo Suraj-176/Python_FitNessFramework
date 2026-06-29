@@ -2,7 +2,6 @@
 Test
 ---
 !define TEST_SYSTEM {slim}
-
-!|fixtures.PostRequestFixture|
-|url|bodyJson|statusCodes?|responseBody?|
-|${BASE_URL}/api/v2/login|{"Username":"suraj","Password":"Sur$0402"}|200||
+!| fixtures.AuthFixture |
+| tokenUrl | bodyJson | tokenField | generateToken? | statusCode? | token? | responseBody? |
+| https://c1790.trucap.io/trucapapi/api/v2/login | {"username":"suraj","password":"!-Sur$0402-!"} | token | true | 200 | | |

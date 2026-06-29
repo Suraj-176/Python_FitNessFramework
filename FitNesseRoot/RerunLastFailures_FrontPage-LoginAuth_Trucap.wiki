@@ -5,6 +5,6 @@ Suite
 
 !note This page is automatically generated when running tests. It will be overwritten by the next Suite or Test execution.
 
-Tests failed (first failure was at 2026-06-29T18:41:23.464):
+Tests failed (first failure was at 2026-06-29T18:41:09.486):
 
-!see [[FrontPage.DevLoginAuth][.FrontPage.DevLoginAuth]]
+!see [[FrontPage.LoginAuth_Trucap][.FrontPage.LoginAuth_Trucap]]

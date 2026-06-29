@@ -1,3 +1,4 @@
+import json
 import html
 from core.logger import logger, log_request, log_response
 import time
@@ -45,7 +46,7 @@ class PostRequestFixture:
             log_request("POST", self._url, headers=headers, payload=html.unescape(self._body_json))
 
             start = time.perf_counter()
-            response = requests.post(self._url, data=html.unescape(self._body_json).encode('utf-8'), headers=headers, timeout=15)
+            response = requests.post(self._url, json=json.loads(html.unescape(self._body_json)), headers=headers, timeout=15)
             self._response_time_ms = int((time.perf_counter() - start) * 1000)
 
             self._actual_status_code = response.status_code
