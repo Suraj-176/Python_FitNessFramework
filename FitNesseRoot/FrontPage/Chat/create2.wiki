@@ -1,0 +1,9 @@
+---
+LastModifyingUser: admin
+Test
+---
+!define TEST_SYSTEM {slim}
+
+!|fixtures.PostRequestFixture|
+|url|bodyJson|statusCode?|responseBody?|
+|https://api.example.com/users|{"name":"John Doe","email":"john.doe@example.com","mobile":"9876543210","city":"Pune"}|201|{"id":101,"message":"User created successfully"}|

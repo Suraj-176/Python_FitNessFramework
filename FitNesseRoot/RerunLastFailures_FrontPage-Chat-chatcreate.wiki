@@ -5,6 +5,6 @@ Suite
 
 !note This page is automatically generated when running tests. It will be overwritten by the next Suite or Test execution.
 
-Tests failed (first failure was at 2026-06-29T19:07:55.009):
+Tests failed (first failure was at 2026-06-29T19:09:08.626):
 
-!see [[FrontPage.DevLoginAuth][.FrontPage.DevLoginAuth]]
+!see [[FrontPage.Chat.chatcreate][.FrontPage.Chat.chatcreate]]
