@@ -186,14 +186,12 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       { label: "+ Add Child",   href: function(){ return p() + "?new"; },        adminOnly: true },
       { label: "❌ Delete Page", href: function(){ return p() + "?deletePage"; }, adminOnly: true },
       { label: "⚙ Tools",       href: function(){ return p() + "?refactor"; },   adminOnly: true },
-      { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true },
-      { label: "📋 Execution Log", href: function(){ return p() + "?executionLog"; } }
+      { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true }
     ],
     user: [
       { label: "Home",          href: function(){ return "/"; } },
       { label: "▶ Run Suite",   href: function(){ return "/ApiTests?suite"; } },
-      { label: "▶ Test Page",   href: function(){ return p() + "?test"; } },
-      { label: "📋 Execution Log", href: function(){ return p() + "?executionLog"; } }
+      { label: "▶ Test Page",   href: function(){ return p() + "?test"; } }
     ]
   };
 
