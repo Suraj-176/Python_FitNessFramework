@@ -43,6 +43,11 @@ exit /b 1
 echo [INFO] Launching FitNesse on http://localhost:8080/UserTests
 echo [INFO] Loading custom ICICI Pru Banking Theme templates and properties...
 echo [INFO] Restricting access using passwords.txt...
+echo [INFO] Starting Real-Time Folder-Sync Self-Healing Watcher in background...
+
+:: Silently launch our real-time folder-sync self-healing watcher! 🟢
+start /b .venv\Scripts\python "%~dp0core\fitnesse_watcher.py"
+
 echo [INFO] Press Ctrl+C in this terminal to stop the server.
 echo ---------------------------------------------------------------------
 java -cp "%~dp0fitnesse-standalone.jar;%~dp0." fitnesseMain.FitNesseMain -p 8080 -a "%~dp0passwords.txt"
