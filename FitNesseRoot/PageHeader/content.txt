@@ -719,6 +719,31 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   };
 
 
+  /* ── Auto-prepopulate new Suite Pages with !contents macro! ── */
+  document.addEventListener("DOMContentLoaded", function() {
+    if (/[?&](edit|new)/i.test(location.search)) {
+      var textarea = document.getElementById("pageContent") || document.querySelector("textarea[name='pageContent']");
+      if (textarea) {
+        if (textarea.value.trim() === "") {
+          var suiteRadio = document.getElementById("suite") || document.querySelector("input[value='Suite']");
+          if (suiteRadio && suiteRadio.checked) {
+            textarea.value = "!contents -R2 -g -p -h\n";
+          }
+          
+          document.querySelectorAll("input[name='pageType']").forEach(function(radio) {
+            radio.addEventListener("change", function() {
+              if (this.value === "Suite" && textarea.value.trim() === "") {
+                textarea.value = "!contents -R2 -g -p -h\n";
+              } else if (this.value !== "Suite" && textarea.value.trim() === "!contents -R2 -g -p -h") {
+                textarea.value = "";
+              }
+            });
+          });
+        }
+      }
+    }
+  });
+
   /* ── Auto-restore session on page load ────────────────────────── */
   var existing = loadSession();
   if (existing) {

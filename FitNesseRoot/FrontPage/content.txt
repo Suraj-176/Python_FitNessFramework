@@ -366,9 +366,6 @@
       var testCount = 0;
       if (childList) {
         testCount = childList.querySelectorAll("li").length;
-      } else if (isSuite && nameLower.indexOf("regression") !== -1) {
-        // Fallback fallback if childList is not cached on homepage list yet
-        testCount = 1; 
       }
 
       // ── Icon Mapping based on Suite Name ──
