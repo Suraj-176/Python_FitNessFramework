@@ -109,6 +109,13 @@ class BaseRequestFixture:
             log_response(self._actual_status_code, self._response_body, dict(response.headers))
             logger.info(f"[{method}] {self._url} -> {self._actual_status_code} ({self._response_time_ms}ms)")
             
+            # Auto-generate our 3rd-party corporate HTML report dynamically on the fly!
+            try:
+                from core.report_generator import generate_html_report
+                generate_html_report()
+            except Exception as e:
+                logger.error(f"[Report] Failed to trigger report generator: {e}")
+            
             self._executed = True
             return True
 

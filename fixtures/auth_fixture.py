@@ -139,6 +139,14 @@ class AuthFixture:
 
             AuthFixture._auth_token = token
             logger.info("[Auth] Token acquired successfully.")
+            
+            # Auto-generate our 3rd-party corporate HTML report dynamically on the fly!
+            try:
+                from core.report_generator import generate_html_report
+                generate_html_report()
+            except Exception as e:
+                logger.error(f"[Report] Failed to trigger report generator: {e}")
+                
             return True
 
         except requests.exceptions.Timeout:

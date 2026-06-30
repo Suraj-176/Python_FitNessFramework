@@ -320,11 +320,15 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       { label: "+ Add Child",   href: function(){ return p() + "?new"; },        adminOnly: true },
       { label: "❌ Delete Page", href: function(){ return p() + "?deletePage"; }, adminOnly: true },
       { label: "⚙ Tools",       href: function(){ return p() + "?refactor"; },   adminOnly: true },
-      { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true }
+      { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true },
+      { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } },
+      { label: "📊 Branded Report", href: "/files/report.html" }
     ],
     user: [
       { label: "Home",          href: function(){ return "/"; } },
-      { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); } }
+      { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); } },
+      { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } },
+      { label: "📊 Branded Report", href: "/files/report.html" }
     ]
   };
 
