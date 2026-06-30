@@ -296,14 +296,17 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 
   function getRunUrl() {
     if (p() === "/" || p() === "/FrontPage" || p() === "" || p() === "/index.html") {
-      return "/ApiTests?suite";
+      return "/FrontPage?suite";
     }
-    // Dynamically detect if current page is a Suite or Test page!
-    var isSuite = /suite/i.test(document.title) || 
-                  /suite/i.test(location.search) ||
-                  document.querySelector(".suite") !== null ||
-                  document.body.className.indexOf("suite") !== -1;
-    if (isSuite) {
+    // Natively inspect the DOM for nested child lists (which only exist on SUITE pages!) to identify Suites vs Test pages flawlessly!
+    var hasSuiteAction = document.querySelector('.contents') !== null || 
+                         document.querySelector('.toc-item') !== null ||
+                         document.querySelector('#ici-contents-wrapper') !== null ||
+                         document.querySelector('a[href*="?suite"]') !== null || 
+                         document.querySelector('a[href$="suite"]') !== null ||
+                         /suite/i.test(document.title) ||
+                         document.body.className.indexOf("suite") !== -1;
+    if (hasSuiteAction) {
       return p() + "?suite";
     }
     return p() + "?test";

@@ -1,8 +1,0 @@
----
-LastModifyingUser: admin
-Test
----
-!define TEST_SYSTEM {slim}
-!| fixtures.PostRequestFixture |
-| url | bodyJson | statusCodes? | responseBody? |
-| !-http://192.168.4.187/trubi25v2rel/api/UsersAPI/AuthenticateUser-! | {"Username":"suraj","Password":"!-Sur$0402-!"} | 200 | |

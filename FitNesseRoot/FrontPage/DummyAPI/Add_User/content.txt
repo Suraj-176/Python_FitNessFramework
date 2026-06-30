@@ -1,0 +1,5 @@
+!define TEST_SYSTEM {slim}
+
+!|fixtures.PostRequestFixture|
+|url|bodyJson|statusCodes?|responseBody?|
+|https://dummyjson.com/users/add|{"firstName":"John","lastName":"Doe","age":30}|201||

@@ -1,9 +1,0 @@
----
-LastModifyingUser: admin
-Test
----
-!define TEST_SYSTEM {slim}
-
-!|fixtures.AuthFixture|
-|tokenUrl|bodyJson|tokenField|generateToken?|statusCode?|token?|responseBody?|
-|https://c1790.trucap.io/trucapapi/api/v2/login|{"username":"suraj","password":"dummy123"}|token|true|200|Bearer eyJhbGciOiJIUzI1NiJ9.dummy.token|{"status":"success","message":"Login successful","token":"eyJhbGciOiJIUzI1NiJ9.dummy.token"}|

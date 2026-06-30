@@ -1,0 +1,5 @@
+!define TEST_SYSTEM {slim}
+
+!|fixtures.DeleteRequestFixture|
+|url|statusCodes?|responseBody?|
+|https://dummyjson.com/users/1|200||
