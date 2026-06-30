@@ -721,6 +721,24 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 
   /* ── Auto-prepopulate new Suite Pages with !contents macro! ── */
   document.addEventListener("DOMContentLoaded", function() {
+    var form = document.getElementById("f") || document.querySelector("form");
+    if (form) {
+      form.addEventListener("submit", function(e) {
+        var textarea = document.getElementById("pageContent") || document.querySelector("textarea[name='pageContent']");
+        if (textarea) {
+          var text = textarea.value.trim();
+          var isSuiteChecked = (document.getElementById("suite") || {}).checked;
+          var pageNameInput = document.getElementById("pageName") || document.querySelector("input[name='pageName']");
+          var pageName = pageNameInput ? pageNameInput.value : "";
+          
+          // If they are saving an empty page, and it's a Suite page:
+          if (text === "" && (isSuiteChecked || /suite|regression|smoke|sanity|demo/i.test(location.pathname) || /suite|regression|smoke|sanity|demo/i.test(pageName))) {
+            textarea.value = "!contents -R2 -g -p -h\n";
+          }
+        }
+      });
+    }
+
     if (/[?&](edit|new)/i.test(location.search)) {
       var textarea = document.getElementById("pageContent") || document.querySelector("textarea[name='pageContent']");
       if (textarea) {
