@@ -1,8 +1,0 @@
----
-LastModifyingUser: admin
----
-!define TEST_SYSTEM {slim}
-
-!|fixtures.AuthFixture|
-|tokenUrl|bodyJson|tokenField|generateToken?|statusCode?|responseBody?|
-|https://dummyjson.com/auth/login|{"username":"emilys","password":"emilyspass"}|accessToken|true|200|||
