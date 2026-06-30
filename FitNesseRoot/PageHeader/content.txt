@@ -388,6 +388,45 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     sessionStorage.removeItem(SESSION_KEY);
   }
 
+  /* ── Zero-Dependency Dynamic Table-to-Excel/CSV Exporter! ── */
+  window.iciExportTableToCSV = function() {
+    var tables = document.querySelectorAll("table.fit_table, table.statistics, .history table, .test-history table, table");
+    if (tables.length === 0) {
+      alert("No tabular data found on this page to export.");
+      return;
+    }
+
+    var csvRows = [];
+    tables.forEach(function(table, tableIdx) {
+      if (tableIdx > 0) csvRows.push(""); // separation spacer
+      
+      var rows = table.querySelectorAll("tr");
+      rows.forEach(function(row) {
+        var cols = row.querySelectorAll("th, td");
+        var rowData = [];
+        
+        cols.forEach(function(col) {
+          var text = col.textContent.replace(/\s+/g, " ").replace(/"/g, '""').trim();
+          rowData.push('"' + text + '"');
+        });
+        
+        csvRows.push(rowData.join(","));
+      });
+    });
+
+    var csvString = csvRows.join("\n");
+    var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    var link = document.createElement("a");
+    
+    var pageTitle = (document.title || "Report").replace(/[^a-zA-Z0-9]/g, "_");
+    link.download = pageTitle + "_Report.csv";
+    link.href = URL.createObjectURL(blob);
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   function buildNav(role) {
     var links = NAV[role] || NAV.user;
     var nav = document.getElementById("icici-header-nav");
@@ -403,21 +442,22 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       backBtn.style.borderColor = "#E06336";
       backBtn.style.color = "#fff";
       backBtn.style.fontWeight = "bold";
-      backBtn.textContent = "⬅ Go Back to Test";
+      backBtn.textContent = "⬅ Back";
       nav.appendChild(backBtn);
     }
     
-    // Prepend a beautiful Export PDF Button if we are viewing a specific date's execution run history!
-    if (/[?&]pageHistory/.test(location.search) && /[?&]entry=/.test(location.search)) {
+    // Prepend our premium "Export to Excel/CSV" button if viewing run results or history lists! 🟢
+    var isResultOrHistory = /[?&](test|suite|pagehistory)/i.test(location.search);
+    if (isResultOrHistory) {
       var exportBtn = document.createElement("button");
       exportBtn.className = "icici-nav-btn admin-only";
-      exportBtn.style.background = "#A6192E";
-      exportBtn.style.borderColor = "#A6192E";
+      exportBtn.style.background = "#155724";
+      exportBtn.style.borderColor = "#155724";
       exportBtn.style.color = "#fff";
       exportBtn.style.fontWeight = "bold";
       exportBtn.style.marginRight = "6px";
-      exportBtn.textContent = "💾 Export PDF Report";
-      exportBtn.onclick = function() { window.print(); };
+      exportBtn.textContent = "💾 Export to Excel";
+      exportBtn.onclick = function() { iciExportTableToCSV(); };
       nav.appendChild(exportBtn);
     }
     

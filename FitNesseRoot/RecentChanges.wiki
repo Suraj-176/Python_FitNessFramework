@@ -1,7 +1,7 @@
+|FrontPage.Sanity.loginTrubi|admin|13:56:03 Tue, Jun 30, 2026|
 |VariablePage|admin|12:55:46 Tue, Jun 30, 2026|
 |FrontPage.Regression|admin|12:54:07 Tue, Jun 30, 2026|
 |FrontPage.Smoke.TruCap_Login|admin|12:52:56 Tue, Jun 30, 2026|
-|FrontPage.Sanity.loginTrubi|admin|12:49:46 Tue, Jun 30, 2026|
 |FrontPage.Regression.TruBI_login|admin|12:41:02 Tue, Jun 30, 2026|
 |FrontPage.Regression.TruBI|admin|12:40:20 Tue, Jun 30, 2026|
 |FrontPage.Sanity|admin|12:39:16 Tue, Jun 30, 2026|

@@ -4,4 +4,4 @@ Test
 ---
 !| fixtures.AuthFixture |
 | url | basicAuth | statusCodes? | responseBody? |
-| !-http://192.168.4.187/trubi25v2rel/api/UsersAPI/AuthenticateUser-! | !-suraj:Sur$0402-! | 200 | |
+| !-http://192.168.4.187/trubi25v2rel/api/UsersAPI/AuthenticateUser-! | !-suraj:Sur$040-! | 200 | |

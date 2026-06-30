@@ -306,36 +306,48 @@ table.fit_table tbody tr:nth-child(even) {
   background-color: #faf8f4;
 }
 
-/* ==========================================
+/* ==========================================================
    TEST RESULT COLORING
-   (kept semantic — don't break pass/fail)
-   ========================================== */
+   (High-Contrast, Soft Pastel Green & Crisp Text)
+   ========================================================== */
 .test-summary-pass,
 .pass,
-td.pass {
-  background-color: #DFF0DB !important;
-  color: #1a5c1a !important;
+td.pass,
+span.pass,
+div.pass {
+  background-color: #f0fdf4 !important; /* Whisper-light, extremely soft mint-green */
+  color: #155724 !important; /* Deep dark-green text for maximum readability! */
+  border-color: #dcfce7 !important;
+}
+
+.test-summary-pass a,
+.pass a {
+  color: #155724 !important;
+  font-weight: 700 !important;
 }
 
 .test-summary-fail,
 .fail,
 td.fail {
-  background-color: #F9E0E0 !important;
-  color: #8B0000 !important;
+  background-color: #f8d7da !important; /* Soft, light pastel red */
+  color: #721c24 !important; /* Deep dark-red text */
+  border-color: #f5c6cb !important;
 }
 
 .test-summary-ignore,
 .ignore,
 td.ignore {
-  background-color: #FFF8DC !important;
-  color: #7a5c00 !important;
+  background-color: #fff3cd !important; /* Soft, light pastel yellow */
+  color: #856404 !important; /* Deep dark-yellow text */
+  border-color: #ffeeba !important;
 }
 
 .test-summary-error,
 .error,
 td.error {
-  background-color: #FFE4CC !important;
-  color: #7a3000 !important;
+  background-color: #e2e3e5 !important; /* Soft, light pastel grey */
+  color: #383d41 !important; /* Deep dark-grey text */
+  border-color: #d6d8db !important;
 }
 
 /* Test result summary bar */
