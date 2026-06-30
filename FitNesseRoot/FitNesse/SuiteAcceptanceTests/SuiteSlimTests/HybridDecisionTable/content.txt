@@ -210,4 +210,4 @@ The pattern used in the hybrid table is the below.
 
 
 Further Reading:
-!contents -R2 -g -p -f -h
+!contents -R2 -g -p -h

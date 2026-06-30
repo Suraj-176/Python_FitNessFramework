@@ -2,4 +2,4 @@ Here all the pages go that are available throughout the wiki.
 
 Find out more on page .FitNesse.UserGuide.WritingAcceptanceTests.SpecialPages.
 
-!contents -R2 -g -p -f -h
+!contents -R2 -g -p -h

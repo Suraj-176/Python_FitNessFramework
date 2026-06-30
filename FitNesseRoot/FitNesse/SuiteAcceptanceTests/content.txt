@@ -37,3 +37,5 @@ Use a non-default port number, so SLIM tests systems can be run as well:
 !define COLLAPSE_TEARDOWN {true}
 
 !define TITLE_TAG {li}
+
+!contents -R2 -g -p -h

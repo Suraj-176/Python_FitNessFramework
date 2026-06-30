@@ -13,4 +13,4 @@ Read [[Writing Plugins][FitNesse.UserGuide.AdministeringFitNesse.WritingPlugins]
 
 Below is the list of all installed plugins in this system:
 
-!contents -R1 -g -p -f -h
+!contents -R1 -g -p -h

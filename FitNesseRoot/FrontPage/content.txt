@@ -47,6 +47,139 @@
 }
 .ici-run-btn:hover { background: #E06336; color: #fff; text-decoration: none; }
 
+/* ── Branded Toggle Segment Styling ────────────────── */
+.ici-toggle-group {
+  display: inline-flex !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  padding: 2px !important;
+  margin-right: 8px !important;
+  box-sizing: border-box !important;
+}
+.ici-toggle-btn {
+  border: none !important;
+  background: transparent !important;
+  padding: 5px 12px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: background 0.15s, color 0.15s !important;
+  font-family: Arial, sans-serif !important;
+  outline: none !important;
+}
+.ici-toggle-btn.active {
+  background: #004A80 !important;
+  color: #fff !important;
+}
+.ici-toggle-btn:hover:not(.active) {
+  background: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+/* ── Dynamic CSS Grid & Suite Cards Styling ───────── */
+.ici-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)) !important;
+  gap: 20px !important;
+  margin-top: 20px !important;
+}
+.ici-suite-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  border-top: 4px solid #004A80 !important;
+  padding: 22px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03) !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  min-height: 220px !important; /* Slightly expanded to display descriptions beautifully! */
+  box-sizing: border-box !important;
+  text-align: left !important;
+}
+.ici-suite-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important;
+  border-top-color: #E06336 !important;
+}
+.ici-suite-card.test-case-card {
+  border-top-color: #64748b !important; /* Grey top border for standalone test cases */
+}
+.ici-card-top {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  margin-bottom: 12px !important;
+}
+.ici-card-icon {
+  font-size: 30px !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+.ici-card-details h3 {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  margin: 0 0 4px !important;
+  font-family: Arial, sans-serif !important;
+}
+.ici-card-details p {
+  font-size: 11px !important;
+  color: #64748b !important;
+  margin: 0 !important;
+  font-weight: 600 !important;
+  font-family: Arial, sans-serif !important;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.ici-card-body-desc {
+  font-size: 12px !important;
+  color: #475569 !important;
+  line-height: 1.5 !important;
+  margin-bottom: 16px !important;
+  font-family: Arial, sans-serif !important;
+}
+.ici-card-actions {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: auto !important;
+  border-top: 1px dashed #f1f5f9 !important;
+  padding-top: 12px !important;
+  width: 100% !important;
+}
+.ici-card-btn {
+  flex: 1 !important;
+  text-align: center !important;
+  padding: 8px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  border-radius: 4px !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  border: none !important;
+  box-sizing: border-box !important;
+  font-family: Arial, sans-serif !important;
+}
+.ici-card-btn.run {
+  background: #A6192E !important;
+  color: #fff !important;
+}
+.ici-card-btn.run:hover {
+  background: #E06336 !important;
+}
+.ici-card-btn.open {
+  background: #f8fafc !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+.ici-card-btn.open:hover {
+  background: #f1f5f9 !important;
+}
+
 /* ── Pagination Controls Styling ───────────────────── */
 .ici-pagination-controls {
   display: flex;
@@ -83,6 +216,65 @@
   min-width: 90px;
   text-align: center;
 }
+
+/* ── Custom List View Layout & Inline Buttons Styling ── */
+#ici-contents-wrapper ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+}
+#ici-contents-wrapper li {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px dashed #f1f5f9 !important;
+  margin-bottom: 0 !important;
+  box-sizing: border-box !important;
+}
+#ici-contents-wrapper li:hover {
+  background: #f8fafc !important;
+}
+#ici-contents-wrapper li a {
+  text-decoration: none !important;
+  font-family: Arial, sans-serif !important;
+}
+#ici-contents-wrapper li a:hover {
+  text-decoration: underline !important;
+}
+
+.ici-list-actions {
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+}
+.ici-list-btn {
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  border-radius: 4px !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  border: none !important;
+  box-sizing: border-box !important;
+  font-family: Arial, sans-serif !important;
+}
+.ici-list-btn.run {
+  background: #A6192E !important;
+  color: #fff !important;
+}
+.ici-list-btn.run:hover {
+  background: #E06336 !important;
+}
+.ici-list-btn.open {
+  background: #f8fafc !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+.ici-list-btn.open:hover {
+  background: #f1f5f9 !important;
+}
 </style>
 
 <div class="ici-dash">
@@ -90,114 +282,162 @@
   <!-- ── MASTER SUITE ── -->
   <div class="ici-dynamic-card">
     
-    <!-- Unified Card Header with Title on Left and Create Button on Right Top -->
+    <!-- Unified Card Header with Title on Left, View Toggle, and Create Button on Right Top -->
     <div class="ici-card-header">
-      <h2 class="ici-card-title">📂 Available Suites & Test Cases</h2>
-      <a class="ici-run-btn" href="FrontPage?new">➕ Create New Test Page / Suite</a>
+      <h2 class="ici-card-title">📂 Available Test Suites</h2>
+      
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <!-- Card / List View Toggle Group Segment -->
+        <div class="ici-toggle-group">
+          <button id="ici-btn-card" class="ici-toggle-btn active" onclick="iciSetView('card')" title="Cards Grid View">📱 Cards</button>
+          <button id="ici-btn-list" class="ici-toggle-btn" onclick="iciSetView('list')" title="Standard List View">📋 List</button>
+        </div>
+        <a class="ici-run-btn" href="FrontPage?new">➕ Create New Test Page / Suite</a>
+      </div>
     </div>
 
-    <div class="ici-card-desc">Create your corporate AML API test pages or suites natively in 1 click. Any test page or suite you add will automatically and dynamically appear in the list below:</div>
+    <div class="ici-card-desc">Create your corporate AML API test pages or suites natively in 1 click. Any test page or suite you add will automatically and dynamically appear inside the responsive grid card view below:</div>
     
-    <div id="ici-contents-wrapper" style="font-size: 14px; color: #2c2c2c; line-height: 1.8; margin-bottom: 24px; padding-left: 10px;">
+    <!-- Hidden relative list contents used as our dynamic data source -->
+    <div id="ici-contents-wrapper" style="display: none !important;">
 -!
 !contents -R2 -g -p -h
 !-
     </div>
+
+    <!-- Active responsive CSS grid card view! -->
+    <div id="ici-suite-grid" class="ici-grid"></div>
     
   </div>
 
 </div>
 
-<!-- ── DYNAMIC LIST FORMATTER, TEST COUNTER & PAGINATION ── -->
+<!-- ── DYNAMIC CARD VIEW GENERATOR & PAGINATION ENGINE ── -->
 <script>
 (function() {
   var pageSize = 10;
   var currentPage = 1;
-  var allLIs = [];
+  var allCards = [];
 
-  function iciFormatPageList() {
-    var items = document.querySelectorAll("#ici-contents-wrapper li, .contents li, .toc-item li");
-    
-    // Find the outer main UL container (immediate child of the wrapper block)
-    var mainUL = document.querySelector("#ici-contents-wrapper > ul, .contents > ul, .toc-item > ul");
-    if (!mainUL) return;
+  function iciGenerateCardView() {
+    var wrapper = document.getElementById("ici-contents-wrapper");
+    var grid = document.getElementById("ici-suite-grid");
+    if (!grid || !wrapper) return;
+    grid.innerHTML = "";
 
-    items.forEach(function(li) {
-      // Find nested list
+    // Find the first outer main UL container compiled by FitNesse! (Flawless DOM detection)
+    var mainUL = wrapper.querySelector("ul");
+    if (!mainUL) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b; font-weight: bold;">No active suites or test cases found. Click Create above to add one!</div>';
+      return;
+    }
+
+    var topLevelItems = Array.from(mainUL.children);
+    if (topLevelItems.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b; font-weight: bold;">No active suites or test cases found. Click Create above to add one!</div>';
+      return;
+    }
+
+    topLevelItems.forEach(function(li) {
+      // Find nested list (which represents nested test cases!)
       var childList = li.querySelector("ul");
       
       // Calculate immediate text content only (ignoring nested list items)
       var immediateText = "";
-      for (var i = 0; i < li.childNodes.length; i++) {
-        var node = li.childNodes[i];
-        if (node.nodeType === Node.TEXT_NODE) {
-          immediateText += node.textContent;
-        } else if (node.tagName === "A") {
-          immediateText += node.textContent;
-        }
+      var link = li.querySelector("a");
+      if (!link) return;
+
+      var originalName = link.textContent.trim();
+      var name = originalName.replace(/\s*\*+/, "").replace(/\s*\++/, "").trim();
+      var href = link.href;
+
+      var isSuite = originalName.indexOf("*") !== -1 || childList !== null;
+      var testCount = 0;
+      if (childList) {
+        testCount = childList.querySelectorAll("li").length;
       }
-      
-      // ── 1. Check if this is a Suite Page (Contains '*' symbol)
-      if (immediateText.indexOf("*") !== -1) {
-        var a = li.querySelector("a");
-        if (a) {
-          var name = a.textContent.replace(/\s*\*+/, "").trim();
-          
-          // Count the number of nested <li> test cases inside this suite
-          var testCount = 0;
-          if (childList) {
-            testCount = childList.querySelectorAll("li").length;
-          }
-          
-          // Re-write text as: "📁 Chat (2)"
-          a.textContent = "📁 " + name + " (" + testCount + ")";
-          a.style.fontWeight = "bold";
-          a.style.color = "#004A80";
-          a.style.fontSize = "15px";
-          
-          // Hide the messy nested lists recursively to keep dashboard extremely clean!
-          if (childList) {
-            childList.style.display = "none";
-          }
-        }
-        
-        // Strip any residual raw text '*' symbols
-        for (var i = 0; i < li.childNodes.length; i++) {
-          var node = li.childNodes[i];
-          if (node.nodeType === Node.TEXT_NODE && node.textContent.indexOf("*") !== -1) {
-            node.textContent = node.textContent.replace(/\s*\*+/, "");
-          }
-        }
+
+      // ── Icon Mapping based on Suite Name ──
+      var icon = "📁";
+      var nameLower = name.toLowerCase();
+      if (nameLower.indexOf("smoke") !== -1) icon = "💨";
+      else if (nameLower.indexOf("sanity") !== -1) icon = "🛡️";
+      else if (nameLower.indexOf("regression") !== -1) icon = "🧪";
+      else if (!isSuite) icon = "📄";
+
+      // ── Dynamic Descriptions Mapping based on Suite Name ──
+      var desc = "Dynamic corporate API test suite.";
+      if (nameLower.indexOf("smoke") !== -1) {
+        desc = "Checks critical application functionality to confirm the build is stable for testing.";
+      } else if (nameLower.indexOf("sanity") !== -1) {
+        desc = "Verifies specific changes or fixes and their immediate impact.";
+      } else if (nameLower.indexOf("regression") !== -1) {
+        desc = "Validates that previously working features remain unaffected by recent changes.";
+      } else if (!isSuite) {
+        desc = "Single executable REST API automation test case.";
       }
-      
-      // ── 2. Check if this is a Single Test Page (Contains '+' symbol)
-      else if (immediateText.indexOf("+") !== -1) {
-        var a = li.querySelector("a");
-        if (a) {
-          var name = a.textContent.replace(/\s*\++/, "").trim();
-          
-          // Re-write text as: "📄 Dev Login Auth" (no ugly '+' symbol!)
-          a.textContent = "📄 " + name;
-          a.style.color = "#444";
-          a.style.fontSize = "14px";
-          a.style.fontWeight = "500";
-        }
-        
-        // Strip any residual raw text '+' symbols
-        for (var i = 0; i < li.childNodes.length; i++) {
-          var node = li.childNodes[i];
-          if (node.nodeType === Node.TEXT_NODE && node.textContent.indexOf("+") !== -1) {
-            node.textContent = node.textContent.replace(/\s*\++/, "");
-          }
-        }
+
+      // ── Create Suite Card DOM Element ──
+      var card = document.createElement("div");
+      card.className = "ici-suite-card" + (isSuite ? "" : " test-case-card");
+
+      // Top section (Icon + Title & details)
+      var topDiv = document.createElement("div");
+      topDiv.className = "ici-card-top";
+
+      var iconSpan = document.createElement("span");
+      iconSpan.className = "ici-card-icon";
+      iconSpan.textContent = icon;
+      topDiv.appendChild(iconSpan);
+
+      var detailsDiv = document.createElement("div");
+      detailsDiv.className = "ici-card-details";
+
+      var h3 = document.createElement("h3");
+      h3.textContent = name;
+      detailsDiv.appendChild(h3);
+
+      var pDesc = document.createElement("p");
+      if (isSuite) {
+        pDesc.textContent = testCount + (testCount === 1 ? " Test Case" : " Test Cases");
+      } else {
+        pDesc.textContent = "Single Test Page";
       }
+      detailsDiv.appendChild(pDesc);
+
+      topDiv.appendChild(detailsDiv);
+      card.appendChild(topDiv);
+
+      // Body Description section
+      var descPara = document.createElement("div");
+      descPara.className = "ici-card-body-desc";
+      descPara.textContent = desc;
+      card.appendChild(descPara);
+
+      // Actions section (Run + Open buttons)
+      var actionsDiv = document.createElement("div");
+      actionsDiv.className = "ici-card-actions";
+
+      var runBtn = document.createElement("a");
+      runBtn.className = "ici-card-btn run";
+      runBtn.href = href + (isSuite ? "?suite" : "?test");
+      runBtn.textContent = "▶ Run";
+      actionsDiv.appendChild(runBtn);
+
+      var openBtn = document.createElement("a");
+      openBtn.className = "ici-card-btn open";
+      openBtn.href = href;
+      openBtn.textContent = "📂 Open";
+      actionsDiv.appendChild(openBtn);
+
+      card.appendChild(actionsDiv);
+      grid.appendChild(card);
     });
 
-    // ── 3. Apply Dynamic Client-Side Pagination (Max 10 entries, No scroll!) ──
-    // Get only the direct top-level LI children of the main outer UL
-    allLIs = Array.from(mainUL.children);
-    if (allLIs.length > pageSize) {
-      setupPaginationControls(mainUL);
+    // ── Apply Dynamic Client-Side Pagination (Max 10 cards, No scroll!) ──
+    allCards = Array.from(grid.children);
+    if (allCards.length > pageSize) {
+      setupPaginationControls(grid);
       renderPage(1);
     }
   }
@@ -208,23 +448,22 @@
     var endIndex = startIndex + pageSize;
 
     // Show only the 10 entries of the current page, hide the rest
-    allLIs.forEach(function(li, idx) {
+    allCards.forEach(function(card, idx) {
       if (idx >= startIndex && idx < endIndex) {
-        li.style.display = ""; // Default display
+        card.style.display = ""; // Default display
       } else {
-        li.style.display = "none"; // Hide
+        card.style.display = "none"; // Hide
       }
     });
 
     // Update pagination controls text and button states
-    var totalPages = Math.ceil(allLIs.length / pageSize);
+    var totalPages = Math.ceil(allCards.length / pageSize);
     document.getElementById("ici-pag-info").textContent = "Page " + page + " of " + totalPages;
     document.getElementById("ici-prev-btn").disabled = (page === 1);
     document.getElementById("ici-next-btn").disabled = (page >= totalPages);
   }
 
   function setupPaginationControls(parentContainer) {
-    // Return if already appended
     if (document.getElementById("ici-pagination-controls")) return;
 
     var controls = document.createElement("div");
@@ -254,7 +493,7 @@
     nextBtn.className = "ici-pag-btn";
     nextBtn.textContent = "Next ▶";
     nextBtn.onclick = function() {
-      var totalPages = Math.ceil(allLIs.length / pageSize);
+      var totalPages = Math.ceil(allCards.length / pageSize);
       if (currentPage < totalPages) renderPage(currentPage + 1);
     };
     controls.appendChild(nextBtn);
@@ -263,8 +502,144 @@
     parentContainer.parentNode.appendChild(controls);
   }
 
-  // Run automatically as soon as FitNesse compiles the list on screen!
-  setTimeout(iciFormatPageList, 100);
+  /* ── 2. Standard List Formatter (runs recursively if List View is enabled!) ── */
+  function iciFormatPageList() {
+    var items = document.querySelectorAll("#ici-contents-wrapper li");
+    items.forEach(function(li) {
+      var childList = li.querySelector("ul");
+      var immediateText = "";
+      for (var i = 0; i < li.childNodes.length; i++) {
+        var node = li.childNodes[i];
+        if (node.nodeType === Node.TEXT_NODE) immediateText += node.textContent;
+        else if (node.tagName === "A") immediateText += node.textContent;
+      }
+      
+      // Suite Page Formatter
+      if (immediateText.indexOf("*") !== -1 || childList !== null) {
+        var a = li.querySelector("a");
+        if (a) {
+          // If the inline buttons are already appended, skip appending again!
+          if (li.querySelector(".ici-list-actions")) return;
+
+          var name = a.textContent.replace(/\s*\*+/, "").trim();
+          var testCount = childList ? childList.querySelectorAll("li").length : 0;
+          var href = a.href;
+          
+          a.textContent = "📁 " + name + " (" + testCount + ")";
+          a.style.fontWeight = "bold";
+          a.style.color = "#004A80";
+          a.style.fontSize = "15px";
+          if (childList) childList.style.display = "none";
+
+          // Create and append beautiful inline action buttons on the right! 🟢
+          var actions = document.createElement("div");
+          actions.className = "ici-list-actions";
+
+          var run = document.createElement("a");
+          run.className = "ici-list-btn run";
+          run.href = href + "?suite";
+          run.textContent = "▶ Run";
+          actions.appendChild(run);
+
+          var open = document.createElement("a");
+          open.className = "ici-list-btn open";
+          open.href = href;
+          open.textContent = "📂 Open";
+          actions.appendChild(open);
+
+          li.appendChild(actions);
+        }
+        for (var i = 0; i < li.childNodes.length; i++) {
+          var node = li.childNodes[i];
+          if (node.nodeType === Node.TEXT_NODE && node.textContent.indexOf("*") !== -1) {
+            node.textContent = node.textContent.replace(/\s*\*+/, "");
+          }
+        }
+      }
+      // Single Test Case Formatter
+      else if (immediateText.indexOf("+") !== -1) {
+        var a = li.querySelector("a");
+        if (a) {
+          if (li.querySelector(".ici-list-actions")) return;
+
+          var name = a.textContent.replace(/\s*\++/, "").trim();
+          var href = a.href;
+
+          a.textContent = "📄 " + name;
+          a.style.color = "#444";
+          a.style.fontSize = "14px";
+          a.style.fontWeight = "500";
+
+          // Create and append beautiful inline action buttons on the right! 🟢
+          var actions = document.createElement("div");
+          actions.className = "ici-list-actions";
+
+          var run = document.createElement("a");
+          run.className = "ici-list-btn run";
+          run.href = href + "?test";
+          run.textContent = "▶ Run";
+          actions.appendChild(run);
+
+          var open = document.createElement("a");
+          open.className = "ici-list-btn open";
+          open.href = href;
+          open.textContent = "📂 Open";
+          actions.appendChild(open);
+
+          li.appendChild(actions);
+        }
+        for (var i = 0; i < li.childNodes.length; i++) {
+          var node = li.childNodes[i];
+          if (node.nodeType === Node.TEXT_NODE && node.textContent.indexOf("+") !== -1) {
+            node.textContent = node.textContent.replace(/\s*\++/, "");
+          }
+        }
+      }
+    });
+  }
+
+  /* ── 3. Dynamic Card/List View Toggle Logic! ── */
+  window.iciSetView = function(view) {
+    var wrapper = document.getElementById("ici-contents-wrapper");
+    var grid = document.getElementById("ici-suite-grid");
+    var pag = document.getElementById("ici-pagination-controls");
+    
+    var btnCard = document.getElementById("ici-btn-card");
+    var btnList = document.getElementById("ici-btn-list");
+    
+    if (!wrapper || !grid) return;
+    
+    if (view === "card") {
+      // Show Card view, hide List view
+      wrapper.style.setAttribute ? wrapper.style.setAttribute("display", "none", "important") : wrapper.style.cssText = "display: none !important;";
+      grid.style.cssText = "display: grid !important;";
+      if (pag) pag.style.cssText = "display: flex !important;";
+      
+      btnCard.className = "ici-toggle-btn active";
+      btnList.className = "ici-toggle-btn";
+      
+      // Re-render and make sure pagination styles/page-sizes apply
+      iciGenerateCardView();
+    } else {
+      // Show formatted List view, hide Card view
+      grid.style.cssText = "display: none !important;";
+      if (pag) pag.style.cssText = "display: none !important;";
+      wrapper.style.cssText = "display: block !important;";
+      
+      btnList.className = "ici-toggle-btn active";
+      btnCard.className = "ici-toggle-btn";
+      
+      // Format the lists natively with folder/sheet icons and counts!
+      iciFormatPageList();
+    }
+  };
+
+  // Run card generation automatically on load (Card view by default!)
+  setTimeout(function() {
+    iciGenerateCardView();
+    iciSetView("card"); // Force Card View as default on boot!
+  }, 100);
+
 })();
 </script>
 -!

@@ -76,4 +76,4 @@ Then I should NOT go to the store
 |2             |           |                       |            |
 
 
-!contents -R2 -g -p -f -h
+!contents -R2 -g -p -h

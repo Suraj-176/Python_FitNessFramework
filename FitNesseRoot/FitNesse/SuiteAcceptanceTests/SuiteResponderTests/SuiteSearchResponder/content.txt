@@ -9,3 +9,5 @@ The search responder works in two fashions: Title Search and Content Search.
 ----
 Includes:
  ^SamplePages
+
+!contents -R2 -g -p -h

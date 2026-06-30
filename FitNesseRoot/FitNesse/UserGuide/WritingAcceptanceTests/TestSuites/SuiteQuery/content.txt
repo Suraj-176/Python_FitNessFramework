@@ -17,6 +17,6 @@ Every ''Suite Specification'' table represents the ''Intersection'' of the ''Pag
 
 If you have multiple ''Suite Specification'' tables, then the suite will be the ''disjuction'' (The logical OR) of all of them.  
 
-!note The regular expressions conform to the Java library. 
+!note The regular expressions conform to the Java library.
 
-
+!contents -R2 -g -p -h

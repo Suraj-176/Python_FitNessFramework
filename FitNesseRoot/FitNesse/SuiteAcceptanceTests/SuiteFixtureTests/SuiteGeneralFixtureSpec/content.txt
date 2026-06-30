@@ -6,3 +6,5 @@
 ^TestTackOnFixtureNotFixture
 ^TestCannotResolveGracefullyNamedFixture
 ^TestNoDefaultConstructor
+
+!contents -R2 -g -p -h

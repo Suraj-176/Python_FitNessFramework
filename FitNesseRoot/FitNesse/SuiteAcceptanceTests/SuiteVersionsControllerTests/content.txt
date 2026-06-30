@@ -12,4 +12,4 @@ Deal with Versions Controllers and the versions they store
 
 !define Create_backup_for_initial_page_version (0)
 
-!contents -R3 -g -p -f -h
+!contents -R3 -g -p -h
