@@ -1,6 +1,10 @@
+import html
 import json
 import requests
+import time
 from typing import List
+from .json_utils import extract_json_field
+from core.logger import logger, log_request, log_response
 
 class AuthFixture:
     """
@@ -18,6 +22,8 @@ class AuthFixture:
         
         self._actual_status_code: int = 0
         self._response_body: str = ""
+        self._response_body_json: dict = {}
+        self._response_time_ms: int = 0
 
     @classmethod
     def get_stored_token(cls) -> str:
@@ -50,44 +56,66 @@ class AuthFixture:
             try:
                 self._expected_codes.append(int(code.strip()))
             except ValueError:
-                print(f"Invalid status code: {code}")
+                logger.warning(f"[Auth] Invalid status code: {code}")
 
     # Action mapped to execute
     def generate_token(self) -> bool:
         """Sends a POST request to generate the token and stores it statically."""
         try:
-            # Automatically unescape HTML entities (like &quot;) in the request body!
-            import html
             unescaped_body = html.unescape(self._body_json)
             
             headers = {"Content-Type": "application/json"}
-            response = requests.post(self._token_url, data=unescaped_body.encode('utf-8'), headers=headers, timeout=15)
             
+            # Log Request
+            log_request("POST", self._token_url, headers=headers, payload=unescaped_body)
+
+            start = time.perf_counter()
+            
+            try:
+                # NATIVE JSON serialization to match Postman! 🟢
+                json_payload = json.loads(unescaped_body)
+                response = requests.post(self._token_url, json=json_payload, headers=headers, timeout=15)
+            except Exception:
+                # Fallback to raw data bytes
+                response = requests.post(self._token_url, data=unescaped_body.encode('utf-8'), headers=headers, timeout=15)
+                
+            self._response_time_ms = int((time.perf_counter() - start) * 1000)
             self._actual_status_code = response.status_code
             self._response_body = response.text
-            
-            if response.status_code != 200:
-                print(f"[Auth] FAILED code={response.status_code} body={response.text}")
-                return False
 
             try:
-                json_data = response.json()
+                self._response_body_json = response.json()
             except Exception:
-                print(f"[Auth] Invalid JSON response body: {response.text}")
+                self._response_body_json = {}
+
+            # Log Response
+            log_response(self._actual_status_code, self._response_body, dict(response.headers))
+
+            if response.status_code != 200:
+                logger.error(f"[Auth] FAILED code={response.status_code} body={response.text}")
                 return False
 
-            # Extract the token field (supports nested dictionary optString fallback)
-            token = json_data.get(self._token_field, "")
-            if not token:
-                print(f"[Auth] Token field '{self._token_field}' not found in response: {response.text}")
+            if not self._response_body_json:
+                logger.error(f"[Auth] Invalid JSON response body: {response.text}")
                 return False
 
-            AuthFixture._auth_token = str(token)
-            print("[Auth] Token acquired successfully.")
+            token = extract_json_field(self._response_body_json, self._token_field)
+            if not token or token in ("key not found", "no key set"):
+                logger.error(f"[Auth] Token field '{self._token_field}' not found in response: {response.text}")
+                return False
+
+            AuthFixture._auth_token = token
+            logger.info("[Auth] Token acquired successfully.")
             return True
 
+        except requests.exceptions.Timeout:
+            logger.error(f"[Auth] Timeout [{self._token_url}]")
+            return False
+        except requests.exceptions.ConnectionError as e:
+            logger.error(f"[Auth] Connection error [{self._token_url}]: {e}")
+            return False
         except Exception as e:
-            print(f"[Auth] Exception: {str(e)}")
+            logger.error(f"[Auth] Exception: {e}")
             return False
 
     # Getters/Assertions mapped to columns
@@ -95,7 +123,6 @@ class AuthFixture:
         return self._actual_status_code
 
     def status_code(self) -> str:
-        """Returns the actual status code as a string."""
         return str(self._actual_status_code)
 
     def status_codes(self) -> str:
@@ -105,16 +132,16 @@ class AuthFixture:
             return str(self._actual_status_code)
         return f"{self._actual_status_code} (expected: {self._expected_codes})"
 
+    def response_time(self) -> int:
+        return self._response_time_ms
+
     def token(self) -> str:
-        """Returns the dynamically generated token."""
         return AuthFixture._auth_token
 
     def response_body(self) -> str:
-        """Returns the pretty-printed JSON response body wrapped in preformatted code tags."""
         try:
-            # Try to parse and pretty-print JSON response
             json_data = json.loads(self._response_body)
             pretty_json = json.dumps(json_data, indent=2)
-            return f"\n{{{{\n{pretty_json}\n}}}}\n"
+            return f"\n{{{{\n{pretty_json}\n}}\n"
         except Exception:
-            return f"\n{{{{\n{self._response_body}\n}}}}\n"
+            return f"\n{{{{\n{self._response_body}\n}}\n"
