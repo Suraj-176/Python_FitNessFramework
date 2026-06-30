@@ -54,7 +54,7 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     <!-- Nav links injected by JS after login -->
   </nav>
 
-  <!-- Right: user info + logout + environment selector! -->
+  <!-- Right: user info dropdown + environment selector! -->
   <div class="icici-header-right">
     
     <!-- Embedded Environment Selector -->
@@ -66,12 +66,19 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       <button class="ici-nav-env-btn" onclick="iciOpenManageEnvModal()" title="Manage Environments">⚙️</button>
     </div>
 
-    <div class="icici-user-chip" id="icici-user-chip">
-      <span class="icici-user-icon">&#9679;</span>
-      <span id="icici-user-display"></span>
-      <span class="icici-role-badge" id="icici-role-badge"></span>
+    <!-- Dropdown User Chip Container -->
+    <div class="icici-profile-container" id="icici-profile-container">
+      <div class="icici-user-chip" id="icici-user-chip" onclick="iciToggleProfileDropdown(event)" title="Click to view profile options">
+        <span class="icici-user-icon">&#9679;</span>
+        <span id="icici-user-display"></span>
+        <span class="icici-role-badge" id="icici-role-badge"></span>
+      </div>
+      <!-- Collapsible Profile Dropdown menu -->
+      <div id="icici-profile-dropdown" class="icici-profile-dropdown" style="display: none;">
+        <button class="icici-dropdown-item" onclick="iciLogout()">🚪 Sign Out</button>
+      </div>
     </div>
-    <button class="icici-logout-btn" onclick="iciLogout()">Sign Out</button>
+
   </div>
 
 </div>
@@ -186,18 +193,55 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 
 /* Right side */
 .icici-header-right  { display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.icici-user-chip     { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.12); border-radius:20px; padding:5px 12px; }
+.icici-profile-container { position: relative !important; display: inline-block !important; }
+
+.icici-user-chip     { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.12); border-radius:20px; padding:5px 12px; cursor: pointer; user-select: none; transition: background 0.15s; }
+.icici-user-chip:hover { background: rgba(255,255,255,0.2); }
 .icici-user-icon     { font-size:9px; color:#E06336; }
 #icici-user-display  { color:#fff; font-size:13px; font-weight:600; }
 .icici-role-badge    { font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px; text-transform:uppercase; letter-spacing:.4px; }
 .role-admin { background:#E06336; color:#fff; }
 .role-user  { background:rgba(255,255,255,.2); color:#fff; }
-.icici-logout-btn {
-  background:transparent; border:1px solid rgba(255,255,255,.4); color:#fff;
-  border-radius:4px; padding:5px 12px; font-size:12px; cursor:pointer;
-  transition:background .18s;
+
+/* Collapsible Profile Dropdown styles */
+.icici-profile-dropdown {
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  right: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  width: 130px !important;
+  z-index: 100000 !important;
+  padding: 4px 0 !important;
+  overflow: hidden !important;
+  animation: iciFadeIn 0.15s ease !important;
 }
-.icici-logout-btn:hover { background:rgba(255,255,255,.15); }
+.icici-dropdown-item {
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  color: #334155 !important;
+  cursor: pointer !important;
+  font-weight: 700 !important;
+  transition: background 0.15s, color 0.15s !important;
+  font-family: Arial, sans-serif !important;
+  outline: none !important;
+}
+.icici-dropdown-item:hover {
+  background: #f1f5f9 !important;
+  color: #A6192E !important;
+}
+
+@keyframes iciFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ── Inline Environment Selector inside Navbar ──────── */
 .ici-nav-env-container {
@@ -363,6 +407,20 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       nav.appendChild(backBtn);
     }
     
+    // Prepend a beautiful Export PDF Button if we are viewing a specific date's execution run history!
+    if (/[?&]pageHistory/.test(location.search) && /[?&]entry=/.test(location.search)) {
+      var exportBtn = document.createElement("button");
+      exportBtn.className = "icici-nav-btn admin-only";
+      exportBtn.style.background = "#A6192E";
+      exportBtn.style.borderColor = "#A6192E";
+      exportBtn.style.color = "#fff";
+      exportBtn.style.fontWeight = "bold";
+      exportBtn.style.marginRight = "6px";
+      exportBtn.textContent = "💾 Export PDF Report";
+      exportBtn.onclick = function() { window.print(); };
+      nav.appendChild(exportBtn);
+    }
+    
     links.forEach(function(l) {
       var a = document.createElement("a");
       a.href = typeof l.href === "function" ? l.href() : l.href;
@@ -452,6 +510,20 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
         document.getElementById("icici-login-overlay").style.display !== "none") {
       iciLogin();
     }
+  });
+
+  /* Click-to-toggle user profile dropdown */
+  window.iciToggleProfileDropdown = function(e) {
+    e.stopPropagation();
+    var dropdown = document.getElementById("icici-profile-dropdown");
+    if (dropdown) {
+      dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+    }
+  };
+
+  document.addEventListener("click", function() {
+    var dropdown = document.getElementById("icici-profile-dropdown");
+    if (dropdown) dropdown.style.display = "none";
   });
 
 
