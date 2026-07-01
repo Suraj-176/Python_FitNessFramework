@@ -762,6 +762,22 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     }
   });
 
+  /* ── Force corporate browser tab title overrides beautifully! ── */
+  function updateBrowserTabTitle() {
+    var baseTitle = "ICICI Prudential AML";
+    if (p() === "/" || p() === "/FrontPage" || p() === "" || p() === "/index.html") {
+      document.title = baseTitle;
+    } else {
+      var subPageName = p().replace(/^\//, "").split(".").pop();
+      if (subPageName) {
+        document.title = baseTitle + " - " + subPageName;
+      } else {
+        document.title = baseTitle;
+      }
+    }
+  }
+  updateBrowserTabTitle();
+
   /* ── Auto-restore session on page load ────────────────────────── */
   var existing = loadSession();
   if (existing) {

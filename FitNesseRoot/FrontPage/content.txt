@@ -1,7 +1,3 @@
-<div style="display: none !important;">
-!define TEST_SYSTEM {slim}
-</div>
-
 !-
 <style>
 /* ── Dashboard layout ─────────────────────────────── */
