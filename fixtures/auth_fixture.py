@@ -21,6 +21,7 @@ class AuthFixture:
         self._token_field: str = "token"
         self._expected_codes: List[int] = []
         self._basic_auth_header: str = ""
+        self._ssl_verify: bool = True
         
         self._actual_status_code: int = 0
         self._response_body: str = ""
@@ -107,10 +108,10 @@ class AuthFixture:
             try:
                 # NATIVE JSON serialization to match Postman! 🟢
                 json_payload = json.loads(unescaped_body)
-                response = requests.post(self._token_url, json=json_payload, headers=headers, timeout=15)
+                response = requests.post(self._token_url, json=json_payload, headers=headers, timeout=15, verify=self._ssl_verify)
             except Exception:
                 # Fallback to raw data bytes
-                response = requests.post(self._token_url, data=unescaped_body.encode('utf-8'), headers=headers, timeout=15)
+                response = requests.post(self._token_url, data=unescaped_body.encode('utf-8'), headers=headers, timeout=15, verify=self._ssl_verify)
                 
             self._response_time_ms = int((time.perf_counter() - start) * 1000)
             self._actual_status_code = response.status_code
@@ -186,3 +187,10 @@ class AuthFixture:
             return f"\n{{{{\n{pretty_json}\n}}}}\n"
         except Exception:
             return f"\n{{{{\n{self._response_body}\n}}}}\n"
+
+    def set_ssl_verify(self, verify: str) -> None:
+        """Enables/Disables SSL Certificate verification for login request. Set to 'false' to bypass self-signed SSL warnings in UAT."""
+        self._ssl_verify = verify.strip().lower() != "false"
+
+    def setSslVerify(self, verify: str) -> None:
+        self.set_ssl_verify(verify)

@@ -177,6 +177,10 @@ class BaseRequestFixture:
         return f"{self._actual_status_code} (expected: {self._expected_codes})"
 
     def response_field(self) -> str:
+        body_stripped = self._response_body.strip()
+        if body_stripped.startswith("<") and body_stripped.endswith(">"):
+            from .json_utils import extract_xml_field
+            return extract_xml_field(self._response_body, self._key)
         return extract_json_field(self._response_body_json, self._key)
 
     def json_value(self) -> str:
