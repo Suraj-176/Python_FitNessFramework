@@ -20,7 +20,7 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       <div id="icici-login-error"></div>
       <div class="icici-field">
         <label for="icici-username">Username</label>
-        <input type="text" id="icici-username" placeholder="Enter username" autocomplete="username">
+        <input type="text" id="icici-username" placeholder="Enter username" autocomplete="username" autofocus>
       </div>
       <div class="icici-field">
         <label for="icici-password">Password</label>
@@ -181,10 +181,10 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 .icici-header-subtitle { color:rgba(255,255,255,.7); font-size:10px; text-transform:uppercase; letter-spacing:.6px; }
 
 /* Centre nav */
-.icici-header-nav    { display:flex; align-items:center; gap:4px; flex:1; justify-content:center; flex-wrap:nowrap !important; }
+.icici-header-nav    { display:flex; align-items:center; gap:2px; flex:1; justify-content:center; flex-wrap:nowrap !important; }
 .icici-nav-btn {
   color:#fff; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25);
-  border-radius:4px; padding:5px 8px !important; font-size:12px; font-weight:500;
+  border-radius:4px; padding:5px 6px !important; font-size:11px; font-weight:500;
   cursor:pointer; text-decoration:none; transition:background .18s;
   display:inline-block; white-space:nowrap !important;
 }
@@ -360,9 +360,10 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     admin: [
       { label: "Home",          href: function(){ return "/"; } },
       { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); } },
+      { label: "📊 Report",     href: "/files/report.html", target: "_blank" },
       { label: "✎ Edit",        href: function(){ return p() + "?edit"; },       adminOnly: true },
       { label: "+ Add Child",   href: function(){ return p() + "?new"; },        adminOnly: true },
-      { label: "❌ Delete Page", href: function(){ return p() + "?deletePage"; }, adminOnly: true },
+      { label: "❌ Delete",     href: function(){ return p() + "?deletePage"; }, adminOnly: true },
       { label: "⚙ Tools",       href: function(){ return p() + "?refactor"; },   adminOnly: true },
       { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true },
       { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } }
@@ -370,6 +371,7 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     user: [
       { label: "Home",          href: function(){ return "/"; } },
       { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); } },
+      { label: "📊 Report",     href: "/files/report.html", target: "_blank" },
       { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } }
     ]
   };
@@ -464,6 +466,9 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     links.forEach(function(l) {
       var a = document.createElement("a");
       a.href = typeof l.href === "function" ? l.href() : l.href;
+      if (l.target) {
+        a.target = l.target;
+      }
       if (l.action) {
         a.onclick = function(e) {
           e.preventDefault();
@@ -782,6 +787,12 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   var existing = loadSession();
   if (existing) {
     showApp(existing);
+  } else {
+    // Focus the username field on load
+    document.addEventListener("DOMContentLoaded", function() {
+      var uField = document.getElementById("icici-username");
+      if (uField) uField.focus();
+    });
   }
 
 })();

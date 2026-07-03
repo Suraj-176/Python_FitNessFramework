@@ -158,7 +158,14 @@ def start_server():
     _setup_syspath(options)
     _setup_encoding(options)
     _setup_port(options, args)
-    WaferSlimServer(options).serve_forever()
+    try:
+        WaferSlimServer(options).serve_forever()
+    finally:
+        try:
+            from core.report_generator import trigger_delayed_report
+            trigger_delayed_report()
+        except Exception:
+            pass
 
 if __name__ == '__main__':
     start_server()
