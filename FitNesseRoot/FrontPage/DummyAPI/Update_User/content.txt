@@ -1,0 +1,5 @@
+!define TEST_SYSTEM {slim}
+
+!|fixtures.PutRequestFixture|
+|url|bodyJson|statusCodes?|responseBody?|
+|https://dummyjson.com/users/1|{"lastName":"Updated"}|200||

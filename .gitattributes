@@ -1,0 +1,6 @@
+# Tell GitHub Linguist to treat the pre-bundled FitNesse theme assets as vendored/third-party.
+# This completely excludes them from your repository language statistics,
+# forcing your GitHub repository to proudly and accurately display as 100% PYTHON!
+fitnesse/** linguist-vendored
+waferslim/** linguist-vendored
+FitNesseRoot/** linguist-vendored

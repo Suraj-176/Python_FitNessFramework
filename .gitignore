@@ -1,0 +1,30 @@
+# Python virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python bytecode, caches, and test states
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.cache/
+.coverage
+htmlcov/
+
+# Local framework run logs
+logs/
+*.log
+
+# FitNesse local run history, logs, and generated HTML reports
+# (keeps your GitHub repository pristine and lightweight!)
+FitNesseRoot/files/testResults/
+FitNesseRoot/ErrorLogs/
+FitNesseRoot/files/reports/
+FitNesseRoot/update_history.txt
+
+# OS-specific temp files
+.DS_Store
+Thumbs.db
