@@ -549,6 +549,49 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     location.reload();
   };
 
+  /* Block all FitNesse global keyboard shortcuts & trap focus inside the login box when not logged in */
+  (function() {
+    var blockHotkeys = function(e) {
+      var session = sessionStorage.getItem("ici_session");
+      if (!session) {
+        var targetId = e.target ? e.target.id : "";
+        var isLoginField = (targetId === "icici-username" || targetId === "icici-password" || targetId === "icici-login-btn");
+        
+        // Let Enter key bubble to trigger login
+        if (e.key === "Enter" && isLoginField) {
+          return;
+        }
+        
+        // Stop propagation so it never reaches FitNesse's global key event listeners
+        e.stopPropagation();
+        
+        // Prevent default actions (like browser shortcuts, scroll, backspace navigation, etc.) if not in login fields
+        if (!isLoginField) {
+          e.preventDefault();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", blockHotkeys, true);
+    window.addEventListener("keypress", blockHotkeys, true);
+    window.addEventListener("keyup", blockHotkeys, true);
+
+    // Focus trap: Redirect focus back to the login box if user tries to focus background elements
+    document.addEventListener("focus", function(e) {
+      var session = sessionStorage.getItem("ici_session");
+      if (!session) {
+        var loginBox = document.getElementById("icici-login-box");
+        if (loginBox && !loginBox.contains(e.target)) {
+          e.stopPropagation();
+          var uField = document.getElementById("icici-username");
+          if (uField) {
+            uField.focus();
+          }
+        }
+      }
+    }, true);
+  })();
+
   /* Enter key on login form */
   document.addEventListener("keydown", function(e) {
     if (e.key === "Enter" && document.getElementById("icici-login-overlay") &&

@@ -122,40 +122,96 @@ def generate_html_report() -> None:
 
     # Detect if the latest execution session is a Suite Run or a Single Test Run.
     # results contains ALL pages, including suite pages (e.g., "DummyAPI", "Sanity")
-    # and individual test pages (e.g., "DummyAPI.Add_User", "Sanity.loginTrubi").
+    # Detect if the latest execution session is a Suite Run or a Single Test Run.
     active_pages = []
     suite_name = "FITNESSE RUN"
 
     if results:
-        latest_page = results[0]["name"]
-        suite_name = latest_page.split(".")[0] if "." in latest_page else latest_page
-        
-        # Filter all results for the active namespace (excluding the parent suite page itself)
-        current_suite_pages = [r for r in results if (r["name"].startswith(suite_name + ".") or r["name"] == suite_name) and r["name"] != suite_name]
-        
-        if current_suite_pages:
-            latest_raw = current_suite_pages[0]["timestamp_raw"]
-            try:
-                latest_dt = datetime.datetime.strptime(latest_raw[:14], "%Y%m%d%H%M%S")
+        # Helper to locate parent suite directory on disk
+        def get_suite_dir(page_name: str) -> str:
+            parts = ["FrontPage"]
+            if page_name != "FrontPage":
+                clean_name = page_name.replace("FrontPage.", "")
+                parts.extend(clean_name.split("."))
+            
+            if len(parts) > 1:
+                parent_folder = ".".join(parts[:-1])
+            else:
+                parent_folder = parts[0]
                 
-                # Find all pages in the suite completed within 60 seconds of the latest completion
-                recent_pages = []
-                for r in current_suite_pages:
+            return os.path.join(BASE_DIR, "FitNesseRoot", "files", "testResults", parent_folder)
+
+        latest_page = results[0]["name"]
+        latest_raw = results[0]["timestamp_raw"]
+        
+        try:
+            latest_dt = datetime.datetime.strptime(latest_raw[:14], "%Y%m%d%H%M%S")
+            
+            # 1. Determine if it was a Suite Run by checking if a suite XML file was written
+            # in either the root Homepage (FrontPage) directory or the parent suite folder
+            # whose modification time (mtime) is within 3 seconds of the latest test page completion.
+            is_suite_run = False
+            is_homepage_run = False
+            suite_dir = get_suite_dir(latest_page)
+            
+            homepage_dir = os.path.join(BASE_DIR, "FitNesseRoot", "files", "testResults", "FrontPage")
+            if os.path.exists(homepage_dir):
+                for s_xml in glob.glob(os.path.join(homepage_dir, "*.xml")):
                     try:
-                        dt = datetime.datetime.strptime(r["timestamp_raw"][:14], "%Y%m%d%H%M%S")
-                        if abs((latest_dt - dt).total_seconds()) <= 60:
-                            recent_pages.append(r)
+                        s_mtime = os.path.getmtime(s_xml)
+                        s_dt = datetime.datetime.fromtimestamp(s_mtime)
+                        # We use 12 seconds here to allow for disk write latency of the master suite XML file
+                        if abs((latest_dt - s_dt).total_seconds()) <= 12:
+                            is_suite_run = True
+                            is_homepage_run = True
+                            suite_dir = homepage_dir
+                            break
                     except Exception:
                         pass
+            
+            if not is_homepage_run and os.path.exists(suite_dir):
+                suite_xmls = glob.glob(os.path.join(suite_dir, "*.xml"))
+                for s_xml in suite_xmls:
+                    try:
+                        s_mtime = os.path.getmtime(s_xml)
+                        s_dt = datetime.datetime.fromtimestamp(s_mtime)
+                        if abs((latest_dt - s_dt).total_seconds()) <= 3:
+                            is_suite_run = True
+                            break
+                    except Exception:
+                        pass
+            
+            if is_suite_run:
+                # 2. If it's a Suite Run, check if it was classified as a homepage run.
+                # If yes, this is a master run of all suites, so we include all test pages from all suites.
+                # If no, we include only test pages belonging to the active suite namespace.
                 
-                # If more than 1 page completed recently, it's a Suite Run!
-                if len(recent_pages) > 1:
-                    active_pages = recent_pages
+                if is_homepage_run:
+                    # Homepage run: Include all test pages from all suites completed within 90 seconds
+                    for r in results:
+                        if r["name"] != "FrontPage":
+                            try:
+                                dt = datetime.datetime.strptime(r["timestamp_raw"][:14], "%Y%m%d%H%M%S")
+                                if abs((latest_dt - dt).total_seconds()) <= 90:
+                                    active_pages.append(r)
+                            except Exception:
+                                pass
                 else:
-                    # Single Test Run: Only include the latest page
-                    active_pages = [current_suite_pages[0]]
-            except Exception:
-                active_pages = [current_suite_pages[0]]
+                    # Namespace-specific suite run: Include only pages in this suite's namespace
+                    suite_name = latest_page.split(".")[0] if "." in latest_page else latest_page
+                    current_suite_pages = [r for r in results if r["name"].startswith(suite_name + ".") and r["name"] != suite_name]
+                    for r in current_suite_pages:
+                        try:
+                            dt = datetime.datetime.strptime(r["timestamp_raw"][:14], "%Y%m%d%H%M%S")
+                            if abs((latest_dt - dt).total_seconds()) <= 60:
+                                active_pages.append(r)
+                        except Exception:
+                            pass
+            else:
+                # Single Test Run: Include ONLY the single latest test page run
+                active_pages = [results[0]]
+        except Exception:
+            active_pages = [results[0]]
 
     # Initialize empty request lists on all active pages
     for p in active_pages:
