@@ -5,6 +5,9 @@ echo  Starting FitNesse + Python API Framework Server (Branded: ICICI Pru)
 echo  [SECURITY] Authentication is ENABLED. Login required to access portal.
 echo =====================================================================
 
+:: Enable Security Manager for Java 18+ to allow FitNesse testing
+set "JAVA_TOOL_OPTIONS=-Djava.security.manager=allow"
+
 :: Set PYTHONPATH to the directory of this batch file
 set "PYTHONPATH=%~dp0"
 echo [INFO] PYTHONPATH set to: %PYTHONPATH%
@@ -21,9 +24,10 @@ echo [WARNING] Running using system-wide Python.
 goto clean_ports
 
 :clean_ports
-:: Automatically terminate any old Java/FitNesse/Mock processes currently holding port 8080 or 8089
-echo [INFO] Scanning and clearing ports 8080 and 8089 to prevent server conflicts...
+:: Automatically terminate any old Java/FitNesse/Mock processes currently holding port 8080, 8085, or 8089
+echo [INFO] Scanning and clearing ports 8080, 8085, and 8089 to prevent server conflicts...
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8080') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8085') do taskkill /f /pid %%a >nul 2>&1
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8089') do taskkill /f /pid %%a >nul 2>&1
 goto check_java
 

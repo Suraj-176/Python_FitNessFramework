@@ -316,7 +316,22 @@ def generate_html_report() -> None:
                 method_class = f"badge-{r['method'].lower()}"
                 
                 req_body = html_escape(r["request_body"])
-                resp_body = html_escape(r["response_body"])
+                full_resp_body = r["response_body"]
+                resp_body_escaped = html_escape(full_resp_body)
+                
+                resp_body_str = full_resp_body or '[Empty Body]'
+                lines = resp_body_str.split('\n')
+                
+                if len(resp_body_str) > 150 or len(lines) > 4:
+                    resp_body_preview_html = f"""
+                    <div class="large-response-placeholder" onclick="openResponseModal(this.nextElementSibling.textContent, event)" title="Click to view full response body">
+                        🔍 Response body is large. Click here to view details.
+                    </div>
+                    <span class="hidden-full-response" style="display:none;">{resp_body_escaped}</span>
+                    """
+                else:
+                    resp_body_preview_html = f"""<pre><code>{resp_body_escaped}</code></pre>"""
+                
                 curl_cmd = html_escape(r["curl"])
 
                 req_details_display = "block" if not is_success else "none"
@@ -346,7 +361,7 @@ def generate_html_report() -> None:
                             </div>
                             <div class="body-block">
                                 <h4>📥 Response Body</h4>
-                                <pre><code>{resp_body or '[Empty Body]'}</code></pre>
+                                {resp_body_preview_html}
                             </div>
                         </div>
                     </div>
@@ -639,6 +654,7 @@ def generate_html_report() -> None:
             font-size: 14px;
             color: var(--text-main);
             vertical-align: middle;
+            word-break: break-all;
         }}
         
         .summary-row {{
@@ -835,8 +851,138 @@ def generate_html_report() -> None:
             from {{ opacity: 0; transform: translateY(-4px); }}
             to {{ opacity: 1; transform: translateY(0); }}
         }}
+        
+        /* Modal Popup styles */
+        .modal-overlay {{
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        .modal-content {{
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 650px;
+            max-width: 90%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            overflow: hidden;
+            animation: slideDown 0.2s ease-out;
+        }}
+        .modal-header {{
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+        }}
+        .modal-header h3 {{
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+        }}
+        .modal-close {{
+            background: none;
+            border: none;
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--text-sub);
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }}
+        .modal-close:hover {{
+            color: var(--text-main);
+        }}
+        .modal-content pre {{
+            padding: 24px;
+            margin: 0;
+            overflow-y: auto;
+            flex: 1;
+            background: var(--code-bg);
+            border: none;
+            max-height: none;
+        }}
+        .modal-content code {{
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--code-text);
+            white-space: pre-wrap;
+        }}
+        .modal-actions {{
+            padding: 12px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            background: #f8fafc;
+        }}
+        .modal-copy-btn {{
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }}
+        .modal-copy-btn:hover {{
+            background: var(--primary-hover);
+        }}
+        .large-response-placeholder {{
+            background: var(--bg-card);
+            border: 1.5px dashed var(--border);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 18px 24px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin: 8px 0;
+            display: block;
+        }}
+        .large-response-placeholder:hover {{
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-color: #3b82f6;
+        }}
     </style>
     <script>
+        function openResponseModal(content, event) {{
+            if (event) event.stopPropagation();
+            document.getElementById("modal-response-code").textContent = content;
+            document.getElementById("response-modal").style.display = "flex";
+        }}
+
+        function closeResponseModal() {{
+            document.getElementById("response-modal").style.display = "none";
+        }}
+
+        function copyModalCode() {{
+            var codeText = document.getElementById("modal-response-code").textContent;
+            navigator.clipboard.writeText(codeText).then(function() {{
+                var btn = document.querySelector(".modal-copy-btn");
+                var original = btn.textContent;
+                btn.textContent = "✔️ Copied!";
+                setTimeout(function() {{
+                    btn.textContent = original;
+                }}, 1500);
+            }});
+        }}
+
         function togglePage(idx) {{
             var el = document.getElementById("page-details-" + idx);
             if (el.style.display === "none") {{
@@ -968,9 +1114,9 @@ def generate_html_report() -> None:
             <table class="report-table">
                 <thead>
                     <tr>
-                        <th style="width: 50%;">Test Case Name</th>
-                        <th style="width: 30%;">Last Execution Time</th>
-                        <th style="width: 20%;">Status</th>
+                        <th>Test Case Name</th>
+                        <th style="white-space: nowrap; width: 1%;">Last Execution Time</th>
+                        <th style="white-space: nowrap; width: 1%;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -978,6 +1124,20 @@ def generate_html_report() -> None:
                 </tbody>
             </table>
         </section>
+    </div>
+
+    <!-- Response Body Modal -->
+    <div id="response-modal" class="modal-overlay" style="display:none;" onclick="closeResponseModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>📥 Full Response Body</h3>
+                <button class="modal-close" onclick="closeResponseModal()">&times;</button>
+            </div>
+            <pre><code id="modal-response-code"></code></pre>
+            <div class="modal-actions">
+                <button class="modal-copy-btn" onclick="copyModalCode()">📋 Copy Content</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

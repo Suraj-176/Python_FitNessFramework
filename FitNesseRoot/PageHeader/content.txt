@@ -11,24 +11,42 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
      ═══════════════════════════════════════════════════ -->
 <div id="icici-login-overlay">
   <div id="icici-login-box">
-    <div id="icici-login-logo">
-      <img src="/files/fitnesse/images/fitnesse-logo.png" alt="FitNesse" onerror="this.style.display='none'">
-      <div id="icici-login-title">FitNesse Login</div>
-      <div id="icici-login-subtitle">API Test Automation Framework</div>
+    <!-- Left Column: FitNesse Intro -->
+    <div id="icici-login-left">
+      <img src="/files/fitnesse/images/fitnesse-logo.png" alt="FitNesse Logo" onerror="this.style.display='none'">
+      <div class="left-title">FitNesse</div>
+      <div class="left-subtitle">Wiki & Acceptance Testing Framework</div>
+      <div class="left-desc">
+        <p>A collaborative acceptance testing tool and documentation wiki designed to help teams build quality software.</p>
+        <ul class="left-bullets">
+          <li><span>✓</span> Automated Acceptance Testing</li>
+          <li><span>✓</span> Collaborative Wiki Documentation</li>
+          <li><span>✓</span> Real-time Execution & Auditing</li>
+        </ul>
+      </div>
     </div>
-    <div id="icici-login-form">
-      <div id="icici-login-error"></div>
-      <div class="icici-field">
-        <label for="icici-username">Username</label>
-        <input type="text" id="icici-username" placeholder="Enter username" autocomplete="username" autofocus>
+    <!-- Right Column: Login Form -->
+    <div id="icici-login-right">
+      <div class="right-header">
+        <div class="right-welcome">Welcome</div>
+        <div class="right-to">To</div>
+        <img src="/files/fitnesse/images/fitnesse-logo.png" alt="FitNesse Logo" class="right-logo-img" onerror="this.style.display='none'">
+        <div class="right-subtitle">Enter your credentials to access the portal.</div>
       </div>
-      <div class="icici-field">
-        <label for="icici-password">Password</label>
-        <input type="password" id="icici-password" placeholder="Enter password" autocomplete="current-password">
-      </div>
-      <button id="icici-login-btn" onclick="iciLogin()">Sign In</button>
-      <div id="icici-login-hint">
-        Authorised users only &nbsp;|&nbsp; Contact QA Admin for access
+      <div id="icici-login-form">
+        <div id="icici-login-error"></div>
+        <div class="icici-field">
+          <label for="icici-username">Username</label>
+          <input type="text" id="icici-username" placeholder="Enter username" autocomplete="username" autofocus>
+        </div>
+        <div class="icici-field">
+          <label for="icici-password">Password</label>
+          <input type="password" id="icici-password" placeholder="Enter password" autocomplete="current-password">
+        </div>
+        <button id="icici-login-btn" onclick="iciLogin()">Login</button>
+        <div id="icici-login-hint">
+          Authorised users only &nbsp;|&nbsp; Contact QA Admin for access
+        </div>
       </div>
     </div>
   </div>
@@ -120,6 +138,17 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
      STYLES
      ═══════════════════════════════════════════════════ -->
 <style>
+/* Prevent horizontal scrolling on FitNesse page tables and force full width expansion */
+.fixtures td, .fixtures th, .fixtures table, table, td, th {
+  max-width: 100% !important;
+  word-break: break-all !important;
+  word-wrap: break-word !important;
+}
+.fixtures table, table.decision_table, table.hash_table {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
 /* ── Login Overlay ──────────────────────────────────── */
 #icici-login-overlay {
   position: fixed; inset: 0;
@@ -129,37 +158,177 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 }
 #icici-login-box {
   background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
-  width: 380px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
   overflow: hidden;
 }
-#icici-login-logo {
+#icici-login-left {
+  width: 70%;
   background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
-  padding: 28px 32px 22px;
+  padding: 60px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  border-bottom: 4px solid #2563EB;
+  color: #ffffff;
+  border-right: 1px solid rgba(255,255,255,0.1);
 }
-#icici-login-logo img { height: 48px; margin-bottom: 10px; display: block; margin: 0 auto 10px; }
-#icici-login-title    { color:#fff; font-size:18px; font-weight:700; letter-spacing:.5px; }
-#icici-login-subtitle { color:rgba(255,255,255,.75); font-size:12px; margin-top:3px; }
-#icici-login-form     { padding: 28px 32px 24px; text-align: left !important; }
-.icici-field          { margin-bottom: 16px; text-align: left !important; }
-.icici-field label    { display:block !important; text-align: left !important; font-size:12px; font-weight:600; color:#555; margin-bottom:5px; text-transform:uppercase; letter-spacing:.4px; }
-.icici-field input    { width:100% !important; display:block !important; text-align: left !important; box-sizing:border-box; padding:10px 12px; border:1.5px solid #ddd; border-radius:5px; font-size:14px; outline:none; transition:border-color .2s; }
-.icici-field input:focus { border-color:#2563EB; }
+#icici-login-left img {
+  height: 80px;
+  margin-bottom: 20px;
+  display: block;
+}
+#icici-login-left .left-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+#icici-login-left .left-subtitle {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+  margin-top: 6px;
+  margin-bottom: 28px;
+}
+#icici-login-left .left-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.85);
+  max-width: 360px;
+}
+#icici-login-left .left-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0 0;
+  text-align: left;
+  display: inline-block;
+}
+#icici-login-left .left-bullets li {
+  margin-bottom: 12px;
+  font-weight: 500;
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+}
+#icici-login-left .left-bullets li span {
+  color: #38BDF8;
+  font-weight: 700;
+  margin-right: 8px;
+}
+#icici-login-right {
+  width: 30%;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff;
+}
+#icici-login-right .right-logo-img {
+  height: 38px;
+  margin: 16px auto 24px auto;
+  display: block;
+}
+#icici-login-right .right-header {
+  margin-bottom: 20px;
+  text-align: center;
+  max-width: 340px;
+  width: 100%;
+  margin: 0 auto;
+}
+#icici-login-right .right-welcome,
+#icici-login-right .right-to {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+  text-align: center;
+  line-height: 1.2;
+}
+#icici-login-right .right-to {
+  margin-top: -2px;
+}
+#icici-login-right .right-subtitle {
+  font-size: 13px;
+  color: #64748B;
+  margin-top: 8px;
+  margin-bottom: 24px;
+  text-align: left;
+  max-width: 340px;
+  width: 100%;
+  margin: 8px auto 24px auto;
+}
+#icici-login-form {
+  text-align: left !important;
+  max-width: 340px;
+  width: 100%;
+  margin: 0 auto;
+}
+.icici-field {
+  margin-bottom: 16px;
+  text-align: left !important;
+}
+.icici-field label {
+  display: block !important;
+  text-align: left !important;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.icici-field input {
+  width: 100% !important;
+  display: block !important;
+  text-align: left !important;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+  color: #0F172A;
+}
+.icici-field input:focus {
+  border-color: #2563EB;
+}
 #icici-login-btn {
-  width:100%; padding:12px; background:#2563EB; color:#fff;
-  border:none; border-radius:5px; font-size:15px; font-weight:600;
-  cursor:pointer; letter-spacing:.3px; transition:background .2s;
+  width: 100%;
+  padding: 12px;
+  background: #2563EB;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: .3px;
+  transition: background .2s;
+  margin-top: 8px;
 }
-#icici-login-btn:hover { background:#1D4ED8; }
+#icici-login-btn:hover {
+  background: #1D4ED8;
+}
 #icici-login-error {
-  color:#EF4444; font-size:13px; margin-bottom:12px; min-height:18px;
-  font-weight:600; text-align:center;
+  color: #EF4444;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+#icici-login-error:not(:empty) {
+  margin-bottom: 16px;
+  min-height: 18px;
 }
 #icici-login-hint {
-  text-align:center; font-size:11px; color:#999; margin-top:14px;
+  text-align: center;
+  font-size: 11px;
+  color: #64748B;
+  margin-top: 16px;
 }
 
 /* ── Header Banner ──────────────────────────────────── */
@@ -359,7 +528,7 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   var NAV = {
     admin: [
       { label: "Home",          href: function(){ return "/"; } },
-      { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); } },
+      { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); }, id: "icici-run-btn" },
       { label: "📊 Report",     href: "/files/report.html", target: "_blank" },
       { label: "✎ Edit",        href: function(){ return p() + "?edit"; },       adminOnly: true },
       { label: "+ Add Child",   href: function(){ return p() + "?new"; },        adminOnly: true },
@@ -370,7 +539,7 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     ],
     user: [
       { label: "Home",          href: function(){ return "/"; } },
-      { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); } },
+      { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); }, id: "icici-run-btn" },
       { label: "📊 Report",     href: "/files/report.html", target: "_blank" },
       { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } }
     ]
@@ -466,6 +635,9 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     links.forEach(function(l) {
       var a = document.createElement("a");
       a.href = typeof l.href === "function" ? l.href() : l.href;
+      if (l.id) {
+        a.id = l.id;
+      }
       if (l.target) {
         a.target = l.target;
       }
@@ -479,6 +651,225 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       a.textContent = l.label;
       nav.appendChild(a);
     });
+  }
+
+  function formatFitnesseTestTables() {
+    var cells = document.querySelectorAll("td");
+    for (var i = 0; i < cells.length; i++) {
+      var cell = cells[i];
+      var text = cell.textContent || cell.innerText || "";
+      
+      // Do not format if already processed
+      if (cell.querySelector(".fitnesse-full-response-hidden")) continue;
+      
+      var isLargeData = text.length > 100 && (
+        text.indexOf("{") !== -1 || 
+        text.indexOf("[") !== -1 || 
+        text.indexOf("<") !== -1 || 
+        text.indexOf("curl") !== -1
+      );
+      if (isLargeData) {
+        var fullContent = text;
+        var previewText = fullContent.substring(0, 120) + "...";
+        cell.innerHTML = "";
+        
+        // Create parent wrapper to support absolute positioning of full-screen icon
+        var container = document.createElement("div");
+        container.style.position = "relative";
+        container.style.width = "100%";
+        container.style.paddingRight = "24px";
+        container.style.boxSizing = "border-box";
+        container.style.textAlign = "left";
+        
+        var spanPreview = document.createElement("span");
+        spanPreview.textContent = previewText;
+        
+        var viewBtn = document.createElement("span");
+        viewBtn.innerHTML = "⛶";
+        viewBtn.title = "Click to view full response details";
+        viewBtn.style.color = "#2563EB";
+        viewBtn.style.cursor = "pointer";
+        viewBtn.style.fontWeight = "bold";
+        viewBtn.style.fontSize = "16px";
+        viewBtn.style.position = "absolute";
+        viewBtn.style.top = "0";
+        viewBtn.style.right = "0";
+        viewBtn.style.lineHeight = "1";
+        
+        var hiddenSpan = document.createElement("span");
+        hiddenSpan.style.display = "none";
+        hiddenSpan.className = "fitnesse-full-response-hidden";
+        hiddenSpan.textContent = fullContent;
+        
+        viewBtn.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var fullData = this.parentNode.querySelector(".fitnesse-full-response-hidden").textContent;
+          openFitnesseModal(fullData);
+        };
+        
+        container.appendChild(spanPreview);
+        container.appendChild(viewBtn);
+        container.appendChild(hiddenSpan);
+        
+        cell.appendChild(container);
+      }
+    }
+  }
+
+  function openFitnesseModal(content) {
+    var modal = document.getElementById("fitnesse-response-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "fitnesse-response-modal";
+      modal.style.position = "fixed";
+      modal.style.top = "0";
+      modal.style.left = "0";
+      modal.style.width = "100%";
+      modal.style.height = "100%";
+      modal.style.background = "rgba(15, 23, 42, 0.6)";
+      modal.style.backdropFilter = "blur(4px)";
+      modal.style.zIndex = "1000000";
+      modal.style.display = "flex";
+      modal.style.alignItems = "center";
+      modal.style.justifyContent = "center";
+      modal.onclick = function() { modal.style.display = "none"; };
+      
+      var box = document.createElement("div");
+      box.style.background = "#fff";
+      box.style.border = "1px solid #cbd5e1";
+      box.style.borderRadius = "12px";
+      box.style.width = "650px";
+      box.style.maxWidth = "90%";
+      box.style.maxHeight = "80vh";
+      box.style.display = "flex";
+      box.style.flexDirection = "column";
+      box.style.overflow = "hidden";
+      box.style.boxShadow = "0 20px 25px -5px rgba(0,0,0,0.1)";
+      box.onclick = function(e) { e.stopPropagation(); };
+      
+      var header = document.createElement("div");
+      header.style.padding = "16px 24px";
+      header.style.borderBottom = "1px solid #cbd5e1";
+      header.style.display = "flex";
+      header.style.alignItems = "center";
+      header.style.justifyContent = "space-between";
+      header.style.background = "#f8fafc";
+      
+      var title = document.createElement("h3");
+      title.textContent = "📥 Response Body Details";
+      title.style.margin = "0";
+      title.style.fontSize = "16px";
+      title.style.fontWeight = "700";
+      title.style.color = "#1e293b";
+      
+      var closeBtn = document.createElement("button");
+      closeBtn.innerHTML = "&times;";
+      closeBtn.style.background = "none";
+      closeBtn.style.border = "none";
+      closeBtn.style.fontSize = "24px";
+      closeBtn.style.cursor = "pointer";
+      closeBtn.style.color = "#64748b";
+      closeBtn.onclick = function() { modal.style.display = "none"; };
+      
+      header.appendChild(title);
+      header.appendChild(closeBtn);
+      
+      var pre = document.createElement("pre");
+      pre.style.padding = "24px";
+      pre.style.margin = "0";
+      pre.style.overflowY = "auto";
+      pre.style.flex = "1";
+      pre.style.background = "#ffffff";
+      pre.style.border = "1px solid #cbd5e1";
+      
+      var code = document.createElement("code");
+      code.id = "fitnesse-modal-code";
+      code.style.fontFamily = "monospace";
+      code.style.fontSize = "12px";
+      code.style.color = "#000000";
+      code.style.background = "#ffffff";
+      code.style.whiteSpace = "pre-wrap";
+      
+      pre.appendChild(code);
+      
+      var footer = document.createElement("div");
+      footer.style.padding = "12px 24px";
+      footer.style.borderTop = "1px solid #cbd5e1";
+      footer.style.display = "flex";
+      footer.style.justifyContent = "flex-end";
+      footer.style.background = "#f8fafc";
+      
+      var copyBtn = document.createElement("button");
+      copyBtn.textContent = "📋 Copy Content";
+      copyBtn.style.background = "#2563eb";
+      copyBtn.style.color = "#fff";
+      copyBtn.style.border = "none";
+      copyBtn.style.padding = "8px 16px";
+      copyBtn.style.fontSize = "12px";
+      copyBtn.style.fontWeight = "600";
+      copyBtn.style.borderRadius = "6px";
+      copyBtn.style.cursor = "pointer";
+      copyBtn.onclick = function() {
+        navigator.clipboard.writeText(document.getElementById("fitnesse-modal-code").textContent).then(function() {
+          var original = copyBtn.textContent;
+          copyBtn.textContent = "✔️ Copied!";
+          setTimeout(function() { copyBtn.textContent = original; }, 1500);
+        });
+      };
+      
+      footer.appendChild(copyBtn);
+      
+      box.appendChild(header);
+      box.appendChild(pre);
+      box.appendChild(footer);
+      modal.appendChild(box);
+      document.body.appendChild(modal);
+    }
+    
+    document.getElementById("fitnesse-modal-code").textContent = content;
+    modal.style.display = "flex";
+  }
+
+  function checkExecutionStatus() {
+    var runBtn = document.getElementById("icici-run-btn");
+    if (!runBtn) return;
+    
+    var isRunningPage = /[?&](test|suite)/i.test(location.search);
+    if (isRunningPage) {
+      formatFitnesseTestTables();
+      
+      if (document.readyState !== "complete") {
+        runBtn.textContent = "⏳ Running...";
+        runBtn.style.pointerEvents = "none";
+        runBtn.style.opacity = "0.75";
+        
+        var onLoadHandler = function() {
+          formatFitnesseTestTables();
+          runBtn.textContent = "▶ Run";
+          runBtn.style.pointerEvents = "auto";
+          runBtn.style.opacity = "1";
+          runBtn.style.background = "";
+          runBtn.style.borderColor = "";
+          window.removeEventListener("load", onLoadHandler);
+        };
+        window.addEventListener("load", onLoadHandler);
+        
+        var pollInterval = setInterval(function() {
+          formatFitnesseTestTables();
+          
+          if (document.readyState === "complete") {
+            clearInterval(pollInterval);
+            formatFitnesseTestTables();
+            runBtn.textContent = "▶ Run";
+            runBtn.style.pointerEvents = "auto";
+            runBtn.style.opacity = "1";
+            runBtn.style.background = "";
+            runBtn.style.borderColor = "";
+          }
+        }, 1000);
+      }
+    }
   }
 
   function showApp(session) {
@@ -498,6 +889,7 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     }
 
     buildNav(session.role);
+    checkExecutionStatus();
     populateEnvUI(); // Load Environment selector cleanly on log in!
 
     if (session.role !== "admin") {
