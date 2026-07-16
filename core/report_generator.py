@@ -459,6 +459,32 @@ def generate_html_report() -> None:
             line-height: 1.6;
         }}
         
+        .download-json-btn {{
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+        .download-json-btn:hover {{
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }}
+        .download-json-btn:active {{
+            transform: translateY(0);
+        }}
+        
         /* Master Status Banner */
         .status-banner {{
             padding: 16px 24px;
@@ -961,6 +987,18 @@ def generate_html_report() -> None:
         }}
     </style>
     <script>
+        const reportData = {json.dumps(grouped_pages)};
+
+        function downloadJSONReport() {{
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(reportData, null, 2));
+            var downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "fitnesse_api_report.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }}
+
         function openResponseModal(content, event) {{
             if (event) event.stopPropagation();
             document.getElementById("modal-response-code").textContent = content;
@@ -1054,7 +1092,8 @@ def generate_html_report() -> None:
             <div class="header-meta">
                 <strong>Active Suite:</strong> {html_escape(suite_name) if suite_name else 'N/A'}<br>
                 <strong>Environment:</strong> UAT Testing Portal<br>
-                <strong>Execution Duration:</strong> {formatted_duration}
+                <strong>Execution Duration:</strong> {formatted_duration}<br>
+                <button class="download-json-btn" onclick="downloadJSONReport()">📥 Download JSON Report</button>
             </div>
         </header>
 
