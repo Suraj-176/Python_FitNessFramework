@@ -47,6 +47,11 @@ class BaseRequestFixture:
     def setBodyJson(self, body_json: str) -> None:
         self.set_body_json(body_json)
 
+    def set_body(self, body: str) -> None:
+        self._body_json = body
+    def setBody(self, body: str) -> None:
+        self.set_body(body)
+
     def set_key(self, key: str) -> None:
         self._key = key
     def setKey(self, key: str) -> None:

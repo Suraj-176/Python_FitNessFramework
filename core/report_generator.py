@@ -380,7 +380,10 @@ def generate_html_report() -> None:
             </td>
             <td>{p['timestamp']}</td>
             <td>
-                <span class="status-indicator {page_status_class}">{page_status_text}</span>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                    <span class="status-indicator {page_status_class}">{page_status_text}</span>
+                    <button class="download-single-btn" onclick="downloadSinglePage({idx}, event)" title="Download this test case JSON">📥 JSON</button>
+                </div>
                 {defect_helper}
             </td>
         </tr>
@@ -483,6 +486,26 @@ def generate_html_report() -> None:
         }}
         .download-json-btn:active {{
             transform: translateY(0);
+        }}
+        
+        .download-single-btn {{
+            background: #f1f5f9;
+            color: var(--text-sub);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }}
+        .download-single-btn:hover {{
+            background: #e2e8f0;
+            color: var(--text-main);
+            border-color: #cbd5e1;
         }}
         
         /* Master Status Banner */
@@ -994,6 +1017,18 @@ def generate_html_report() -> None:
             var downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
             downloadAnchor.setAttribute("download", "fitnesse_api_report.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }}
+
+        function downloadSinglePage(idx, event) {{
+            if (event) event.stopPropagation();
+            var pageData = reportData[idx];
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pageData, null, 2));
+            var downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", pageData.name + "_report.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();

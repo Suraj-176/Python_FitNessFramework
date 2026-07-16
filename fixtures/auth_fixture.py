@@ -67,6 +67,11 @@ class AuthFixture:
     def setBodyJson(self, body_json: str) -> None:
         self.set_body_json(body_json)
 
+    def set_body(self, body: str) -> None:
+        self._body_json = body
+    def setBody(self, body: str) -> None:
+        self.set_body(body)
+
     def set_token_field(self, token_field: str) -> None:
         self._token_field = token_field
     def setTokenField(self, token_field: str) -> None:
