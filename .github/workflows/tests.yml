@@ -629,6 +629,9 @@ jobs:
       - name: Generate Test Summary
         if: always()
         shell: powershell
+        env:
+          TEST_ENV: ${{ github.event.inputs.environment }}
+          TEST_SUITE_NAME: ${{ github.event.inputs.test_suite }}
         run: |
           if (Test-Path "test_results.json") {
             $results = Get-Content "test_results.json" | ConvertFrom-Json
@@ -636,11 +639,14 @@ jobs:
             $wrong = $results.finalCounts.wrong
             $exceptions = $results.finalCounts.exceptions
             
+            $envName = if ($env:TEST_ENV) { $env:TEST_ENV } else { 'dev' }
+            $suiteName = if ($env:TEST_SUITE_NAME) { $env:TEST_SUITE_NAME } else { 'FrontPage' }
+            
             $summary = @"
 ## FitNesse API Test Results
 
-**Environment:** ${{ github.event.inputs.environment || 'dev' }}
-**Test Suite:** ${{ github.event.inputs.test_suite || 'FrontPage' }}
+**Environment:** $envName
+**Test Suite:** $suiteName
 
 | Metric | Count |
 |--------|-------|
