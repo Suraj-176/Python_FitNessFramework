@@ -42,21 +42,28 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-def log_request(method: str, url: str, headers: dict = None, payload: dict = None) -> None:
+def log_request(method: str, url: str, headers: dict = None, payload = None) -> None:
     """Logs the HTTP request details in a structured format."""
+    from core.test_data_capture import TestDataCapture
     logger.info(f"---> HTTP REQUEST: {method} {url}")
     if headers:
-        logger.debug(f"Request Headers: {headers}")
+        sanitized_headers = TestDataCapture.sanitize_headers(headers)
+        logger.debug(f"Request Headers: {sanitized_headers}")
     if payload:
-        logger.debug(f"Request Payload: {payload}")
+        payload_str = str(payload)
+        sanitized_payload = TestDataCapture.sanitize_body(payload_str)
+        logger.debug(f"Request Payload: {sanitized_payload}")
 
 
 def log_response(status_code: int, response_text: str, response_headers: dict = None) -> None:
     """Logs the HTTP response details in a structured format."""
+    from core.test_data_capture import TestDataCapture
     logger.info(f"<--- HTTP RESPONSE: Status Code {status_code}")
     if response_headers:
-        logger.debug(f"Response Headers: {response_headers}")
+        sanitized_headers = TestDataCapture.sanitize_headers(response_headers)
+        logger.debug(f"Response Headers: {sanitized_headers}")
     if response_text:
+        sanitized_text = TestDataCapture.sanitize_body(response_text)
         # Limit logging size of responses to keep logs clean
-        truncated_text = response_text[:1000] + "..." if len(response_text) > 1000 else response_text
+        truncated_text = sanitized_text[:1000] + "..." if len(sanitized_text) > 1000 else sanitized_text
         logger.debug(f"Response Body: {truncated_text}")

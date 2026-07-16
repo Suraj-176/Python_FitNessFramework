@@ -1,3 +1,4 @@
+import os
 import html
 import json
 import base64
@@ -16,12 +17,18 @@ class AuthFixture:
     _auth_token = ""  # Static/Class variable to share token across requests
 
     def __init__(self) -> None:
-        self._token_url: str = ""
+        self._token_url: str = os.getenv("OAUTH2_TOKEN_URL", "")
         self._body_json: str = "{}"
         self._token_field: str = "token"
         self._expected_codes: List[int] = []
         self._basic_auth_header: str = ""
         self._ssl_verify: bool = True
+        
+        self._grant_type: str = ""
+        self._username: str = ""
+        self._password: str = ""
+        self._client_id: str = os.getenv("OAUTH2_CLIENT_ID", "")
+        self._client_secret: str = os.getenv("OAUTH2_CLIENT_SECRET", "")
         
         self._actual_status_code: int = 0
         self._response_body: str = ""
@@ -85,6 +92,42 @@ class AuthFixture:
                 logger.warning(f"[Auth] Invalid status code: {code}")
     def setStatusCodes(self, codes: str) -> None:
         self.set_status_codes(codes)
+        
+    def set_grant_type(self, grant_type: str) -> None:
+        self._grant_type = grant_type
+    def setGrantType(self, grant_type: str) -> None:
+        self.set_grant_type(grant_type)
+
+    def set_username(self, username: str) -> None:
+        self._username = username
+    def setUsername(self, username: str) -> None:
+        self.set_username(username)
+
+    def set_password(self, password: str) -> None:
+        self._password = password
+    def setPassword(self, password: str) -> None:
+        self.set_password(password)
+
+    def set_auth_url(self, auth_url: str) -> None:
+        self._token_url = auth_url
+    def setAuthUrl(self, auth_url: str) -> None:
+        self.set_auth_url(auth_url)
+
+    def set_client_id(self, client_id: str) -> None:
+        self._client_id = client_id
+    def setClientId(self, client_id: str) -> None:
+        self.set_client_id(client_id)
+
+    def set_client_secret(self, client_secret: str) -> None:
+        self._client_secret = client_secret
+    def setClientSecret(self, client_secret: str) -> None:
+        self.set_client_secret(client_secret)
+
+    def get_access_token(self) -> str:
+        return self.get_stored_token()
+
+    def authenticate(self) -> bool:
+        return self.generate_token()
 
     # Action mapped to execute
     def execute(self) -> bool:
@@ -94,9 +137,38 @@ class AuthFixture:
     def generate_token(self) -> bool:
         """Sends a POST request to generate the token and stores it statically."""
         try:
+            # Auto-resolve token url from environment if empty
+            if not self._token_url:
+                self._token_url = os.getenv("OAUTH2_TOKEN_URL", "")
+
+            # If grant type is password and body json is empty, build standard body payload
+            if self._grant_type == "password" and (self._body_json == "{}" or not self._body_json):
+                if "dummyjson.com" in self._token_url:
+                    self._body_json = json.dumps({
+                        "username": self._username,
+                        "password": self._password
+                    })
+                else:
+                    self._body_json = f"grant_type=password&username={self._username}&password={self._password}"
+
+            # If client credentials grant type, build standard header authorization and payload
+            is_urlencoded = False
+            if self._grant_type == "client_credentials":
+                is_urlencoded = True
+                client_id = self._client_id or os.getenv("OAUTH2_CLIENT_ID", "")
+                client_secret = self._client_secret or os.getenv("OAUTH2_CLIENT_SECRET", "")
+                encoded = base64.b64encode(f"{client_id}:{client_secret}".encode("utf-8")).decode("utf-8")
+                self._basic_auth_header = f"Basic {encoded}"
+                self._body_json = "grant_type=client_credentials"
+
             unescaped_body = html.unescape(self._body_json)
             
-            headers = {"Content-Type": "application/json"}
+            headers = {}
+            if is_urlencoded:
+                headers["Content-Type"] = "application/x-www-form-urlencoded"
+            else:
+                headers["Content-Type"] = "application/json"
+
             if self._basic_auth_header:
                 headers["Authorization"] = self._basic_auth_header
 
@@ -135,8 +207,12 @@ class AuthFixture:
 
             token = extract_json_field(self._response_body_json, self._token_field)
             if not token or token in ("key not found", "no key set"):
-                logger.error(f"[Auth] Token field '{self._token_field}' not found in response: {response.text}")
-                return False
+                # Fallback check for standard OAuth2 access_token field
+                if "access_token" in self._response_body_json:
+                    token = self._response_body_json["access_token"]
+                else:
+                    logger.error(f"[Auth] Token field '{self._token_field}' not found in response: {response.text}")
+                    return False
 
             AuthFixture._auth_token = token
             logger.info("[Auth] Token acquired successfully.")

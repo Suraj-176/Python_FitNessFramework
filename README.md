@@ -1,5 +1,8 @@
 # 🚀 FitNesse API — Test Automation Framework
 
+[![codecov](https://codecov.io/gh/Suraj-176/Python_FitNessFramework/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/Suraj-176/Python_FitNessFramework)
+[![Tests Status](https://github.com/Suraj-176/Python_FitNessFramework/actions/workflows/tests.yml/badge.svg)](https://github.com/Suraj-176/Python_FitNessFramework/actions)
+
 Welcome to the **FitNesse API Test Automation Framework**. This is a secure, high-performance, enterprise-grade REST API testing framework integrating FitNesse's SLIM engine with pure Python 3.10+ backend fixtures.
 
 It features a custom, responsive HTML dashboard, basic authentication popup security on startup, custom log rotation, an embedded standard-library Python HTTP Mock Server for offline/CI environments, and a suite of advanced enterprise-level testing capabilities.
@@ -16,6 +19,7 @@ FitNessePythonFramework/
 ├── fitnesse-standalone.jar      # FitNesse standalone server engine
 ├── .gitignore                   # Safe Git exclusions (virtual env, logs, caches)
 ├── .gitattributes               # Forces GitHub to accurately show 100% Python statistics
+├── Jenkinsfile                  # Declarative Jenkins CI/CD Pipeline (Windows Node)
 │
 ├── .venv/                       # Isolated Python Virtual Environment with locked dependencies
 │
@@ -38,12 +42,23 @@ FitNessePythonFramework/
 │   ├── head_request_fixture.py  # HEAD request engine
 │   ├── options_request_fixture.py# OPTIONS request engine
 │   ├── json_utils.py            # JSON extractor with ValueError safety handling
-│   └── mock_server_fixture.py   # Embedded background HTTP Mock Server
+│   ├── mock_server_fixture.py   # Embedded background HTTP Mock Server
+│   ├── grpc_request_fixture.py  # GRPC request engine
+│   ├── graphql_request_fixture.py # GraphQL request engine
+│   └── oauth2_fixture.py        # Dedicated OAuth2 request engine
 │
 ├── core/                        # Core Framework Infrastructure
 │   ├── logger.py                # Structured daily rotating file and console logger
 │   ├── fitnesse_watcher.py      # Real-time folder-sync and self-healing watcher
-│   └── report_generator.py      # Stub report generator hook
+│   ├── report_generator.py      # Stub report generator hook
+│   ├── validators.py            # Input validation helper
+│   ├── config.py                # Environment configuration loader
+│   ├── token_encryption.py      # Token encryption & storage helper
+│   └── data_factory.py          # Faker test data generator helper
+│
+├── tests/                       # Automated Test Suite (pytest)
+│   ├── unit/                    # Unit tests for core functions
+│   └── integration/             # Integration tests for requests/fixtures
 │
 └── logs/                        # Rotation log outputs (7-day retention)
     └── framework.log            # Active logger output
@@ -61,6 +76,8 @@ Instead of writing custom fixtures for every endpoint, this framework utilizes *
 *   **`fixtures.DeleteRequestFixture`**: Executes DELETE calls and checks status codes.
 *   **`fixtures.HeadRequestFixture`**: Executes HEAD calls to fetch and validate header keys.
 *   **`fixtures.OptionsRequestFixture`**: Executes OPTIONS calls to validate server-supported HTTP verbs and CORS origin rules.
+*   **`fixtures.GraphqlRequestFixture`**: Executes GraphQL calls, packing your raw queries and variables dynamically.
+*   **`fixtures.Oauth2Fixture`**: Dedicated OAuth2 request engine supporting password & client credentials grant flows.
 
 ---
 
@@ -92,6 +109,28 @@ To allow the entire suite to run 100% offline, locally, and inside headless CI/C
     *   Username: `admin`
     *   Password: `admin123`
 4.  **Graphical Dashboard:** You will instantly see your custom-designed FitNesse API Test Suite landing dashboard! Click **Suite** or individual **Run** buttons to execute your tests in 1 click!
+
+---
+
+## 6. How to Run Unit & Integration Tests (pytest)
+
+1.  **Activate virtual environment:**
+    ```powershell
+    .venv\Scripts\Activate.ps1
+    ```
+2.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  **Run all unit and integration tests:**
+    ```bash
+    pytest
+    ```
+4.  **Run with coverage reporting:**
+    ```bash
+    pytest --cov --cov-report=html
+    ```
+    Open `htmlcov/index.html` in your web browser to view the interactive line-by-line coverage reports!
 
 ---
 

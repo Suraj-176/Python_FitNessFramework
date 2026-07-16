@@ -330,6 +330,51 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   color: #64748B;
   margin-top: 16px;
 }
+/* ── Responsive Overrides for smaller laptops/screens ────────────────── */
+@media (max-width: 1024px) {
+  #icici-login-box {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+  }
+  #icici-login-left {
+    width: 100% !important;
+    height: auto !important;
+    padding: 40px 24px !important;
+  }
+  #icici-login-right {
+    width: 100% !important;
+    height: auto !important;
+    padding: 40px 24px !important;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.08) !important;
+  }
+  #icici-login-left .left-desc {
+    max-width: 500px !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .icici-header-banner {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 12px 20px !important;
+    gap: 12px !important;
+  }
+  .icici-header-left {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  .icici-header-nav {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  .icici-header-right {
+    justify-content: center !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+  }
+}
 
 /* ── Header Banner ──────────────────────────────────── */
 .icici-header-banner {
@@ -531,7 +576,7 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); }, id: "icici-run-btn" },
       { label: "📊 Report",     href: "/files/report.html", target: "_blank" },
       { label: "✎ Edit",        href: function(){ return p() + "?edit"; },       adminOnly: true },
-      { label: "+ Add Child",   href: function(){ return p() + "?new"; },        adminOnly: true },
+      { label: "+ Add Test",   href: function(){ return p() + "?new"; },        adminOnly: true },
       { label: "❌ Delete",     href: function(){ return p() + "?deletePage"; }, adminOnly: true },
       { label: "⚙ Tools",       href: function(){ return p() + "?refactor"; },   adminOnly: true },
       { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true },

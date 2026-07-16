@@ -4,6 +4,9 @@ venv/
 ENV/
 env/
 
+# Local Environment Secrets
+.env
+
 # Python bytecode, caches, and test states
 __pycache__/
 *.pyc
@@ -28,3 +31,4 @@ FitNesseRoot/update_history.txt
 # OS-specific temp files
 .DS_Store
 Thumbs.db
+*.zip

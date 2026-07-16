@@ -1,3 +1,4 @@
+import os
 import html
 import json
 import time
@@ -24,6 +25,10 @@ class BaseRequestFixture:
         self._response_headers: dict = {}
         self._header_lookup_key: str = ""
         self._file_path: str = ""
+        
+        self._timeout: int = int(os.getenv("DEFAULT_TIMEOUT", 15))
+        self._max_retries: int = int(os.getenv("MAX_RETRIES", 0))
+        self._retry_delay: float = float(os.getenv("RETRY_DELAY", 1.0))
 
         self._executed: bool = False
         self._actual_status_code: int = 0
@@ -71,134 +76,203 @@ class BaseRequestFixture:
                 logger.warning(f"Invalid status code: {code}")
     def setStatusCodes(self, codes: str) -> None:
         self.set_status_codes(codes)
+        
+    def set_timeout(self, timeout: str) -> None:
+        try:
+            self._timeout = int(float(str(timeout).strip()))
+        except ValueError:
+            logger.warning(f"Invalid timeout: {timeout}")
+    def setTimeout(self, timeout: str) -> None:
+        self.set_timeout(timeout)
+
+    def set_retries(self, retries: str) -> None:
+        try:
+            self._max_retries = int(float(str(retries).strip()))
+        except ValueError:
+            logger.warning(f"Invalid retries: {retries}")
+    def setRetries(self, retries: str) -> None:
+        self.set_retries(retries)
+
+    def set_retry_delay(self, delay: str) -> None:
+        try:
+            self._retry_delay = float(str(delay).strip())
+        except ValueError:
+            logger.warning(f"Invalid retry delay: {delay}")
+    def setRetryDelay(self, delay: str) -> None:
+        self.set_retry_delay(delay)
 
     def _make_request(self, method: str) -> bool:
-        try:
-            headers: dict = {}
-            
-            # Use Basic Auth if specified, otherwise fall back to cached Bearer Token
-            if self._basic_auth_header:
-                headers["Authorization"] = self._basic_auth_header
-            else:
-                token = AuthFixture.get_stored_token()
-                if token:
-                    headers["Authorization"] = f"Bearer {token}"
+        unescaped_body = html.unescape(self._body_json)
+        
+        headers: dict = {}
+        # Use Basic Auth if specified, otherwise fall back to cached Bearer Token
+        if self._basic_auth_header:
+            headers["Authorization"] = self._basic_auth_header
+        else:
+            token = AuthFixture.get_stored_token()
+            if token:
+                headers["Authorization"] = f"Bearer {token}"
 
-            # Inject custom headers if set
-            headers.update(self._custom_headers)
+        # Inject custom headers if set
+        headers.update(self._custom_headers)
 
-            unescaped_body = html.unescape(self._body_json)
-            
-            # Log Request
-            log_request(method, self._url, headers=headers, payload=unescaped_body or None)
+        attempts = 0
+        max_attempts = 1 + self._max_retries
+        last_exception = None
+        response = None
 
-            start = time.perf_counter()
-            
-            # Perform POST / PUT / PATCH natively with dictionary payloads if available!
-            if self._file_path:
+        while attempts < max_attempts:
+            attempts += 1
+            try:
+                # Log Request
+                log_request(method, self._url, headers=headers, payload=unescaped_body or None)
+                if attempts > 1:
+                    logger.info(f"[Retry] Attempt {attempts} of {max_attempts} for {method} {self._url}")
+
+                start = time.perf_counter()
+                
+                # Perform POST / PUT / PATCH natively with dictionary payloads if available!
+                if self._file_path:
+                    try:
+                        # Open file and request
+                        with open(self._file_path, 'rb') as f:
+                            files = {'file': f}
+                            response = requests.request(method, self._url, files=files, headers=headers, timeout=self._timeout, verify=self._ssl_verify)
+                    except Exception as e:
+                        logger.error(f"[Upload] Failed to open/send file {self._file_path}: {e}")
+                        raise e
+                elif method in ("POST", "PUT", "PATCH") and unescaped_body:
+                    try:
+                        json_payload = json.loads(unescaped_body)
+                        response = requests.request(method, self._url, json=json_payload, headers=headers, timeout=self._timeout, verify=self._ssl_verify)
+                    except Exception:
+                        response = requests.request(method, self._url, data=unescaped_body.encode('utf-8'), headers=headers, timeout=self._timeout, verify=self._ssl_verify)
+                else:
+                    response = requests.request(method, self._url, headers=headers, timeout=self._timeout, verify=self._ssl_verify)
+
+                self._response_headers = dict(response.headers)
+                self._response_time_ms = int((time.perf_counter() - start) * 1000)
+                self._actual_status_code = response.status_code
+                self._response_body = response.text
+
                 try:
-                    # Open file and request
-                    with open(self._file_path, 'rb') as f:
-                        files = {'file': f}
-                        response = requests.request(method, self._url, files=files, headers=headers, timeout=15, verify=self._ssl_verify)
-                except Exception as e:
-                    logger.error(f"[Upload] Failed to open/send file {self._file_path}: {e}")
-                    raise e
-            elif method in ("POST", "PUT", "PATCH") and unescaped_body:
-                try:
-                    json_payload = json.loads(unescaped_body)
-                    response = requests.request(method, self._url, json=json_payload, headers=headers, timeout=15, verify=self._ssl_verify)
+                    self._response_body_json = response.json()
                 except Exception:
-                    response = requests.request(method, self._url, data=unescaped_body.encode('utf-8'), headers=headers, timeout=15, verify=self._ssl_verify)
-            else:
-                response = requests.request(method, self._url, headers=headers, timeout=15, verify=self._ssl_verify)
+                    self._response_body_json = {}
 
-            # Log equivalent cURL command for developers
-            try:
-                curl_cmd = self._generate_curl_command(method, headers)
-                logger.info(f"[cURL Replicator] {curl_cmd}")
-            except Exception as e:
-                logger.debug(f"Failed to generate cURL command: {e}")
+                # Log Response
+                log_response(self._actual_status_code, self._response_body, dict(response.headers))
+                logger.info(f"[{method}] {self._url} -> {self._actual_status_code} ({self._response_time_ms}ms)")
 
-            self._response_headers = dict(response.headers)
-            self._response_time_ms = int((time.perf_counter() - start) * 1000)
-            self._actual_status_code = response.status_code
-            self._response_body = response.text
-
-            try:
-                self._response_body_json = response.json()
-            except Exception:
-                self._response_body_json = {}
-
-            # Log Response
-            log_response(self._actual_status_code, self._response_body, dict(response.headers))
-            logger.info(f"[{method}] {self._url} -> {self._actual_status_code} ({self._response_time_ms}ms)")
-            
-            # Calculate assertion counts
-            right_count = 0
-            wrong_count = 0
-            if self._expected_codes:
-                if self._actual_status_code in self._expected_codes:
-                    right_count = 1
+                # Check if request succeeded based on status codes
+                is_success = False
+                if self._expected_codes:
+                    if self._actual_status_code in self._expected_codes:
+                        is_success = True
                 else:
-                    wrong_count = 1
-            else:
-                if 200 <= self._actual_status_code < 400 or self._actual_status_code == 204:
-                    right_count = 1
+                    if 200 <= self._actual_status_code < 400 or self._actual_status_code == 204:
+                        is_success = True
+
+                if is_success:
+                    break
                 else:
-                    wrong_count = 1
+                    # It failed the status code match. Retry if attempts left!
+                    if attempts < max_attempts:
+                        logger.warning(f"[{method}] Status code {self._actual_status_code} does not match expectation. Retrying in {self._retry_delay}s...")
+                        time.sleep(self._retry_delay)
+                        continue
 
-            # Auto-generate our 3rd-party corporate HTML report dynamically on the fly!
-            try:
-                from core.report_generator import add_record
-                add_record({
-                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "method": method,
-                    "url": self._url,
-                    "status_code": self._actual_status_code,
-                    "response_time_ms": self._response_time_ms,
-                    "curl": self._generate_curl_command(method, headers),
-                    "request_body": unescaped_body or "",
-                    "response_body": self._response_body or "",
-                    "right": right_count,
-                    "wrong": wrong_count,
-                    "ignored": 0,
-                    "exceptions": 0
-                })
             except Exception as e:
-                logger.error(f"[Report] Failed to trigger report generator: {e}")
-            
-            self._executed = True
-            return True
+                last_exception = e
+                if attempts < max_attempts:
+                    logger.warning(f"[{method}] Request encountered error: {str(e)}. Retrying in {self._retry_delay}s...")
+                    time.sleep(self._retry_delay)
+                    continue
+                else:
+                    logger.error(f"[{method}] Final attempt failed with exception [{self._url}]: {str(e)}")
+                    # Log as exception to the report generator!
+                    try:
+                        from core.report_generator import add_record
+                        add_record({
+                            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                            "method": method,
+                            "url": self._url,
+                            "status_code": 0,
+                            "response_time_ms": 0,
+                            "curl": self._generate_curl_command(method, headers) if hasattr(self, '_generate_curl_command') else f"curl -X {method} \"{self._url}\"",
+                            "request_body": self._body_json or "",
+                            "response_body": f"exception: {str(e)}",
+                            "right": 0,
+                            "wrong": 0,
+                            "ignored": 0,
+                            "exceptions": 1
+                        })
+                    except Exception:
+                        pass
+                    return False
 
-        except Exception as e:
-            logger.error(f"[{method}] Unexpected exception [{self._url}]: {str(e)}")
-            # Log as exception to the report generator!
-            try:
-                from core.report_generator import add_record
-                add_record({
-                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "method": method,
-                    "url": self._url,
-                    "status_code": 0,
-                    "response_time_ms": 0,
-                    "curl": self._generate_curl_command(method, self._custom_headers) if hasattr(self, '_custom_headers') else f"curl -X {method} \"{self._url}\"",
-                    "request_body": self._body_json or "",
-                    "response_body": f"exception: {str(e)}",
-                    "right": 0,
-                    "wrong": 0,
-                    "ignored": 0,
-                    "exceptions": 1
-                })
-            except Exception:
-                pass
+        # If we exited the loop and still have a last exception that was not broken by success:
+        if last_exception and not response:
             return False
+
+        # Log equivalent cURL command for developers
+        try:
+            curl_cmd = self._generate_curl_command(method, headers)
+            logger.info(f"[cURL Replicator] {curl_cmd}")
+        except Exception as e:
+            logger.debug(f"Failed to generate cURL command: {e}")
+
+        # Calculate assertion counts for the final response
+        right_count = 0
+        wrong_count = 0
+        if self._expected_codes:
+            if self._actual_status_code in self._expected_codes:
+                right_count = 1
+            else:
+                wrong_count = 1
+        else:
+            if 200 <= self._actual_status_code < 400 or self._actual_status_code == 204:
+                right_count = 1
+            else:
+                wrong_count = 1
+
+        # Auto-generate our 3rd-party corporate HTML report dynamically on the fly!
+        try:
+            from core.report_generator import add_record
+            add_record({
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "method": method,
+                "url": self._url,
+                "status_code": self._actual_status_code,
+                "response_time_ms": self._response_time_ms,
+                "curl": self._generate_curl_command(method, headers),
+                "request_body": unescaped_body or "",
+                "response_body": self._response_body or "",
+                "right": right_count,
+                "wrong": wrong_count,
+                "ignored": 0,
+                "exceptions": 0
+            })
+        except Exception as e:
+            logger.error(f"[Report] Failed to trigger report generator: {e}")
+        
+        self._executed = True
+        return True
 
     def executed(self) -> bool:
         return self._executed
 
     def actual_status_code(self) -> int:
         return self._actual_status_code
+
+    def get_response_status(self) -> int:
+        return self._actual_status_code
+
+    def get_response_body(self) -> str:
+        return self._response_body
+
+    def get_response_body_json(self) -> dict:
+        return self._response_body_json
 
     def status_code(self) -> str:
         """Returns the actual status code as a string (supports statusCode?)."""
