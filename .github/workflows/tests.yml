@@ -637,20 +637,20 @@ jobs:
             $exceptions = $results.finalCounts.exceptions
             
             $summary = @"
-            ## FitNesse API Test Results
-            
-            **Environment:** ${{ github.event.inputs.environment || 'dev' }}
-            **Test Suite:** ${{ github.event.inputs.test_suite || 'FrontPage' }}
-            
-            | Metric | Count |
-            |--------|-------|
-            | Passed | $right |
-            | Failed | $wrong |
-            | Exceptions | $exceptions |
-            | Ignored | $($results.finalCounts.ignores) |
-            
-            **Status:** $(if ($wrong -eq 0 -and $exceptions -eq 0) { 'SUCCESS' } else { 'FAILED' })
-            "@
+## FitNesse API Test Results
+
+**Environment:** ${{ github.event.inputs.environment || 'dev' }}
+**Test Suite:** ${{ github.event.inputs.test_suite || 'FrontPage' }}
+
+| Metric | Count |
+|--------|-------|
+| Passed | $right |
+| Failed | $wrong |
+| Exceptions | $exceptions |
+| Ignored | $($results.finalCounts.ignores) |
+
+**Status:** $(if ($wrong -eq 0 -and $exceptions -eq 0) { 'SUCCESS' } else { 'FAILED' })
+"@
             
             $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
           }
