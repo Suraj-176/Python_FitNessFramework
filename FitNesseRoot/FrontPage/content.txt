@@ -1,3 +1,7 @@
+!*< Silent Config Overrides
+!define runInParallel {false}
+!define fitnesse.runner.parallel {1}
+*!
 !-
 <style>
 /* ── Dashboard layout ─────────────────────────────── */
@@ -8,7 +12,7 @@
   background: #ffffff;
   border-radius: 8px;
   border: 1px solid #e8e3db;
-  border-top: 4px solid #004A80;
+  border-top: 4px solid #2563EB;
   padding: 24px 32px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   margin-bottom: 32px;
@@ -45,7 +49,7 @@
   border: none;
   white-space: nowrap !important;
 }
-.ici-run-btn:hover { background: #1D4ED8; color: #fff; text-decoration: none; }
+.ici-run-btn:hover { background: #1E3A8A; color: #fff; text-decoration: none; }
 
 /* ── Branded Toggle Segment Styling ────────────────── */
 .ici-toggle-group {
@@ -71,7 +75,7 @@
   outline: none !important;
 }
 .ici-toggle-btn.active {
-  background: #004A80 !important;
+  background: #2563EB !important;
   color: #fff !important;
 }
 .ici-toggle-btn:hover:not(.active) {
@@ -90,7 +94,7 @@
   background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 8px !important;
-  border-top: 4px solid #004A80 !important;
+  border-top: 4px solid #2563EB !important;
   padding: 22px !important;
   box-shadow: 0 2px 6px rgba(0,0,0,0.03) !important;
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
@@ -104,7 +108,7 @@
 .ici-suite-card:hover {
   transform: translateY(-4px) !important;
   box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important;
-  border-top-color: #2563EB !important;
+  border-top-color: #3B82F6 !important;
 }
 .ici-suite-card.test-case-card {
   border-top-color: #64748b !important; /* Grey top border for standalone test cases */
@@ -169,7 +173,7 @@
   color: #fff !important;
 }
 .ici-card-btn.run:hover {
-  background: #1D4ED8 !important;
+  background: #1E3A8A !important;
 }
 .ici-card-btn.open {
   background: #f8fafc !important;
@@ -265,7 +269,7 @@
   color: #fff !important;
 }
 .ici-list-btn.run:hover {
-  background: #1D4ED8 !important;
+  background: #1E3A8A !important;
 }
 .ici-list-btn.open {
   background: #f8fafc !important;
@@ -296,7 +300,7 @@
       </div>
     </div>
 
-    <div class="ici-card-desc">Create your corporate AML API test pages or suites natively in 1 click. Any test page or suite you add will automatically and dynamically appear inside the responsive grid card view below:</div>
+    <div class="ici-card-desc">Create your corporate API & UI test pages or suites natively in 1 click. Any test page or suite you add will automatically and dynamically appear inside the responsive grid card view below:</div>
     
     <!-- Hidden relative list contents used as our dynamic data source -->
     <div id="ici-contents-wrapper" style="display: none !important;">
@@ -374,18 +378,21 @@
       if (nameLower.indexOf("smoke") !== -1) icon = "💨";
       else if (nameLower.indexOf("sanity") !== -1) icon = "🛡️";
       else if (nameLower.indexOf("regression") !== -1) icon = "🧪";
+      else if (nameLower.indexOf("banking") !== -1 || nameLower.indexOf("retail") !== -1 || nameLower.indexOf("tata") !== -1 || nameLower.indexOf("aig") !== -1 || nameLower.indexOf("sit") !== -1) icon = "🖥️";
       else if (!isSuite) icon = "📄";
 
       // ── Dynamic Descriptions Mapping based on Suite Name ──
       var desc = "Dynamic corporate API test suite.";
-      if (nameLower.indexOf("smoke") !== -1) {
+      if (nameLower.indexOf("banking") !== -1 || nameLower.indexOf("retail") !== -1 || nameLower.indexOf("tata") !== -1 || nameLower.indexOf("aig") !== -1 || nameLower.indexOf("sit") !== -1) {
+        desc = "Dynamic corporate UI and browser automation test suite.";
+      } else if (nameLower.indexOf("smoke") !== -1) {
         desc = "Checks critical application functionality to confirm the build is stable for testing.";
       } else if (nameLower.indexOf("sanity") !== -1) {
         desc = "Verifies specific changes or fixes and their immediate impact.";
       } else if (nameLower.indexOf("regression") !== -1) {
         desc = "Validates that previously working features remain unaffected by recent changes.";
       } else if (!isSuite) {
-        desc = "Single executable REST API automation test case.";
+        desc = "Single executable automation test case.";
       }
 
       // ── Create Suite Card DOM Element ──
@@ -418,12 +425,6 @@
 
       topDiv.appendChild(detailsDiv);
       card.appendChild(topDiv);
-
-      // Body Description section
-      var descPara = document.createElement("div");
-      descPara.className = "ici-card-body-desc";
-      descPara.textContent = desc;
-      card.appendChild(descPara);
 
       // Actions section (Run + Open buttons)
       var actionsDiv = document.createElement("div");
@@ -538,7 +539,7 @@
           
           a.textContent = "📁 " + name + " (" + testCount + ")";
           a.style.fontWeight = "bold";
-          a.style.color = "#004A80";
+          a.style.color = "#2563EB";
           a.style.fontSize = "15px";
           if (childList) childList.style.display = "none";
 

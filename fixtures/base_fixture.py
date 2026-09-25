@@ -1,6 +1,6 @@
-import os
 import html
 import json
+import os
 import time
 import base64
 from typing import List, Optional
@@ -8,6 +8,26 @@ import requests
 from .auth_fixture import AuthFixture
 from .json_utils import extract_json_field
 from core.logger import logger, log_request, log_response
+from core.allure_helper import AllureHelper
+class StatusCode(str):
+    """
+    Status code that acts as both a string (for FitNesse Slim evaluation)
+    and an integer (for direct equality assertions in Python tests).
+    """
+    def __eq__(self, other):
+        if isinstance(other, int):
+            try:
+                return int(self) == other
+            except ValueError:
+                return False
+        return super().__eq__(str(other))
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __int__(self):
+        return int(str(self))
+
 
 class BaseRequestFixture:
     """
@@ -25,10 +45,9 @@ class BaseRequestFixture:
         self._response_headers: dict = {}
         self._header_lookup_key: str = ""
         self._file_path: str = ""
-        
-        self._timeout: int = int(os.getenv("DEFAULT_TIMEOUT", 15))
-        self._max_retries: int = int(os.getenv("MAX_RETRIES", 0))
-        self._retry_delay: float = float(os.getenv("RETRY_DELAY", 1.0))
+        self._timeout: int = 15
+        self._max_retries: int = 0
+        self._retry_delay: float = 1.0
 
         self._executed: bool = False
         self._actual_status_code: int = 0
@@ -38,19 +57,35 @@ class BaseRequestFixture:
 
     # Setters (Supporting both camelCase and snake_case natively for compatibility!)
     def set_url(self, url: str) -> None:
-        self._url = url
+        """Set request URL with validation"""
+        from core.validators import RequestValidator, ValidationError
+        
+        try:
+            self._url = RequestValidator.validate_url(url) if url else ""
+        except ValidationError as e:
+            logger.error(f"[Validation] {e}")
+            # Store invalid URL but log error
+            self._url = url.strip() if url else ""
+            
     def setUrl(self, url: str) -> None:
         self.set_url(url)
 
     def set_body_json(self, body_json: str) -> None:
-        self._body_json = body_json
+        """Set request body JSON with validation"""
+        from core.validators import RequestValidator, ValidationError
+        
+        try:
+            if body_json and body_json.strip():
+                # Validate JSON format
+                RequestValidator.validate_json(body_json)
+            self._body_json = body_json
+        except ValidationError as e:
+            logger.error(f"[Validation] {e}")
+            # Store invalid JSON but log error
+            self._body_json = body_json
+            
     def setBodyJson(self, body_json: str) -> None:
         self.set_body_json(body_json)
-
-    def set_body(self, body: str) -> None:
-        self._body_json = body
-    def setBody(self, body: str) -> None:
-        self.set_body(body)
 
     def set_key(self, key: str) -> None:
         self._key = key
@@ -81,58 +116,143 @@ class BaseRequestFixture:
                 logger.warning(f"Invalid status code: {code}")
     def setStatusCodes(self, codes: str) -> None:
         self.set_status_codes(codes)
-        
-    def set_timeout(self, timeout: str) -> None:
+
+    def set_timeout(self, seconds: str) -> None:
+        """Sets request timeout in seconds. Default is 15 seconds. Useful for slow APIs or large file uploads."""
         try:
-            self._timeout = int(float(str(timeout).strip()))
+            self._timeout = int(seconds)
+            logger.debug(f"Timeout set to {self._timeout} seconds")
         except ValueError:
-            logger.warning(f"Invalid timeout: {timeout}")
-    def setTimeout(self, timeout: str) -> None:
-        self.set_timeout(timeout)
+            logger.warning(f"Invalid timeout value: '{seconds}', using default 15s")
+            self._timeout = 15
+    def setTimeout(self, seconds: str) -> None:
+        self.set_timeout(seconds)
 
     def set_retries(self, retries: str) -> None:
+        """Sets maximum number of retry attempts for failed requests. Default is 0 (no retries). Useful for flaky endpoints."""
         try:
-            self._max_retries = int(float(str(retries).strip()))
+            self._max_retries = int(retries)
+            logger.debug(f"Max retries set to {self._max_retries}")
         except ValueError:
-            logger.warning(f"Invalid retries: {retries}")
+            logger.warning(f"Invalid retries value: '{retries}', using default 0")
+            self._max_retries = 0
     def setRetries(self, retries: str) -> None:
         self.set_retries(retries)
 
-    def set_retry_delay(self, delay: str) -> None:
+    def set_retry_delay(self, seconds: str) -> None:
+        """Sets delay between retries in seconds. Default is 1.0 second. Uses exponential backoff (multiplies by 2 each retry)."""
         try:
-            self._retry_delay = float(str(delay).strip())
+            self._retry_delay = float(seconds)
+            logger.debug(f"Retry delay set to {self._retry_delay}s")
         except ValueError:
-            logger.warning(f"Invalid retry delay: {delay}")
-    def setRetryDelay(self, delay: str) -> None:
-        self.set_retry_delay(delay)
+            logger.warning(f"Invalid retry delay value: '{seconds}', using default 1.0s")
+            self._retry_delay = 1.0
+    def setRetryDelay(self, seconds: str) -> None:
+        self.set_retry_delay(seconds)
+
+    def _record_to_report(self, method: str, url: str, status_code: int, response_time_ms: int, 
+                          curl_cmd: str, request_body: str, response_body: str, 
+                          right: int = 0, wrong: int = 0, exceptions: int = 0) -> None:
+        """Shared helper to record request details to the HTML report generator and save JSON test data."""
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+        
+        try:
+            from core.report_generator import add_record
+            from core.test_data_capture import save_test_data
+            
+            # Save JSON test data file with sanitization
+            json_file_path = ""
+            try:
+                json_file_path = save_test_data(
+                    test_name="API_Test",  # Will be updated by report generator with actual test name
+                    method=method,
+                    url=url,
+                    request_headers=self._custom_headers,
+                    request_body=request_body,
+                    response_status=status_code,
+                    response_headers=self._response_headers,
+                    response_body=response_body,
+                    response_time_ms=response_time_ms,
+                    assertions={
+                        "right": right,
+                        "wrong": wrong,
+                        "ignored": 0,
+                        "exceptions": exceptions
+                    },
+                    timestamp=timestamp
+                )
+            except Exception as json_err:
+                logger.warning(f"[TestData] Failed to save JSON test data: {json_err}")
+            
+            add_record({
+                "timestamp": timestamp,
+                "method": method,
+                "url": url,
+                "status_code": status_code,
+                "response_time_ms": response_time_ms,
+                "curl": curl_cmd,
+                "request_body": request_body,
+                "response_body": response_body,
+                "right": right,
+                "wrong": wrong,
+                "ignored": 0,
+                "exceptions": exceptions,
+                "json_file": json_file_path  # Add JSON file path for download button
+            })
+        except Exception as e:
+            logger.error(f"[Report] Failed to trigger report generator: {e}")
+
+    def _calculate_assertion_counts(self, status_code: int, expected_codes: list) -> tuple:
+        """Calculate right/wrong counts based on status code validation."""
+        right_count = 0
+        wrong_count = 0
+        if expected_codes:
+            if status_code in expected_codes:
+                right_count = 1
+            else:
+                wrong_count = 1
+        else:
+            if 200 <= status_code < 400 or status_code == 204:
+                right_count = 1
+            else:
+                wrong_count = 1
+        return right_count, wrong_count
 
     def _make_request(self, method: str) -> bool:
-        unescaped_body = html.unescape(self._body_json)
+        # Validate URL before making request
+        if not self._url:
+            logger.error("[Validation] Cannot execute request: URL is empty")
+            return False
+        if not (self._url.startswith("http://") or self._url.startswith("https://")):
+            logger.error(f"[Validation] Cannot execute request: Invalid URL format: {self._url}")
+            return False
         
-        headers: dict = {}
-        # Use Basic Auth if specified, otherwise fall back to cached Bearer Token
-        if self._basic_auth_header:
-            headers["Authorization"] = self._basic_auth_header
-        else:
-            token = AuthFixture.get_stored_token()
-            if token:
-                headers["Authorization"] = f"Bearer {token}"
-
-        # Inject custom headers if set
-        headers.update(self._custom_headers)
-
-        attempts = 0
-        max_attempts = 1 + self._max_retries
+        # Retry loop with exponential backoff
         last_exception = None
-        response = None
-
-        while attempts < max_attempts:
-            attempts += 1
+        for attempt in range(self._max_retries + 1):
+            if attempt > 0:
+                delay = self._retry_delay * (2 ** (attempt - 1))  # Exponential backoff
+                logger.info(f"[Retry] Attempt {attempt + 1}/{self._max_retries + 1} after {delay}s delay...")
+                time.sleep(delay)
+            
             try:
+                headers: dict = {}
+                
+                # Use Basic Auth if specified, otherwise fall back to cached Bearer Token
+                if self._basic_auth_header:
+                    headers["Authorization"] = self._basic_auth_header
+                else:
+                    token = AuthFixture.get_stored_token()
+                    if token:
+                        headers["Authorization"] = f"Bearer {token}"
+
+                # Inject custom headers if set
+                headers.update(self._custom_headers)
+
+                unescaped_body = html.unescape(self._body_json)
+                
                 # Log Request
                 log_request(method, self._url, headers=headers, payload=unescaped_body or None)
-                if attempts > 1:
-                    logger.info(f"[Retry] Attempt {attempts} of {max_attempts} for {method} {self._url}")
 
                 start = time.perf_counter()
                 
@@ -155,6 +275,13 @@ class BaseRequestFixture:
                 else:
                     response = requests.request(method, self._url, headers=headers, timeout=self._timeout, verify=self._ssl_verify)
 
+                # Log equivalent cURL command for developers
+                try:
+                    curl_cmd = self._generate_curl_command(method, headers)
+                    logger.info(f"[cURL Replicator] {curl_cmd}")
+                except Exception as e:
+                    logger.debug(f"Failed to generate cURL command: {e}")
+
                 self._response_headers = dict(response.headers)
                 self._response_time_ms = int((time.perf_counter() - start) * 1000)
                 self._actual_status_code = response.status_code
@@ -168,101 +295,152 @@ class BaseRequestFixture:
                 # Log Response
                 log_response(self._actual_status_code, self._response_body, dict(response.headers))
                 logger.info(f"[{method}] {self._url} -> {self._actual_status_code} ({self._response_time_ms}ms)")
+                
+                # Calculate assertion counts and record to report
+                right_count, wrong_count = self._calculate_assertion_counts(self._actual_status_code, self._expected_codes)
+                self._record_to_report(
+                    method=method,
+                    url=self._url,
+                    status_code=self._actual_status_code,
+                    response_time_ms=self._response_time_ms,
+                    curl_cmd=self._generate_curl_command(method, headers),
+                    request_body=unescaped_body or "",
+                    response_body=self._response_body or "",
+                    right=right_count,
+                    wrong=wrong_count
+                )
+                
+                # Symmetrical Allure API Reporting Compile!
+                try:
+                    clean_url = clean_html_text(self._url)
+                    
+                    # Dynamically extract the FitNesse variables cleanly with ZERO hardcoding!
+                    env_page_name = os.environ.get("FITNESSE_PAGE_NAME")
+                    test_name = f"{method} {clean_url}"
+                    if env_page_name:
+                        test_name = env_page_name
+                        
+                    suite_name = "API Tests"
+                    env_page_path = os.environ.get("FITNESSE_PAGE_PATH")
+                    if env_page_path:
+                        parts = [p.strip() for p in env_page_path.split(".") if p.strip()]
+                        if len(parts) >= 3:
+                            # E.g. "FrontPage.DummyAPI.Get_All_Products" -> suite is "DummyAPI"
+                            suite_name = parts[-2]
+                        elif len(parts) == 2:
+                            # E.g. "FrontPage.DummyAPI" -> suite is "DummyAPI"
+                            suite_name = parts[-1]
+                            
+                    allure = AllureHelper(test_name=test_name, suite_name=suite_name)
+                    allure.add_step("Prepare Request Headers & Body", "passed", 2)
+                    allure.add_step(f"Send HTTP {method} Request", "passed", self._response_time_ms)
+                    
+                    # Attach Request Info
+                    allure.add_attachment("Request_Headers", json.dumps(headers, indent=2), "application/json", "json")
+                    if unescaped_body:
+                        allure.add_attachment("Request_Body", unescaped_body, "application/json", "json")
+                        
+                    # Attach Response Info
+                    allure.add_attachment("Response_Headers", json.dumps(self._response_headers, indent=2), "application/json", "json")
+                    allure.add_attachment("Response_Body", self._response_body, "application/json" if "json" in str(self._response_headers.get("Content-Type", "")).lower() else "text/plain", "json" if "json" in str(self._response_headers.get("Content-Type", "")).lower() else "txt")
+                    
+                    if wrong_count > 0:
+                        allure.set_failed(f"Expected status codes {self._expected_codes} but got {self._actual_status_code}!")
+                    
+                    allure.write_result()
+                except Exception as allure_err:
+                    logger.debug(f"Failed to compile Allure API results: {allure_err}")
+                
+                self._executed = True
+                return True
 
-                # Check if request succeeded based on status codes
-                is_success = False
-                if self._expected_codes:
-                    if self._actual_status_code in self._expected_codes:
-                        is_success = True
-                else:
-                    if 200 <= self._actual_status_code < 400 or self._actual_status_code == 204:
-                        is_success = True
-
-                if is_success:
-                    break
-                else:
-                    # It failed the status code match. Retry if attempts left!
-                    if attempts < max_attempts:
-                        logger.warning(f"[{method}] Status code {self._actual_status_code} does not match expectation. Retrying in {self._retry_delay}s...")
-                        time.sleep(self._retry_delay)
-                        continue
-
-            except Exception as e:
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
                 last_exception = e
-                if attempts < max_attempts:
-                    logger.warning(f"[{method}] Request encountered error: {str(e)}. Retrying in {self._retry_delay}s...")
-                    time.sleep(self._retry_delay)
-                    continue
-                else:
-                    logger.error(f"[{method}] Final attempt failed with exception [{self._url}]: {str(e)}")
-                    # Log as exception to the report generator!
+                logger.warning(f"[{method}] Retryable error on attempt {attempt + 1}: {str(e)}")
+                if attempt >= self._max_retries:
+                    # Max retries exhausted
+                    logger.error(f"[{method}] Max retries ({self._max_retries}) exhausted for [{self._url}]")
+                    curl_fallback = self._generate_curl_command(method, headers) if 'headers' in locals() else f"curl -X {method} \"{self._url}\""
+                    self._record_to_report(
+                        method=method,
+                        url=self._url,
+                        status_code=0,
+                        response_time_ms=0,
+                        curl_cmd=curl_fallback,
+                        request_body=self._body_json or "",
+                        response_body=f"exception after {self._max_retries + 1} attempts: {str(last_exception)}",
+                        exceptions=1
+                    )
                     try:
-                        from core.report_generator import add_record
-                        add_record({
-                            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                            "method": method,
-                            "url": self._url,
-                            "status_code": 0,
-                            "response_time_ms": 0,
-                            "curl": self._generate_curl_command(method, headers) if hasattr(self, '_generate_curl_command') else f"curl -X {method} \"{self._url}\"",
-                            "request_body": self._body_json or "",
-                            "response_body": f"exception: {str(e)}",
-                            "right": 0,
-                            "wrong": 0,
-                            "ignored": 0,
-                            "exceptions": 1
-                        })
+                        clean_url = clean_html_text(self._url)
+                        
+                        env_page_name = os.environ.get("FITNESSE_PAGE_NAME")
+                        test_name = f"{method} {clean_url}"
+                        if env_page_name:
+                            test_name = env_page_name
+                            
+                        suite_name = "API Tests"
+                        env_page_path = os.environ.get("FITNESSE_PAGE_PATH")
+                        if env_page_path:
+                            parts = [p.strip() for p in env_page_path.split(".") if p.strip()]
+                            if len(parts) >= 3:
+                                suite_name = parts[-2]
+                            elif len(parts) == 2:
+                                suite_name = parts[-1]
+                                
+                        if test_name != suite_name:
+                            allure = AllureHelper(test_name=test_name, suite_name=suite_name)
+                            allure.add_step(f"Send HTTP {method} Request (FAILED)", "failed", 10)
+                            allure.set_failed(f"Network error: {str(e)}", str(e))
+                            allure.write_result()
                     except Exception:
                         pass
                     return False
-
-        # If we exited the loop and still have a last exception that was not broken by success:
-        if last_exception and not response:
-            return False
-
-        # Log equivalent cURL command for developers
-        try:
-            curl_cmd = self._generate_curl_command(method, headers)
-            logger.info(f"[cURL Replicator] {curl_cmd}")
-        except Exception as e:
-            logger.debug(f"Failed to generate cURL command: {e}")
-
-        # Calculate assertion counts for the final response
-        right_count = 0
-        wrong_count = 0
-        if self._expected_codes:
-            if self._actual_status_code in self._expected_codes:
-                right_count = 1
-            else:
-                wrong_count = 1
-        else:
-            if 200 <= self._actual_status_code < 400 or self._actual_status_code == 204:
-                right_count = 1
-            else:
-                wrong_count = 1
-
-        # Auto-generate our 3rd-party corporate HTML report dynamically on the fly!
-        try:
-            from core.report_generator import add_record
-            add_record({
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "method": method,
-                "url": self._url,
-                "status_code": self._actual_status_code,
-                "response_time_ms": self._response_time_ms,
-                "curl": self._generate_curl_command(method, headers),
-                "request_body": unescaped_body or "",
-                "response_body": self._response_body or "",
-                "right": right_count,
-                "wrong": wrong_count,
-                "ignored": 0,
-                "exceptions": 0
-            })
-        except Exception as e:
-            logger.error(f"[Report] Failed to trigger report generator: {e}")
+                # Continue to next retry attempt
+                
+            except Exception as e:
+                # Non-retryable exception
+                logger.error(f"[{method}] Non-retryable exception [{self._url}]: {str(e)}")
+                curl_fallback = self._generate_curl_command(method, headers) if 'headers' in locals() else f"curl -X {method} \"{self._url}\""
+                self._record_to_report(
+                    method=method,
+                    url=self._url,
+                    status_code=0,
+                    response_time_ms=0,
+                    curl_cmd=self._generate_curl_command(method, headers),
+                    request_body=unescaped_body or "",
+                    response_body=self._response_body or "",
+                    right=0,
+                    wrong=1
+                )
+                try:
+                    clean_url = clean_html_text(self._url)
+                    
+                    env_page_name = os.environ.get("FITNESSE_PAGE_NAME")
+                    test_name = f"{method} {clean_url}"
+                    if env_page_name:
+                        test_name = env_page_name
+                        
+                    suite_name = "API Tests"
+                    env_page_path = os.environ.get("FITNESSE_PAGE_PATH")
+                    if env_page_path:
+                        parts = [p.strip() for p in env_page_path.split(".") if p.strip()]
+                        if len(parts) >= 3:
+                            suite_name = parts[-2]
+                        elif len(parts) == 2:
+                            suite_name = parts[-1]
+                            
+                    if test_name != suite_name:
+                        allure = AllureHelper(test_name=test_name, suite_name=suite_name)
+                        allure.add_step(f"Send HTTP {method} Request (CRASHED)", "failed", 5)
+                        allure.set_failed(f"Unexpected exception: {str(e)}", str(e))
+                        allure.write_result()
+                except Exception:
+                    pass
+                return False
         
-        self._executed = True
-        return True
+        # Should not reach here, but just in case
+        return False
 
     def executed(self) -> bool:
         return self._executed
@@ -279,9 +457,12 @@ class BaseRequestFixture:
     def get_response_body_json(self) -> dict:
         return self._response_body_json
 
-    def status_code(self) -> str:
-        """Returns the actual status code as a string (supports statusCode?)."""
-        return str(self._actual_status_code)
+    def status_code(self) -> StatusCode:
+        """Returns the actual status code (supports both int and str equality, statusCode?)."""
+        return StatusCode(str(self._actual_status_code))
+
+    def statusCode(self) -> StatusCode:
+        return self.status_code()
 
     def response_body(self) -> str:
         try:
@@ -292,6 +473,15 @@ class BaseRequestFixture:
             return f"\n{{{{\n{self._response_body}\n}}}}\n"
 
     def response_time(self) -> int:
+        return self._response_time_ms
+
+    def responseTime(self) -> int:
+        return self._response_time_ms
+
+    def response_time_ms(self) -> int:
+        return self._response_time_ms
+
+    def responseTimeMs(self) -> int:
         return self._response_time_ms
 
     def status_codes(self) -> str:
@@ -310,6 +500,10 @@ class BaseRequestFixture:
 
     def json_value(self) -> str:
         return self.response_field()
+
+    def value_for_key(self) -> str:
+        """Alias for json_value."""
+        return self.json_value()
 
     def set_header(self, name: str, value: str) -> None:
         """Sets a custom HTTP header for the request."""

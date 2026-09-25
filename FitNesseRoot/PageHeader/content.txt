@@ -1,50 +1,55 @@
-!-<link rel="stylesheet" type="text/css" href="/files/fitnesse/css/icici-prudential.css">
+!-<link rel="shortcut icon" type="image/png" href="/files/fitnesse/images/favicon.png">
+<link rel="icon" type="image/png" href="/files/fitnesse/images/favicon.png">
+<link rel="icon" type="image/x-icon" href="/files/fitnesse/images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="/files/fitnesse/images/favicon.ico">
+<link rel="apple-touch-icon" href="/files/fitnesse/images/favicon.png">
+<link rel="stylesheet" type="text/css" href="/files/fitnesse/css/fitnesse-theme.css">
 
 <!-- FitNesse default nav is suppressed at template level (skeleton.vm).
      This minimal reset just ensures no leftover padding or margins appear. -->
 <style>
-body { padding-top: 0 !important; margin-top: 0 !important; }
+body { padding-top: 64px !important; margin-top: 0 !important; }
 </style>
 
 <!-- ═══════════════════════════════════════════════════
      LOGIN OVERLAY
      ═══════════════════════════════════════════════════ -->
-<div id="icici-login-overlay">
-  <div id="icici-login-box">
-    <!-- Left Column: FitNesse Intro -->
-    <div id="icici-login-left">
-      <img src="/files/fitnesse/images/fitnesse-logo.png" alt="FitNesse Logo" onerror="this.style.display='none'">
-      <div class="left-title">FitNesse</div>
-      <div class="left-subtitle">Wiki & Acceptance Testing Framework</div>
-      <div class="left-desc">
-        <p>A collaborative acceptance testing tool and documentation wiki designed to help teams build quality software.</p>
-        <ul class="left-bullets">
-          <li><span>✓</span> Automated Acceptance Testing</li>
-          <li><span>✓</span> Collaborative Wiki Documentation</li>
-          <li><span>✓</span> Real-time Execution & Auditing</li>
-        </ul>
+<div id="fitnesse-login-overlay">
+  <!-- Left Side: AML Branding & Background -->
+  <div id="fitnesse-login-left">
+    <div id="fitnesse-login-left-content">
+      <div id="fitnesse-aml-badge">ACCEPTANCE TESTING</div>
+      <h1 id="fitnesse-aml-title">FitNesse Automation</h1>
+      <p id="fitnesse-aml-desc">A collaborative acceptance testing tool and documentation wiki designed to help teams build quality software with API and UI automation.</p>
+      
+      <div id="fitnesse-aml-features">
+        <div class="aml-feature-item">⚡ High-performance REST, SOAP, GraphQL & gRPC fixtures</div>
+        <div class="aml-feature-item">🎭 Full Playwright UI automation with screenshot capture</div>
+        <div class="aml-feature-item">📊 Interactive Allure reports & real-time test execution</div>
       </div>
     </div>
-    <!-- Right Column: Login Form -->
-    <div id="icici-login-right">
-      <div class="right-header">
-        <div class="right-welcome">Welcome</div>
-        <div class="right-to">To</div>
-        <img src="/files/fitnesse/images/fitnesse-logo.png" alt="FitNesse Logo" class="right-logo-img" onerror="this.style.display='none'">
-        <div class="right-subtitle">Enter your credentials to access the portal.</div>
+  </div>
+  
+  <!-- Right Side: Clean Login Form -->
+  <div id="fitnesse-login-right">
+    <div id="fitnesse-login-box">
+      <div id="fitnesse-login-logo" style="background: #ffffff; padding: 24px 32px 18px; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; border-bottom: 4px solid #2563EB;">
+        <img src="/files/images/fitnesse-logo.png" alt="FitNesse" style="height: 52px; width: auto; object-fit: contain; display: block !important; margin: 0 auto 10px !important;">
+        <div id="fitnesse-login-title" style="color:#2563EB; font-size:18px; font-weight:700; letter-spacing:.5px; text-align: center !important; width: 100% !important; display: block !important;">Automation Framework</div>
+        <div id="fitnesse-login-subtitle" style="margin-top: 4px; color:#58595B; font-size:12px; font-weight:600; text-align: center !important; width: 100% !important; display: block !important;">API &amp; UI Test Platform</div>
       </div>
-      <div id="icici-login-form">
-        <div id="icici-login-error"></div>
-        <div class="icici-field">
-          <label for="icici-username">Username</label>
-          <input type="text" id="icici-username" placeholder="Enter username" autocomplete="username" autofocus>
+      <div id="fitnesse-login-form">
+        <div id="fitnesse-login-error"></div>
+        <div class="fitnesse-field">
+          <label for="fitnesse-username">Username</label>
+          <input type="text" id="fitnesse-username" placeholder="Enter username" autocomplete="username" autofocus>
         </div>
-        <div class="icici-field">
-          <label for="icici-password">Password</label>
-          <input type="password" id="icici-password" placeholder="Enter password" autocomplete="current-password">
+        <div class="fitnesse-field">
+          <label for="fitnesse-password">Password</label>
+          <input type="password" id="fitnesse-password" placeholder="Enter password" autocomplete="current-password">
         </div>
-        <button id="icici-login-btn" onclick="iciLogin()">Login</button>
-        <div id="icici-login-hint">
+        <button id="fitnesse-login-btn" onclick="iciLogin()">Login</button>
+        <div id="fitnesse-login-hint">
           Authorised users only &nbsp;|&nbsp; Contact QA Admin for access
         </div>
       </div>
@@ -55,25 +60,24 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 <!-- ═══════════════════════════════════════════════════
      MAIN HEADER BANNER
      ═══════════════════════════════════════════════════ -->
-<div class="icici-header-banner" id="icici-header-banner" style="display:none">
+<div class="fitnesse-header-banner" id="fitnesse-header-banner" style="display:none">
 
   <!-- Left: logo + title -->
-  <div class="icici-header-left">
-    <img src="/files/fitnesse/images/fitnesse-logo.png" alt="FitNesse"
-         class="icici-header-logo-img" onerror="this.style.display='none'">
-    <div class="icici-header-text">
-      <div class="icici-header-title">FitNesse API</div>
-      <div class="icici-header-subtitle">API Test Automation Framework</div>
+  <div class="fitnesse-header-left">
+    <img src="/files/images/fitnesse-logo.png" alt="FitNesse" class="fitnesse-header-logo-img">
+    <div class="fitnesse-header-text">
+      <div class="fitnesse-header-title">Automation Framework</div>
+      <div class="fitnesse-header-subtitle">API &amp; UI Test Suite</div>
     </div>
   </div>
 
   <!-- Centre: action links (shown based on role) -->
-  <nav class="icici-header-nav" id="icici-header-nav">
+  <nav class="fitnesse-header-nav" id="fitnesse-header-nav">
     <!-- Nav links injected by JS after login -->
   </nav>
 
   <!-- Right: user info dropdown + environment selector! -->
-  <div class="icici-header-right">
+  <div class="fitnesse-header-right">
     
     <!-- Embedded Environment Selector -->
     <div class="ici-nav-env-container" id="ici-nav-env-container">
@@ -85,16 +89,20 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     </div>
 
     <!-- Dropdown User Chip Container -->
-    <div class="icici-profile-container" id="icici-profile-container">
-      <div class="icici-user-chip" id="icici-user-chip" onclick="iciToggleProfileDropdown(event)" title="Click to view profile options">
-        <span class="icici-user-icon">&#9679;</span>
-        <span id="icici-user-display"></span>
-        <span class="icici-role-badge" id="icici-role-badge"></span>
-      </div>
-      <!-- Collapsible Profile Dropdown menu -->
-      <div id="icici-profile-dropdown" class="icici-profile-dropdown" style="display: none;">
-        <button class="icici-dropdown-item" onclick="iciLogout()">🚪 Sign Out</button>
-      </div>
+    <div class="fitnesse-profile-container" id="fitnesse-profile-container">
+    <div class="fitnesse-user-chip" id="fitnesse-user-chip" onclick="iciToggleProfileDropdown(event)" title="Click to view profile options">
+      <span class="fitnesse-user-icon">&#9679;</span>
+      <span id="fitnesse-user-display"></span>
+      <span class="fitnesse-role-badge" id="fitnesse-role-badge"></span>
+    </div>
+    <!-- Collapsible Profile Dropdown menu -->
+    <div id="fitnesse-profile-dropdown" class="fitnesse-profile-dropdown" style="display: none;">
+      <button class="ici-dropdown-item" onclick="iciLiveDebug()"><span class="ici-dropdown-icon">👁️</span><span>Live Debug</span></button>
+      <button class="ici-dropdown-item" onclick="iciToggleDictDrawer()"><span class="ici-dropdown-icon">📖</span><span>Dictionary</span></button>
+      <button id="ici-logs-menu" class="ici-dropdown-item" onclick="iciOpenLogs()"><span class="ici-dropdown-icon">📋</span><span>Logs</span></button>
+      <button id="ici-user-management-menu" class="ici-dropdown-item ici-user-management-hidden" onclick="iciOpenUserManagement()"><span class="ici-dropdown-icon">👥</span><span>Users</span></button>
+      <button class="ici-dropdown-item" onclick="iciLogout()"><span class="ici-dropdown-icon">🚪</span><span>Sign Out</span></button>
+    </div>
     </div>
 
   </div>
@@ -105,26 +113,73 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
      MANAGE ENVIRONMENTS MODAL (Accessible from any page!)
      ═══════════════════════════════════════════════════ -->
 <div id="ici-env-modal" class="ici-modal-overlay">
-  <div class="ici-modal-box">
-    <div class="ici-modal-title">Manage Environments</div>
+  <div class="ici-modal-box" style="width: 750px !important;">
+    <div class="ici-modal-title" style="margin-bottom: 8px;">Manage Configurations</div>
     
-    <table class="ici-env-table">
-      <thead>
-        <tr>
-          <th style="width: 25%;">Env Name</th>
-          <th style="width: 65%;">Base URL</th>
-          <th style="width: 10%; text-align: center;">Action</th>
-        </tr>
-      </thead>
-      <tbody id="ici-modal-table-body">
-        <!-- Rows injected dynamically by JS -->
-      </tbody>
-    </table>
+    <!-- Tab Selector -->
+    <div class="ici-modal-tabs" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid #eee; padding-bottom: 8px;">
+      <button class="ici-tab-btn" id="ici-tab-env" onclick="iciSwitchModalTab('env')" style="background: transparent; border: none; border-bottom: 2px solid #2563EB; font-weight: bold; cursor: pointer; padding: 4px 12px; color: #2563EB;">Environments</button>
+      <button class="ici-tab-btn" id="ici-tab-config" onclick="iciSwitchModalTab('config')" style="background: transparent; border: none; font-weight: bold; cursor: pointer; padding: 4px 12px; color: #64748b;">Config</button>
+    </div>
 
-    <div class="ici-modal-title" style="font-size: 14px; margin-top: 16px; border-top: 1px dashed #eee; padding-top: 16px;">Add New Environment</div>
-    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-      <input type="text" id="ici-add-env-name" class="ici-env-input" style="width: 30%;" placeholder="e.g. STAGING" />
-      <input type="text" id="ici-add-env-url" class="ici-env-input" style="width: 70%;" placeholder="e.g. http://192.168.4.189/api" />
+    <!-- Tab 1: Environments Pane -->
+    <div id="ici-pane-env">
+      <table class="ici-env-table">
+        <thead>
+          <tr>
+            <th style="width: 15%;">Env Name</th>
+            <th style="width: 40%;">API Base URL</th>
+            <th style="width: 35%;">UI Base URL</th>
+            <th style="width: 10%; text-align: center;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="ici-modal-table-body">
+          <!-- Rows injected dynamically by JS -->
+        </tbody>
+      </table>
+
+      <div class="ici-modal-title" style="font-size: 14px; margin-top: 16px; border-top: 1px dashed #eee; padding-top: 16px;">Add New Environment</div>
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <input type="text" id="ici-add-env-name" class="ici-env-input" style="width: 20%;" placeholder="e.g. STAGING" />
+        <input type="text" id="ici-add-env-url" class="ici-env-input" style="width: 40%;" placeholder="e.g. API URL (BASE_URL)" />
+        <input type="text" id="ici-add-env-ui-url" class="ici-env-input" style="width: 40%;" placeholder="e.g. UI URL (UI_BASE_URL)" />
+      </div>
+    </div>
+
+    <!-- Tab 2: Config Pane -->
+    <div id="ici-pane-config" style="display: none;">
+      <p class="ici-modal-hint" style="margin-bottom: 16px;">Central execution parameters. Changes are automatically updated in your .env file on disk!</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div class="fitnesse-field">
+          <label style="display: block !important; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Browser Engine</label>
+          <select id="ici-config-browser" class="ici-env-input">
+            <option value="chromium">Chromium (Chrome)</option>
+            <option value="firefox">Firefox</option>
+            <option value="webkit">WebKit (Safari/iPhone)</option>
+          </select>
+        </div>
+        <div class="fitnesse-field">
+          <label style="display: block !important; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Headless Mode</label>
+          <select id="ici-config-headless" class="ici-env-input">
+            <option value="true">Headless (Background Run)</option>
+            <option value="false">Headed (Visible Window)</option>
+          </select>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div class="fitnesse-field">
+          <label style="display: block !important; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Max Retries</label>
+          <input type="number" id="ici-config-retries" class="ici-env-input" min="0" max="10" placeholder="e.g. 3" />
+        </div>
+        <div class="fitnesse-field">
+          <label style="display: block !important; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Retry Delay (s)</label>
+          <input type="number" id="ici-config-delay" class="ici-env-input" min="0" step="0.5" placeholder="e.g. 1.0" />
+        </div>
+        <div class="fitnesse-field">
+          <label style="display: block !important; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">UI Workers</label>
+          <input type="number" id="ici-config-workers" class="ici-env-input" min="1" max="16" placeholder="e.g. 1" />
+        </div>
+      </div>
     </div>
 
     <div class="ici-modal-actions">
@@ -135,290 +190,573 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 </div>
 
 <!-- ═══════════════════════════════════════════════════
+     USER MANAGEMENT MODAL (ADMIN ONLY)
+     ═══════════════════════════════════════════════════ -->
+<div id="ici-user-modal" class="ici-modal-overlay">
+  <div class="ici-modal-box">
+    <div class="ici-modal-title">User Management</div>
+    <p class="ici-modal-hint">Manage application users and their access levels.</p>
+    <table class="ici-env-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Display name</th>
+          <th>Role</th>
+          <th style="width: 10%; text-align: center;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="ici-user-table-body"></tbody>
+    </table>
+
+    <div class="ici-modal-title" style="font-size: 14px; margin-top: 16px; border-top: 1px dashed #eee; padding-top: 16px;">Add User</div>
+    <div class="ici-user-form">
+      <input type="text" id="ici-add-user-name" class="ici-env-input" placeholder="Username" autocomplete="off" />
+      <input type="text" id="ici-add-user-display" class="ici-env-input" placeholder="Display name" autocomplete="off" />
+      <input type="password" id="ici-add-user-password" class="ici-env-input" placeholder="Password" autocomplete="new-password" />
+      <select id="ici-add-user-role" class="ici-env-input">
+        <option value="editor">Editor</option>
+        <option value="viewer">Viewer</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div id="ici-user-management-error" class="ici-user-management-error"></div>
+
+    <div class="ici-modal-actions">
+      <button class="ici-modal-btn cancel" onclick="iciCloseUserManagement()">Cancel</button>
+      <button class="ici-modal-btn save" onclick="iciSaveUserManagement()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     LOCATOR DICTIONARY & STEP BUILDER DRAWER
+     ═══════════════════════════════════════════════════ -->
+<div id="ici-dict-drawer" class="ici-drawer">
+  <div class="ici-drawer-header">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 20px;">📖</span>
+      <h2 class="ici-drawer-title" style="color: #fff; font-size: 14px;">Dictionary &amp; Step Builder</h2>
+    </div>
+    <button class="ici-drawer-close-btn" onclick="iciToggleDictDrawer()">&times;</button>
+  </div>
+  
+  <div class="ici-drawer-tabs">
+    <button class="ici-drawer-tab-btn active" id="ici-dict-tab-dict" onclick="iciSwitchDrawerTab('dict')">📖 Locators</button>
+    <button class="ici-drawer-tab-btn" id="ici-dict-tab-builder" onclick="iciSwitchDrawerTab('builder')">✍️ Step Builder</button>
+  </div>
+
+  <!-- Tab 1: Locator Dictionary Pane -->
+  <div id="ici-drawer-pane-dict" class="ici-drawer-pane">
+    <p class="ici-drawer-hint">Copy predefined SwagLabs locators in 1 click:</p>
+    
+    <div class="ici-dict-group">
+      <div class="ici-dict-group-title">👤 Input Fields</div>
+      <div class="ici-dict-item" onclick="iciCopyToClipboard('username')">
+        <span class="ici-dict-key">username</span>
+        <span class="ici-dict-desc">User ID input textbox</span>
+        <span class="ici-dict-copy-icon">📋</span>
+      </div>
+      <div class="ici-dict-item" onclick="iciCopyToClipboard('password')">
+        <span class="ici-dict-key">password</span>
+        <span class="ici-dict-desc">Password input textbox</span>
+        <span class="ici-dict-copy-icon">📋</span>
+      </div>
+    </div>
+
+    <div class="ici-dict-group">
+      <div class="ici-dict-group-title">🎯 Buttons &amp; Badges</div>
+      <div class="ici-dict-item" onclick="iciCopyToClipboard('login button')">
+        <span class="ici-dict-key">login button</span>
+        <span class="ici-dict-desc">Submit Login button</span>
+        <span class="ici-dict-copy-icon">📋</span>
+      </div>
+      <div class="ici-dict-item" onclick="iciCopyToClipboard('cart badge')">
+        <span class="ici-dict-key">cart badge</span>
+        <span class="ici-dict-desc">Shopping cart badge count selector</span>
+        <span class="ici-dict-copy-icon">📋</span>
+      </div>
+    </div>
+    
+    <div class="ici-dict-group-title" style="margin-top: 20px;">💡 Pro Tip:</div>
+    <p class="ici-drawer-hint" style="font-style: italic;">You can also pass standard CSS selectors (e.g. #login-button) directly into your steps!</p>
+  </div>
+
+  <!-- Tab 2: Interactive Step Builder Pane -->
+  <div id="ici-drawer-pane-builder" class="ici-drawer-pane" style="display: none;">
+    <p class="ici-drawer-hint">Select an action and locator to visually compile full test scripts with zero code!</p>
+    
+    <div style="margin-bottom: 12px;">
+      <label class="ici-builder-label">1. Select Action</label>
+      <select id="ici-builder-action" class="ici-env-input" onchange="iciOnBuilderActionChange()">
+        <option value="navigate">Navigate to URL</option>
+        <option value="fill">Fill Field / Type Text</option>
+        <option value="click">Click Button / Link</option>
+        <option value="wait">Wait for Text / Timeout</option>
+        <option value="verify">Verify Text Present</option>
+        <option value="close">Close Browser</option>
+      </select>
+    </div>
+
+    <!-- Locator selection: Dropdown (username, password, login button, cart badge) or custom text input -->
+    <div id="ici-builder-locator-container" style="margin-bottom: 12px; display: none;">
+      <label class="ici-builder-label">2. Target Locator</label>
+      <select id="ici-builder-locator-select" class="ici-env-input" onchange="iciOnBuilderLocatorChange()">
+        <option value="username">username (Input)</option>
+        <option value="password">password (Password)</option>
+        <option value="login button">login button (Button)</option>
+        <option value="cart badge">cart badge (Badge)</option>
+        <option value="custom">Custom Selector / CSS...</option>
+      </select>
+      <input type="text" id="ici-builder-locator-custom" class="ici-env-input" style="margin-top: 6px; display: none;" placeholder="Type custom selector (e.g. #login-button)" oninput="iciGenerateBuilderOutput()" />
+    </div>
+
+    <!-- Parameter 1 (for Navigate, Wait, Verify) -->
+    <div id="ici-builder-param-1-container" style="margin-bottom: 12px;">
+      <label id="ici-builder-param-1-label" class="ici-builder-label">Target URL</label>
+      <input type="text" id="ici-builder-param-1" class="ici-env-input" placeholder="e.g. https://www.saucedemo.com/" oninput="iciGenerateBuilderOutput()" />
+    </div>
+
+    <!-- Parameter 2 (for values or timeouts) -->
+    <div id="ici-builder-param-2-container" style="margin-bottom: 12px; display: none;">
+      <label id="ici-builder-param-2-label" class="ici-builder-label">Value to Type</label>
+      <input type="text" id="ici-builder-param-2" class="ici-env-input" placeholder="" oninput="iciGenerateBuilderOutput()" />
+    </div>
+
+    <!-- Single step preview and Append button -->
+    <div style="margin-top: 14px; margin-bottom: 14px; background: #eff6ff; border: 1px dashed #bfdbfe; padding: 10px; border-radius: 6px;">
+      <label class="ici-builder-label" style="color: #2563EB; font-weight: bold; margin-bottom: 2px;">Step Preview</label>
+      <div id="ici-builder-step-preview" style="font-family: monospace; font-size: 11px; font-weight: bold; color: #1e3a8a; word-break: break-all;">|navigate to|https://www.saucedemo.com/|</div>
+      <button class="ici-modal-btn save" style="width: 100%; margin-top: 8px; padding: 6px 10px; font-size: 12px; background: #2563EB;" onclick="iciAppendStepToScript()">➕ Append Step to Script</button>
+    </div>
+
+    <!-- Compiled FitNesse Wiki Table syntax output -->
+    <div style="margin-top: 14px;">
+      <label class="ici-builder-label" style="color: #003060; font-weight: bold; display: flex; justify-content: space-between;">
+        <span>Current Test Script Table</span>
+        <span style="color: #64748b; font-weight: normal; cursor: pointer; text-decoration: underline;" onclick="iciClearBuilderScript()">Clear</span>
+      </label>
+      <textarea id="ici-builder-script" class="ici-env-input" style="font-family: monospace; font-size: 11px; height: 110px; resize: none; background: #faf9f5; line-height: 1.4; border-color: #003060;" readonly onclick="this.select()"></textarea>
+    </div>
+
+    <button class="ici-modal-btn save" style="width: 100%; margin-top: 10px; background: #1E3A8A;" onclick="iciCopyBuilderScript()">📋 Copy Entire Script Table</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
      STYLES
      ═══════════════════════════════════════════════════ -->
 <style>
-/* Prevent horizontal scrolling on FitNesse page tables and force full width expansion */
-.fixtures td, .fixtures th, .fixtures table, table, td, th {
-  max-width: 100% !important;
-  word-break: break-all !important;
-  word-wrap: break-word !important;
+/* ── Locator Dictionary Drawer Styling ────────────────── */
+.ici-drawer {
+  position: fixed;
+  top: 0;
+  right: -380px; /* Hidden initially, slides out smoothly! */
+  width: 380px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+  z-index: 99998;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  text-align: left;
+  border-left: 1px solid #cbd5e1;
 }
-.fixtures table, table.decision_table, table.hash_table {
-  width: 100% !important;
-  table-layout: auto !important;
+.ici-drawer.open {
+  right: 0; /* Slide out! */
+}
+.ici-drawer-header {
+  padding: 16px 20px;
+  background: #1E3A8A;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1e293b;
+}
+.ici-drawer-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 !important;
+  font-family: Arial, sans-serif;
+}
+.ici-drawer-close-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+.ici-drawer-tabs {
+  display: flex;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+.ici-drawer-tab-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.ici-drawer-tab-btn.active {
+  color: #003060;
+  border-bottom-color: #003060;
+  background: #ffffff;
+}
+.ici-drawer-pane {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.ici-drawer-hint {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  font-family: Arial, sans-serif;
+}
+.ici-dict-group {
+  margin-bottom: 16px;
+}
+.ici-dict-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.ici-dict-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ici-dict-item:hover {
+  border-color: #003060;
+  background: #f0f7ff;
+}
+.ici-dict-key {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #003060;
+}
+.ici-dict-desc {
+  font-size: 11px;
+  color: #64748b;
+  margin-left: 8px;
+  flex: 1;
+}
+.ici-dict-copy-icon {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-left: 8px;
+}
+.ici-builder-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  margin-bottom: 4px;
 }
 
 /* ── Login Overlay ──────────────────────────────────── */
-#icici-login-overlay {
+#fitnesse-login-overlay {
   position: fixed; inset: 0;
-  background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 60%, #2563EB 100%);
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  flex-direction: row !important;
+  height: 100vh !important;
+  width: 100vw !important;
   z-index: 99999;
 }
-#icici-login-box {
+#fitnesse-login-left {
+  flex: 1.25 !important;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(30, 58, 138, 0.92) 50%, rgba(37, 99, 235, 0.88) 100%), 
+              url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80') no-repeat center center / cover !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  padding: 8% 6% !important;
+  color: #fff !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+#fitnesse-login-left-content {
+  max-width: 520px !important;
+  text-align: left !important;
+}
+#fitnesse-aml-badge {
+  display: inline-block !important;
+  background: #2563EB !important;
+  color: #fff !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  padding: 4px 10px !important;
+  border-radius: 4px !important;
+  letter-spacing: 1px !important;
+  margin-bottom: 20px !important;
+  text-transform: uppercase !important;
+}
+#fitnesse-aml-title {
+  font-size: 38px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  margin: 0 0 16px 0 !important;
+  line-height: 1.2 !important;
+  font-family: Arial, sans-serif !important;
+  letter-spacing: -0.5px !important;
+}
+#fitnesse-aml-desc {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: rgba(255,255,255,0.9) !important;
+  margin-bottom: 30px !important;
+  font-family: Arial, sans-serif !important;
+}
+#fitnesse-aml-features {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+.aml-feature-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: rgba(255,255,255,0.95) !important;
+  font-family: Arial, sans-serif !important;
+}
+#fitnesse-login-right {
+  flex: 0.75 !important;
+  background: #f8fafc !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 40px !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+}
+#fitnesse-login-box {
   background: #ffffff;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  width: 100%;
+  max-width: 420px; /* Increased from 380px for a more robust split-screen look and to support wider logos */
   overflow: hidden;
+  border: 1px solid #e2e8f0;
 }
-#icici-login-left {
-  width: 70%;
-  background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
-  padding: 60px 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #ffffff;
-  border-right: 1px solid rgba(255,255,255,0.1);
-}
-#icici-login-left img {
-  height: 80px;
-  margin-bottom: 20px;
-  display: block;
-}
-#icici-login-left .left-title {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-}
-#icici-login-left .left-subtitle {
-  font-size: 14px;
-  color: rgba(255,255,255,0.7);
-  font-weight: 500;
-  margin-top: 6px;
-  margin-bottom: 28px;
-}
-#icici-login-left .left-desc {
-  font-size: 14px;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.85);
-  max-width: 360px;
-}
-#icici-login-left .left-bullets {
-  list-style: none;
-  padding: 0;
-  margin: 24px 0 0 0;
-  text-align: left;
-  display: inline-block;
-}
-#icici-login-left .left-bullets li {
-  margin-bottom: 12px;
-  font-weight: 500;
-  font-size: 14px;
-  color: rgba(255,255,255,0.9);
-}
-#icici-login-left .left-bullets li span {
-  color: #38BDF8;
-  font-weight: 700;
-  margin-right: 8px;
-}
-#icici-login-right {
-  width: 30%;
-  padding: 40px 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+#fitnesse-login-logo {
   background: #ffffff;
+  padding: 28px 32px 22px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  border-bottom: 4px solid #2563EB;
 }
-#icici-login-right .right-logo-img {
-  height: 38px;
-  margin: 16px auto 24px auto;
-  display: block;
-}
-#icici-login-right .right-header {
-  margin-bottom: 20px;
-  text-align: center;
-  max-width: 340px;
-  width: 100%;
-  margin: 0 auto;
-}
-#icici-login-right .right-welcome,
-#icici-login-right .right-to {
-  font-size: 28px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: block;
-  text-align: center;
-  line-height: 1.2;
-}
-#icici-login-right .right-to {
-  margin-top: -2px;
-}
-#icici-login-right .right-subtitle {
-  font-size: 13px;
-  color: #64748B;
-  margin-top: 8px;
-  margin-bottom: 24px;
-  text-align: left;
-  max-width: 340px;
-  width: 100%;
-  margin: 8px auto 24px auto;
-}
-#icici-login-form {
-  text-align: left !important;
-  max-width: 340px;
-  width: 100%;
-  margin: 0 auto;
-}
-.icici-field {
-  margin-bottom: 16px;
-  text-align: left !important;
-}
-.icici-field label {
+#fitnesse-login-logo img {
+  width: auto !important;
+  max-width: 100% !important;
+  height: 68px !important;
   display: block !important;
-  text-align: left !important;
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: .4px;
+  margin: 0 auto 12px !important;
 }
-.icici-field input {
-  width: 100% !important;
-  display: block !important;
-  text-align: left !important;
-  box-sizing: border-box;
-  padding: 10px 12px;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color .2s;
-  color: #0F172A;
+#fitnesse-login-title    { color:#2563EB; font-size:18px; font-weight:700; letter-spacing:.5px; text-align: center !important; width: 100% !important; }
+#fitnesse-login-subtitle { color:#58595B; font-size:12px; margin-top:3px; font-weight:600; text-align: center !important; width: 100% !important; }
+#fitnesse-login-form     { padding: 28px 32px 24px; text-align: left !important; }
+.fitnesse-field          { margin-bottom: 16px; text-align: left !important; }
+.fitnesse-field label    { display:block !important; text-align: left !important; font-size:12px; font-weight:600; color:#555; margin-bottom:5px; text-transform:uppercase; letter-spacing:.4px; }
+.fitnesse-field input    { width:100% !important; display:block !important; text-align: left !important; box-sizing:border-box; padding:10px 12px; border:1.5px solid #ddd; border-radius:5px; font-size:14px; outline:none; transition:border-color .2s; }
+.fitnesse-field input:focus { border-color:#2563EB; }
+#fitnesse-login-btn {
+  width:100%; padding:12px; background:#2563EB; color:#fff;
+  border:none; border-radius:5px; font-size:15px; font-weight:600;
+  cursor:pointer; letter-spacing:.3px; transition:background .2s;
 }
-.icici-field input:focus {
-  border-color: #2563EB;
+#fitnesse-login-btn:hover { background:#1E3A8A; }
+#fitnesse-login-error {
+  color:#EF4444; font-size:13px; margin-bottom:12px; min-height:18px;
+  font-weight:600; text-align:center;
 }
-#icici-login-btn {
-  width: 100%;
-  padding: 12px;
-  background: #2563EB;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: .3px;
-  transition: background .2s;
-  margin-top: 8px;
-}
-#icici-login-btn:hover {
-  background: #1D4ED8;
-}
-#icici-login-error {
-  color: #EF4444;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-}
-#icici-login-error:not(:empty) {
-  margin-bottom: 16px;
-  min-height: 18px;
-}
-#icici-login-hint {
-  text-align: center;
-  font-size: 11px;
-  color: #64748B;
-  margin-top: 16px;
-}
-/* ── Responsive Overrides for smaller laptops/screens ────────────────── */
-@media (max-width: 1024px) {
-  #icici-login-box {
-    flex-direction: column !important;
-    overflow-y: auto !important;
-  }
-  #icici-login-left {
-    width: 100% !important;
-    height: auto !important;
-    padding: 40px 24px !important;
-  }
-  #icici-login-right {
-    width: 100% !important;
-    height: auto !important;
-    padding: 40px 24px !important;
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.08) !important;
-  }
-  #icici-login-left .left-desc {
-    max-width: 500px !important;
-  }
+#fitnesse-login-hint {
+  text-align:center; font-size:11px; color:#999; margin-top:14px;
 }
 
-@media (max-width: 1200px) {
-  .icici-header-banner {
-    flex-direction: column !important;
-    height: auto !important;
-    padding: 12px 20px !important;
-    gap: 12px !important;
-  }
-  .icici-header-left {
-    justify-content: center !important;
-    width: 100% !important;
-  }
-  .icici-header-nav {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 6px !important;
-    width: 100% !important;
-  }
-  .icici-header-right {
-    justify-content: center !important;
-    width: 100% !important;
-    margin-top: 4px !important;
-  }
+@media (max-width: 900px) {
+  #fitnesse-login-overlay { flex-direction: column !important; }
+  #fitnesse-login-left { display: none !important; }
+  #fitnesse-login-right { flex: 1 !important; width: 100vw !important; height: 100vh !important; }
 }
 
 /* ── Header Banner ──────────────────────────────────── */
-.icici-header-banner {
+.fitnesse-header-banner {
   display: flex !important;
   align-items: center;
-  background: linear-gradient(90deg, #0F172A 0%, #1E3A8A 30%, #2563EB 70%, #1D4ED8 100%);
+  background: linear-gradient(90deg, #0F172A 0%, #1E3A8A 50%, #2563EB 100%);
   border-bottom: 3px solid #3B82F6;
-  padding: 0 20px;
-  min-height: 64px;
-  gap: 16px;
+  padding: 0 12px !important;
+  min-height: 60px;
+  gap: 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  position: relative;
-  z-index: 9000;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
 }
-.icici-header-left   { display:flex; align-items:center; gap:12px; flex-shrink:0; }
-.icici-header-logo-img { height:38px; }
-.icici-header-title  { color:#fff; font-size:15px; font-weight:700; line-height:1.2; }
-.icici-header-subtitle { color:rgba(255,255,255,.7); font-size:10px; text-transform:uppercase; letter-spacing:.6px; }
+.fitnesse-header-left   { display:flex; align-items:center; gap:8px; flex-shrink:0; max-width: 380px; }
+.fitnesse-header-logo-img { height:36px; }
+.fitnesse-header-title  { color:#fff; font-size:15px; font-weight:700; line-height:1.2; }
+.fitnesse-header-subtitle { color:rgba(255,255,255,.7); font-size:10px; text-transform:uppercase; letter-spacing:.4px; }
 
 /* Centre nav */
-.icici-header-nav    { display:flex; align-items:center; gap:2px; flex:1; justify-content:center; flex-wrap:nowrap !important; }
-.icici-nav-btn {
-  color:#fff; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25);
-  border-radius:4px; padding:5px 6px !important; font-size:11px; font-weight:500;
-  cursor:pointer; text-decoration:none; transition:background .18s;
-  display:inline-block; white-space:nowrap !important;
+.fitnesse-header-nav {
+  display: flex !important;
+  align-items: center;
+  gap: 5px !important;
+  flex: 1 1 auto;
+  justify-content: center !important;
+  margin-left: 8px !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  min-width: 0 !important;
+  scrollbar-width: none !important;
 }
-.icici-nav-btn:hover { background:rgba(255,255,255,.22); color:#fff; text-decoration:none; }
-.icici-nav-btn.admin-only { border-color:#3B82F6; }
+.fitnesse-header-nav::-webkit-scrollbar { display: none !important; }
+.fitnesse-nav-btn {
+  color:#fff; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25);
+  border-radius:4px; padding:5px 10px !important; font-size:11px; font-weight:600;
+  cursor:pointer; text-decoration:none; transition:background .18s;
+  display:inline-block;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+.fitnesse-nav-btn:hover { background:rgba(255,255,255,.22); color:#fff; text-decoration:none; }
+.fitnesse-nav-btn.admin-only { border-color:#3B82F6; }
 
-/* Right side */
-.icici-header-right  { display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.icici-profile-container { position: relative !important; display: inline-block !important; }
+/* Right side - absolutely NO shrinking! */
+.fitnesse-header-right  { display:flex; align-items:center; gap:5px; flex-shrink:0 !important; min-width: fit-content !important; }
 
-.icici-user-chip     { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.12); border-radius:20px; padding:5px 12px; cursor: pointer; user-select: none; transition: background 0.15s; }
-.icici-user-chip:hover { background: rgba(255,255,255,0.2); }
-.icici-user-icon     { font-size:9px; color:#3B82F6; }
-#icici-user-display  { color:#fff; font-size:13px; font-weight:600; }
-.icici-role-badge    { font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px; text-transform:uppercase; letter-spacing:.4px; }
+/* ── Responsive Layout overrides (prevent horizontal overflow) ── */
+@media (min-width: 769px) and (max-width: 1350px) {
+  .fitnesse-header-banner {
+    padding: 0 10px !important;
+    min-height: 52px !important;
+    gap: 8px !important;
+  }
+  .fitnesse-header-left {
+    gap: 6px !important;
+  }
+  .fitnesse-header-logo-img {
+    height: 24px !important;
+  }
+  .fitnesse-header-title {
+    font-size: 13px !important;
+  }
+  .fitnesse-header-subtitle {
+    display: none !important; /* Hide long subtitle to save 200px+ of horizontal space! */
+  }
+  .fitnesse-header-nav {
+    gap: 2px !important;
+    justify-content: flex-start !important; /* Left-align the buttons under narrower widths so horizontal scroll works perfectly */
+  }
+  .fitnesse-nav-btn {
+    padding: 4px 5px !important;
+    font-size: 11px !important;
+  }
+  .fitnesse-header-right {
+    gap: 6px !important;
+  }
+  .ici-nav-env-container {
+    padding: 3px 6px !important;
+    gap: 4px !important;
+    margin-right: 2px !important;
+  }
+  .ici-nav-env-label {
+    font-size: 10px !important;
+  }
+  .ici-nav-env-select {
+    font-size: 11px !important;
+  }
+  .fitnesse-user-chip {
+    padding: 4px 8px !important;
+    gap: 4px !important;
+  }
+  #fitnesse-user-display {
+    font-size: 11px !important;
+  }
+  .fitnesse-role-badge {
+    font-size: 9px !important;
+    padding: 1px 5px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .fitnesse-header-banner {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+  .fitnesse-header-left {
+    flex: 1 1 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  .fitnesse-header-right {
+    flex: 1 1 100% !important;
+    justify-content: center !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .fitnesse-profile-container {
+    margin-left: 0 !important;
+  }
+  .fitnesse-header-nav {
+    border-top: 1px dashed rgba(255,255,255,0.15);
+    padding-top: 8px;
+    width: 100% !important;
+  }
+}
+.fitnesse-profile-container { position: relative !important; display: inline-block !important; }
+
+.fitnesse-user-chip     { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); border-radius:4px; padding:5px 10px; cursor: pointer; user-select: none; transition: background 0.15s; }
+.fitnesse-user-chip:hover { background: rgba(255,255,255,0.2); }
+.fitnesse-user-icon     { font-size:9px; color:#3B82F6; }
+#fitnesse-user-display  { color:#fff; font-size:11px; font-weight:600; }
+.fitnesse-role-badge    { font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; text-transform:uppercase; letter-spacing:.4px; }
 .role-admin { background:#3B82F6; color:#fff; }
+.role-editor { background:#155724; color:#fff; }
 .role-user  { background:rgba(255,255,255,.2); color:#fff; }
+.ici-modal-hint { margin: -8px 0 14px; color:#64748b; font-size:12px; }
+.ici-user-form { display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px; }
+.ici-user-management-error { min-height:18px; color:#2563EB; font-size:12px; font-weight:600; }
+@media (max-width: 700px) { .ici-user-form { grid-template-columns: 1fr; } }
 
 /* Collapsible Profile Dropdown styles */
-.icici-profile-dropdown {
+.fitnesse-profile-dropdown {
   position: absolute !important;
   top: calc(100% + 6px) !important;
   right: 0 !important;
@@ -426,13 +764,27 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   border: 1px solid #cbd5e1 !important;
   border-radius: 6px !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-  width: 130px !important;
+  width: 156px !important;
   z-index: 100000 !important;
   padding: 4px 0 !important;
   overflow: hidden !important;
   animation: iciFadeIn 0.15s ease !important;
 }
-.icici-dropdown-item {
+
+/* Unlocked Symmetrical Report Dropdown styles */
+.fitnesse-report-dropdown {
+  position: absolute !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  width: 180px !important;
+  z-index: 100000 !important;
+  padding: 4px 0 !important;
+  overflow: hidden !important;
+  animation: iciFadeIn 0.15s ease !important;
+}
+.ici-dropdown-item {
   display: block !important;
   width: 100% !important;
   text-align: left !important;
@@ -447,9 +799,28 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   font-family: Arial, sans-serif !important;
   outline: none !important;
 }
-.icici-dropdown-item:hover {
+.ici-dropdown-item:hover {
   background: #f1f5f9 !important;
   color: #2563EB !important;
+}
+.ici-dropdown-icon {
+  display: inline-block !important;
+  width: 22px !important;
+  margin-right: 2px !important;
+  text-align: center !important;
+  font-family: "Segoe UI Emoji", Arial, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  vertical-align: -1px !important;
+}
+.ici-dropdown-item > span:not(.ici-dropdown-icon) {
+  font-family: Arial, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  vertical-align: middle !important;
+}
+.ici-user-management-hidden {
+  display: none !important;
 }
 
 @keyframes iciFadeIn {
@@ -462,16 +833,16 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 6px;
-  padding: 4px 10px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 4px;
+  padding: 5px 10px;
   margin-right: 4px;
 }
 .ici-nav-env-label {
-  color: rgba(255,255,255,0.85);
+  color: #fff;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   white-space: nowrap !important;
@@ -480,14 +851,14 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   background: transparent !important;
   border: none !important;
   color: #fff !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
   cursor: pointer;
   outline: none !important;
   padding: 0 4px !important;
 }
 .ici-nav-env-select option {
-  background: #004A80 !important;
+  background: #1E3A8A !important;
   color: #fff !important;
 }
 .ici-nav-env-btn {
@@ -529,7 +900,236 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 .ici-modal-btn.cancel { background: #eee; color: #333; }
 .ici-modal-btn.cancel:hover { background: #ddd; }
 .ici-modal-btn.save { background: #2563EB; color: #fff; }
-.ici-modal-btn.save:hover { background: #1D4ED8; }
+.ici-modal-btn.save:hover { background: #1E3A8A; }
+
+/* ── Dynamic Test Output Styling ────────────────────── */
+.ici-master-summary-banner {
+  padding: 16px 20px !important;
+  border-radius: 8px !important;
+  font-family: Arial, sans-serif !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 24px !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+  color: #fff !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+}
+.ici-banner-pass {
+  background: linear-gradient(135deg, #15803D 0%, #16A34A 100%) !important;
+  border: 1px solid #16A34A !important;
+}
+.ici-banner-fail {
+  background: linear-gradient(135deg, #991B1B 0%, #DC2626 100%) !important;
+  border: 1px solid #DC2626 !important;
+}
+.ici-banner-title {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: .3px !important;
+}
+.ici-banner-badges {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+.ici-pill {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 4px 10px !important;
+  border-radius: 20px !important;
+  text-transform: uppercase !important;
+  letter-spacing: .4px !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+}
+.ici-pill-right { background: rgba(255,255,255,0.12) !important; }
+.ici-pill-wrong { background: rgba(0,0,0,0.25) !important; }
+.ici-pill-ignored { background: rgba(255,255,255,0.08) !important; }
+.ici-pill-exception { background: #2563EB !important; }
+
+/* Test Summaries list */
+.ici-summary-li {
+  list-style: none !important;
+  padding: 0 !important;
+  margin-bottom: 8px !important;
+}
+.ici-summary-row-content {
+  display: flex !important;
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-left: 4px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  padding: 10px 16px !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 13px !important;
+  gap: 12px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+}
+.ici-row-status {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+  color: #fff !important;
+}
+.ici-row-status.pass { background: #16A34A !important; }
+.ici-row-status.fail { background: #2563EB !important; }
+.ici-row-name { font-weight: 700 !important; color: #1E293B !important; flex: 1 !important; }
+.ici-row-duration { color: #64748B !important; font-size: 12px !important; font-weight: 600 !important; }
+.ici-row-counts { font-size: 11px !important; font-weight: 700 !important; color: #475569 !important; }
+.c-right { color: #16A34A !important; }
+.c-wrong { color: #2563EB !important; }
+.c-ignored { color: #475569 !important; }
+
+/* Inline Response Cell Wrapper */
+.ici-response-wrapper {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+}
+.ici-inspect-btn-inline {
+  background: transparent !important; /* Matches dynamic UI background perfectly! */
+  color: #2563EB !important; /* Premium corporate Maroon icon! */
+  border: 1px solid #cbd5e1 !important; /* Subtle, clean border matching the table grid! */
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  padding: 2px 6px !important;
+  cursor: pointer !important;
+  transition: background 0.15s, color 0.15s !important;
+  font-family: Arial, sans-serif !important;
+  box-shadow: none !important;
+  display: inline-block !important;
+  line-height: 1.2 !important;
+}
+.ici-inspect-btn-inline:hover {
+  background: #f1f5f9 !important; /* Soft gray highlight on hover! */
+  color: #1D4ED8 !important;
+}
+.ici-stop-btn {
+  background: #2563EB !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+  padding: 4px 10px !important;
+  cursor: pointer !important;
+  font-family: Arial, sans-serif !important;
+  transition: background 0.15s !important;
+  flex-shrink: 0 !important;
+  line-height: 1.2 !important;
+}
+.ici-stop-btn:hover {
+  background: #1E3A8A !important;
+}
+.ici-simple-pre {
+  background: transparent !important; /* No background! */
+  border: none !important; /* No border! */
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: monospace !important;
+  font-size: 11px !important;
+  color: #000000 !important; /* Pure black text! */
+}
+
+/* ── Modernize All FitNesse Tables Natively! ── */
+table, .fit_table, .instructions, .collapsible {
+  width: auto !important; /* Fit content dynamically based on data, no forced stretching! */
+  max-width: 100% !important; /* Prevent overflowing horizontally beyond page! */
+  min-width: 350px !important; /* Elegant minimum width boundary */
+  border-collapse: collapse !important;
+  margin: 16px 0 !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+  border: 1px solid #e2e8f0 !important;
+}
+table tr th, .fit_table tr th, .instructions tr th {
+  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%) !important;
+  color: #ffffff !important;
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+  letter-spacing: .5px !important;
+  padding: 12px 16px !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  white-space: nowrap !important; /* Headers should never wrap or compact adjacent columns! */
+}
+table tr td, .fit_table tr td, .instructions tr td {
+  padding: 12px 16px !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+  background: #ffffff !important;
+  line-height: 1.5 !important;
+  word-break: break-word !important; /* Wrap long strings (like raw parameters) cleanly! */
+}
+/* Let columns self-size organically as per their data, with no hardcoded pixel widths! */
+table tr td:nth-child(1), .fit_table tr td:nth-child(1), .instructions tr td:nth-child(1) {
+  white-space: nowrap !important; /* URL Column: fits standard URLs perfectly on a single line! */
+}
+table tr td:nth-child(3), .fit_table tr td:nth-child(3), .instructions tr td:nth-child(3) {
+  text-align: center !important;
+  white-space: nowrap !important; /* statusCodes Column: compact and clean! */
+}
+table tr td:has(.ici-response-wrapper) {
+  width: auto !important; /* responseBody: self-contained single-line truncated preview! */
+}
+table tr:hover td, .fit_table tr:hover td {
+  background: #f8fafc !important;
+}
+
+/* Slim table pass/fail status cells */
+.pass, .right {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  font-weight: 700 !important;
+}
+.fail, .wrong {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  font-weight: 700 !important;
+}
+.ignore {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+/* ── Page-Level Scroll (Natural scrolling for all pages) ── */
+html, body {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+body article {
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+  padding: 24px !important;
+  box-sizing: border-box !important;
+}
+
+/* ── Processing State Animations ── */
+.ici-spin {
+  display: inline-block !important;
+  animation: iciRotate 2s linear infinite !important;
+}
+.ici-pulse {
+  animation: iciPulse 1.5s ease-in-out infinite !important;
+}
+@keyframes iciRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes iciPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
 </style>
 
 <!-- ═══════════════════════════════════════════════════
@@ -538,15 +1138,47 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 <script>
 (function() {
 
-  /* ── Credential store ─────────────────────────────────────────────
-     Format: username → { password, role, displayName }
+  /* ── UI user store ─────────────────────────────────────────────────
+     This store is browser-local for the demo application.
   ─────────────────────────────────────────────────────────────────── */
-  var USERS = {
+  var USER_STORE_KEY = "nirikshan_users";
+  var USER_STORE_API = "http://127.0.0.1:8090/users";
+  var DEFAULT_USERS = {
     "admin":  { password: "admin123",  role: "admin",  display: "Admin" },
-    "qa":     { password: "qa123",     role: "admin",  display: "QA Lead" },
-    "dev":    { password: "dev123",    role: "user",   display: "Developer" },
-    "reader": { password: "reader123", role: "user",   display: "Reader" }
+    "editor": { password: "editor123", role: "editor", display: "Editor" },
+    "viewer": { password: "viewer123", role: "viewer", display: "Viewer" }
   };
+
+  function loadUsers() {
+    try {
+      var stored = localStorage.getItem(USER_STORE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    localStorage.setItem(USER_STORE_KEY, JSON.stringify(DEFAULT_USERS));
+    return JSON.parse(JSON.stringify(DEFAULT_USERS));
+  }
+
+  function saveUsers(users) {
+    localStorage.setItem(USER_STORE_KEY, JSON.stringify(users));
+    fetch(USER_STORE_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(users)
+    }).catch(function(error) {
+      console.warn("User file store unavailable; browser cache retained:", error);
+    });
+  }
+
+  fetch(USER_STORE_API)
+    .then(function(response) { return response.ok ? response.json() : Promise.reject(response.status); })
+    .then(function(users) {
+      if (users && typeof users === "object") {
+        localStorage.setItem(USER_STORE_KEY, JSON.stringify(users));
+      }
+    })
+    .catch(function(error) {
+      console.warn("User file store unavailable; using browser cache:", error);
+    });
 
   /* ── Nav links per role ────────────────────────────────────────── */
   /* p() = current page path so admin links work on every wiki page */
@@ -573,19 +1205,57 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   var NAV = {
     admin: [
       { label: "Home",          href: function(){ return "/"; } },
-      { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); }, id: "icici-run-btn" },
-      { label: "📊 Report",     href: "/files/report.html", target: "_blank" },
+      { label: "▶ Run",         href: "#", action: function(e){ 
+          var btn = e.target;
+          btn.innerHTML = '<span class="ici-spin">⏳</span> Running...';
+          btn.style.pointerEvents = 'none';
+          iciClearAllureResults().then(function() {
+            location.href = getRunUrl();
+          }).catch(function() {
+            location.href = getRunUrl();
+          });
+        } },
+      { label: "📊 Report",     href: "#", action: function(e, btn) { iciToggleReportDropdown(e, btn); } },
       { label: "✎ Edit",        href: function(){ return p() + "?edit"; },       adminOnly: true },
-      { label: "+ Add Test",   href: function(){ return p() + "?new"; },        adminOnly: true },
+      { label: "+ Add Test",    href: function(){ return p() + "?new"; },        adminOnly: true },
       { label: "❌ Delete",     href: function(){ return p() + "?deletePage"; }, adminOnly: true },
       { label: "⚙ Tools",       href: function(){ return p() + "?refactor"; },   adminOnly: true },
       { label: "☰ Properties",  href: function(){ return p() + "?properties"; }, adminOnly: true },
       { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } }
     ],
-    user: [
+    editor: [
       { label: "Home",          href: function(){ return "/"; } },
-      { label: "▶ Run",         href: "#", action: function(){ location.href = getRunUrl(); }, id: "icici-run-btn" },
-      { label: "📊 Report",     href: "/files/report.html", target: "_blank" },
+      { label: "▶ Run",         href: "#", action: function(e){
+          var btn = e.target;
+          btn.innerHTML = '<span class="ici-spin">⏳</span> Running...';
+          btn.style.pointerEvents = 'none';
+          iciClearAllureResults().then(function() {
+            location.href = getRunUrl();
+          }).catch(function() {
+            location.href = getRunUrl();
+          });
+        } },
+      { label: "📊 Report",     href: "#", action: function(e, btn) { iciToggleReportDropdown(e, btn); } },
+      { label: "✎ Edit",        href: function(){ return p() + "?edit"; } },
+      { label: "+ Add Test",    href: function(){ return p() + "?new"; } },
+      { label: "❌ Delete",     href: function(){ return p() + "?deletePage"; } },
+      { label: "⚙ Tools",       href: function(){ return p() + "?refactor"; } },
+      { label: "☰ Properties",  href: function(){ return p() + "?properties"; } },
+      { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } }
+    ],
+    viewer: [
+      { label: "Home",          href: function(){ return "/"; } },
+      { label: "▶ Run",         href: "#", action: function(e){ 
+          var btn = e.target;
+          btn.innerHTML = '<span class="ici-spin">⏳</span> Running...';
+          btn.style.pointerEvents = 'none';
+          iciClearAllureResults().then(function() {
+            location.href = getRunUrl();
+          }).catch(function() {
+            location.href = getRunUrl();
+          });
+        } },
+      { label: "📊 Report",     href: "#", action: function(e, btn) { iciToggleReportDropdown(e, btn); } },
       { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } }
     ]
   };
@@ -603,6 +1273,131 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   function clearSession() {
     sessionStorage.removeItem(SESSION_KEY);
   }
+
+  var tempUsers = {};
+
+  function currentSessionIsAdmin() {
+    var session = loadSession();
+    return !!session && session.role === "admin";
+  }
+
+  window.iciOpenUserManagement = function() {
+    if (!currentSessionIsAdmin()) {
+      alert("Only Admin users can manage users.");
+      return;
+    }
+    tempUsers = JSON.parse(JSON.stringify(loadUsers()));
+    renderUserTable();
+    document.getElementById("ici-user-management-error").textContent = "";
+    document.getElementById("ici-add-user-name").value = "";
+    document.getElementById("ici-add-user-display").value = "";
+    document.getElementById("ici-add-user-password").value = "";
+    document.getElementById("ici-add-user-role").value = "editor";
+    document.getElementById("ici-user-modal").style.display = "flex";
+  };
+
+  window.iciCloseUserManagement = function() {
+    document.getElementById("ici-user-modal").style.display = "none";
+  };
+
+  function renderUserTable() {
+    var tbody = document.getElementById("ici-user-table-body");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    Object.keys(tempUsers).sort().forEach(function(username) {
+      var user = tempUsers[username];
+      var row = document.createElement("tr");
+      var nameCell = document.createElement("td");
+      nameCell.textContent = username;
+      row.appendChild(nameCell);
+
+      var displayCell = document.createElement("td");
+      var displayInput = document.createElement("input");
+      displayInput.className = "ici-env-input";
+      displayInput.value = user.display || username;
+      displayInput.setAttribute("data-user-display", username);
+      displayCell.appendChild(displayInput);
+      row.appendChild(displayCell);
+
+      var roleCell = document.createElement("td");
+      var roleSelect = document.createElement("select");
+      roleSelect.className = "ici-env-input";
+      ["admin", "editor", "viewer"].forEach(function(role) {
+        var option = document.createElement("option");
+        option.value = role;
+        option.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+        option.selected = user.role === role;
+        roleSelect.appendChild(option);
+      });
+      roleSelect.setAttribute("data-user-role", username);
+      roleCell.appendChild(roleSelect);
+      row.appendChild(roleCell);
+
+      var actionCell = document.createElement("td");
+      actionCell.style.textAlign = "center";
+      var deleteButton = document.createElement("button");
+      deleteButton.className = "ici-row-btn";
+      deleteButton.textContent = "❌";
+      deleteButton.title = username === "admin" ? "The primary Admin cannot be deleted" : "Delete user";
+      deleteButton.disabled = username === "admin";
+      deleteButton.onclick = function() {
+        if (username === "admin") return;
+        delete tempUsers[username];
+        renderUserTable();
+      };
+      actionCell.appendChild(deleteButton);
+      row.appendChild(actionCell);
+      tbody.appendChild(row);
+    });
+  }
+
+  window.iciSaveUserManagement = function() {
+    if (!currentSessionIsAdmin()) {
+      alert("Only Admin users can save user changes.");
+      return;
+    }
+
+    var errorEl = document.getElementById("ici-user-management-error");
+    var adminCount = 0;
+    Object.keys(tempUsers).forEach(function(username) {
+      var displayInput = document.querySelector("[data-user-display='" + username + "']");
+      var roleSelect = document.querySelector("[data-user-role='" + username + "']");
+      if (displayInput) tempUsers[username].display = displayInput.value.trim() || username;
+      if (roleSelect) tempUsers[username].role = roleSelect.value;
+      if (tempUsers[username].role === "admin") adminCount++;
+    });
+
+    var username = (document.getElementById("ici-add-user-name").value || "").trim().toLowerCase();
+    var display = (document.getElementById("ici-add-user-display").value || "").trim();
+    var password = document.getElementById("ici-add-user-password").value || "";
+    var role = document.getElementById("ici-add-user-role").value;
+
+    if (username || display || password) {
+      if (!/^[a-z0-9._-]+$/.test(username) || !password || !display) {
+        errorEl.textContent = "Enter a valid username, display name, and password.";
+        return;
+      }
+      if (tempUsers[username]) {
+        errorEl.textContent = "That username already exists.";
+        return;
+      }
+      tempUsers[username] = { password: password, role: role, display: display };
+      if (role === "admin") adminCount++;
+    }
+
+    if (adminCount < 1) {
+      errorEl.textContent = "At least one Admin user must remain.";
+      return;
+    }
+    saveUsers(tempUsers);
+    iciCloseUserManagement();
+    var session = loadSession();
+    if (session && tempUsers[session.user]) {
+      saveSession(session.user, tempUsers[session.user].role, tempUsers[session.user].display);
+      showApp(tempUsers[session.user]);
+    }
+  };
 
   /* ── Zero-Dependency Dynamic Table-to-Excel/CSV Exporter! ── */
   window.iciExportTableToCSV = function() {
@@ -644,29 +1439,17 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   };
 
   function buildNav(role) {
-    var links = NAV[role] || NAV.user;
-    var nav = document.getElementById("icici-header-nav");
+    var links = NAV[role] || NAV.viewer;
+    var nav = document.getElementById("fitnesse-header-nav");
     if (!nav) return;
     nav.innerHTML = "";
     
-    // Prepend a beautiful Back Button ONLY if we are currently viewing the Execution Log!
-    if (/[?&]executionLog/.test(location.search)) {
-      var backBtn = document.createElement("a");
-      backBtn.href = p();
-      backBtn.className = "icici-nav-btn admin-only";
-      backBtn.style.background = "#E06336";
-      backBtn.style.borderColor = "#E06336";
-      backBtn.style.color = "#fff";
-      backBtn.style.fontWeight = "bold";
-      backBtn.textContent = "⬅ Back";
-      nav.appendChild(backBtn);
-    }
-    
+    // Check if we have a parent suite page path (contains a dot ".")
     // Prepend our premium "Export to Excel" button STRICTLY when viewing a specific date's history run! 🟢
     var isSpecificHistoryRun = /pagehistory/i.test(location.search) && /entry/i.test(location.search);
     if (isSpecificHistoryRun) {
       var exportBtn = document.createElement("button");
-      exportBtn.className = "icici-nav-btn admin-only";
+      exportBtn.className = "fitnesse-nav-btn admin-only";
       exportBtn.style.background = "#155724";
       exportBtn.style.borderColor = "#155724";
       exportBtn.style.color = "#fff";
@@ -680,270 +1463,69 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     links.forEach(function(l) {
       var a = document.createElement("a");
       a.href = typeof l.href === "function" ? l.href() : l.href;
-      if (l.id) {
-        a.id = l.id;
-      }
       if (l.target) {
         a.target = l.target;
       }
       if (l.action) {
-        a.onclick = function(e) {
-          e.preventDefault();
-          l.action();
+        a.onclick = function(event) {
+          var ev = event || window.event;
+          if (ev) {
+            if (ev.preventDefault) ev.preventDefault();
+            if (ev.stopPropagation) ev.stopPropagation();
+          }
+          l.action(ev, this); // Pass 'this' (the exact physical <a> element!)
         };
       }
-      a.className = "icici-nav-btn" + (l.adminOnly ? " admin-only" : "");
+      a.className = "fitnesse-nav-btn" + (l.adminOnly ? " admin-only" : "");
       a.textContent = l.label;
       nav.appendChild(a);
     });
   }
 
-  function formatFitnesseTestTables() {
-    var cells = document.querySelectorAll("td");
-    for (var i = 0; i < cells.length; i++) {
-      var cell = cells[i];
-      var text = cell.textContent || cell.innerText || "";
-      
-      // Do not format if already processed
-      if (cell.querySelector(".fitnesse-full-response-hidden")) continue;
-      
-      var isLargeData = text.length > 100 && (
-        text.indexOf("{") !== -1 || 
-        text.indexOf("[") !== -1 || 
-        text.indexOf("<") !== -1 || 
-        text.indexOf("curl") !== -1
-      );
-      if (isLargeData) {
-        var fullContent = text;
-        var previewText = fullContent.substring(0, 120) + "...";
-        cell.innerHTML = "";
-        
-        // Create parent wrapper to support absolute positioning of full-screen icon
-        var container = document.createElement("div");
-        container.style.position = "relative";
-        container.style.width = "100%";
-        container.style.paddingRight = "24px";
-        container.style.boxSizing = "border-box";
-        container.style.textAlign = "left";
-        
-        var spanPreview = document.createElement("span");
-        spanPreview.textContent = previewText;
-        
-        var viewBtn = document.createElement("span");
-        viewBtn.innerHTML = "⛶";
-        viewBtn.title = "Click to view full response details";
-        viewBtn.style.color = "#2563EB";
-        viewBtn.style.cursor = "pointer";
-        viewBtn.style.fontWeight = "bold";
-        viewBtn.style.fontSize = "16px";
-        viewBtn.style.position = "absolute";
-        viewBtn.style.top = "0";
-        viewBtn.style.right = "0";
-        viewBtn.style.lineHeight = "1";
-        
-        var hiddenSpan = document.createElement("span");
-        hiddenSpan.style.display = "none";
-        hiddenSpan.className = "fitnesse-full-response-hidden";
-        hiddenSpan.textContent = fullContent;
-        
-        viewBtn.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var fullData = this.parentNode.querySelector(".fitnesse-full-response-hidden").textContent;
-          openFitnesseModal(fullData);
-        };
-        
-        container.appendChild(spanPreview);
-        container.appendChild(viewBtn);
-        container.appendChild(hiddenSpan);
-        
-        cell.appendChild(container);
-      }
-    }
-  }
-
-  function openFitnesseModal(content) {
-    var modal = document.getElementById("fitnesse-response-modal");
-    if (!modal) {
-      modal = document.createElement("div");
-      modal.id = "fitnesse-response-modal";
-      modal.style.position = "fixed";
-      modal.style.top = "0";
-      modal.style.left = "0";
-      modal.style.width = "100%";
-      modal.style.height = "100%";
-      modal.style.background = "rgba(15, 23, 42, 0.6)";
-      modal.style.backdropFilter = "blur(4px)";
-      modal.style.zIndex = "1000000";
-      modal.style.display = "flex";
-      modal.style.alignItems = "center";
-      modal.style.justifyContent = "center";
-      modal.onclick = function() { modal.style.display = "none"; };
-      
-      var box = document.createElement("div");
-      box.style.background = "#fff";
-      box.style.border = "1px solid #cbd5e1";
-      box.style.borderRadius = "12px";
-      box.style.width = "650px";
-      box.style.maxWidth = "90%";
-      box.style.maxHeight = "80vh";
-      box.style.display = "flex";
-      box.style.flexDirection = "column";
-      box.style.overflow = "hidden";
-      box.style.boxShadow = "0 20px 25px -5px rgba(0,0,0,0.1)";
-      box.onclick = function(e) { e.stopPropagation(); };
-      
-      var header = document.createElement("div");
-      header.style.padding = "16px 24px";
-      header.style.borderBottom = "1px solid #cbd5e1";
-      header.style.display = "flex";
-      header.style.alignItems = "center";
-      header.style.justifyContent = "space-between";
-      header.style.background = "#f8fafc";
-      
-      var title = document.createElement("h3");
-      title.textContent = "📥 Response Body Details";
-      title.style.margin = "0";
-      title.style.fontSize = "16px";
-      title.style.fontWeight = "700";
-      title.style.color = "#1e293b";
-      
-      var closeBtn = document.createElement("button");
-      closeBtn.innerHTML = "&times;";
-      closeBtn.style.background = "none";
-      closeBtn.style.border = "none";
-      closeBtn.style.fontSize = "24px";
-      closeBtn.style.cursor = "pointer";
-      closeBtn.style.color = "#64748b";
-      closeBtn.onclick = function() { modal.style.display = "none"; };
-      
-      header.appendChild(title);
-      header.appendChild(closeBtn);
-      
-      var pre = document.createElement("pre");
-      pre.style.padding = "24px";
-      pre.style.margin = "0";
-      pre.style.overflowY = "auto";
-      pre.style.flex = "1";
-      pre.style.background = "#ffffff";
-      pre.style.border = "1px solid #cbd5e1";
-      
-      var code = document.createElement("code");
-      code.id = "fitnesse-modal-code";
-      code.style.fontFamily = "monospace";
-      code.style.fontSize = "12px";
-      code.style.color = "#000000";
-      code.style.background = "#ffffff";
-      code.style.whiteSpace = "pre-wrap";
-      
-      pre.appendChild(code);
-      
-      var footer = document.createElement("div");
-      footer.style.padding = "12px 24px";
-      footer.style.borderTop = "1px solid #cbd5e1";
-      footer.style.display = "flex";
-      footer.style.justifyContent = "flex-end";
-      footer.style.background = "#f8fafc";
-      
-      var copyBtn = document.createElement("button");
-      copyBtn.textContent = "📋 Copy Content";
-      copyBtn.style.background = "#2563eb";
-      copyBtn.style.color = "#fff";
-      copyBtn.style.border = "none";
-      copyBtn.style.padding = "8px 16px";
-      copyBtn.style.fontSize = "12px";
-      copyBtn.style.fontWeight = "600";
-      copyBtn.style.borderRadius = "6px";
-      copyBtn.style.cursor = "pointer";
-      copyBtn.onclick = function() {
-        navigator.clipboard.writeText(document.getElementById("fitnesse-modal-code").textContent).then(function() {
-          var original = copyBtn.textContent;
-          copyBtn.textContent = "✔️ Copied!";
-          setTimeout(function() { copyBtn.textContent = original; }, 1500);
-        });
-      };
-      
-      footer.appendChild(copyBtn);
-      
-      box.appendChild(header);
-      box.appendChild(pre);
-      box.appendChild(footer);
-      modal.appendChild(box);
-      document.body.appendChild(modal);
-    }
-    
-    document.getElementById("fitnesse-modal-code").textContent = content;
-    modal.style.display = "flex";
-  }
-
-  function checkExecutionStatus() {
-    var runBtn = document.getElementById("icici-run-btn");
-    if (!runBtn) return;
-    
-    var isRunningPage = /[?&](test|suite)/i.test(location.search);
-    if (isRunningPage) {
-      formatFitnesseTestTables();
-      
-      if (document.readyState !== "complete") {
-        runBtn.textContent = "⏳ Running...";
-        runBtn.style.pointerEvents = "none";
-        runBtn.style.opacity = "0.75";
-        
-        var onLoadHandler = function() {
-          formatFitnesseTestTables();
-          runBtn.textContent = "▶ Run";
-          runBtn.style.pointerEvents = "auto";
-          runBtn.style.opacity = "1";
-          runBtn.style.background = "";
-          runBtn.style.borderColor = "";
-          window.removeEventListener("load", onLoadHandler);
-        };
-        window.addEventListener("load", onLoadHandler);
-        
-        var pollInterval = setInterval(function() {
-          formatFitnesseTestTables();
-          
-          if (document.readyState === "complete") {
-            clearInterval(pollInterval);
-            formatFitnesseTestTables();
-            runBtn.textContent = "▶ Run";
-            runBtn.style.pointerEvents = "auto";
-            runBtn.style.opacity = "1";
-            runBtn.style.background = "";
-            runBtn.style.borderColor = "";
-          }
-        }, 1000);
-      }
-    }
-  }
-
   function showApp(session) {
-    var overlay = document.getElementById("icici-login-overlay");
-    if (overlay) overlay.style.display = "none";
+    try {
+      if (!session || !session.role) {
+        throw new Error("Invalid session data");
+      }
 
-    var banner = document.getElementById("icici-header-banner");
-    if (banner) banner.style.display = "flex";
+      var overlay = document.getElementById("fitnesse-login-overlay");
+      if (overlay) overlay.style.display = "none";
+      document.body.style.overflow = ""; // Restore body scrolling!
 
-    var nameEl = document.getElementById("icici-user-display");
-    if (nameEl) nameEl.textContent = session.display;
+      var banner = document.getElementById("fitnesse-header-banner");
+      if (banner) banner.style.display = "flex";
 
-    var badge = document.getElementById("icici-role-badge");
-    if (badge) {
-      badge.textContent = session.role === "admin" ? "Admin" : "Viewer";
-      badge.className = "icici-role-badge " + (session.role === "admin" ? "role-admin" : "role-user");
-    }
+      var nameEl = document.getElementById("fitnesse-user-display");
+      if (nameEl) nameEl.textContent = session.display || "User";
 
-    buildNav(session.role);
-    checkExecutionStatus();
-    populateEnvUI(); // Load Environment selector cleanly on log in!
+      var badge = document.getElementById("fitnesse-role-badge");
+      if (badge) {
+        badge.textContent = session.role.charAt(0).toUpperCase() + session.role.slice(1);
+        badge.className = "fitnesse-role-badge role-" + session.role;
+      }
 
-    if (session.role !== "admin") {
-      lockForReadOnly();
+      var userManagementMenu = document.getElementById("ici-user-management-menu");
+      if (userManagementMenu) {
+        userManagementMenu.classList.toggle("ici-user-management-hidden", session.role !== "admin");
+      }
+
+      buildNav(session.role);
+      populateEnvUI(); // Load Environment selector cleanly on log in!
+
+      if (session.role === "viewer") {
+        lockForReadOnly();
+      }
+    } catch(e) {
+      console.warn("Clearing corrupted session:", e);
+      clearSession();
+      var overlay = document.getElementById("fitnesse-login-overlay");
+      if (overlay) overlay.style.display = "flex";
+      document.body.style.overflow = "hidden";
     }
   }
 
   function lockForReadOnly() {
-    document.addEventListener("DOMContentLoaded", function() {
+    function applyViewerLock() {
       ["input[type=submit]","button[type=submit]",
        "textarea","input[type=text]"].forEach(function(sel) {
         document.querySelectorAll(sel).forEach(function(el) {
@@ -951,28 +1533,36 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
           el.title = "Read-only access — contact Admin to edit";
         });
       });
+      document.querySelectorAll("a[href*='?new'], a[href*='?edit'], a[href*='?delete'], a[href*='?properties'], a[href*='?refactor'], #ici-nav-env-container").forEach(function(el) {
+        el.style.display = "none";
+      });
       if (/[?&](edit|addChild|saveData|save|delete|properties)/.test(location.search)) {
         document.body.innerHTML =
           '<div style="margin:80px auto;max-width:500px;text-align:center;font-family:Arial">' +
-          '<h2 style="color:#A6192E">Access Denied</h2>' +
+          '<h2 style="color:#DC2626">Access Denied</h2>' +
           '<p>Your role (<strong>Viewer</strong>) does not have permission to perform this action.</p>' +
           '<a href="/" style="color:#004A80">← Back to Home</a></div>';
       }
-    });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", applyViewerLock);
+    } else {
+      applyViewerLock();
+    }
   }
 
   /* ── Public functions ──────────────────────────────────────────── */
   window.iciLogin = function() {
-    var u = (document.getElementById("icici-username").value || "").trim().toLowerCase();
-    var p = document.getElementById("icici-password").value || "";
-    var errEl = document.getElementById("icici-login-error");
+    var u = (document.getElementById("fitnesse-username").value || "").trim().toLowerCase();
+    var p = document.getElementById("fitnesse-password").value || "";
+    var errEl = document.getElementById("fitnesse-login-error");
 
     if (!u || !p) { errEl.textContent = "Please enter username and password."; return; }
 
-    var rec = USERS[u];
+    var rec = loadUsers()[u];
     if (!rec || rec.password !== p) {
       errEl.textContent = "Invalid username or password.";
-      document.getElementById("icici-password").value = "";
+      document.getElementById("fitnesse-password").value = "";
       return;
     }
 
@@ -983,56 +1573,13 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
 
   window.iciLogout = function() {
     clearSession();
-    location.reload();
+    location.href = "/";
   };
-
-  /* Block all FitNesse global keyboard shortcuts & trap focus inside the login box when not logged in */
-  (function() {
-    var blockHotkeys = function(e) {
-      var session = sessionStorage.getItem("ici_session");
-      if (!session) {
-        var targetId = e.target ? e.target.id : "";
-        var isLoginField = (targetId === "icici-username" || targetId === "icici-password" || targetId === "icici-login-btn");
-        
-        // Let Enter key bubble to trigger login
-        if (e.key === "Enter" && isLoginField) {
-          return;
-        }
-        
-        // Stop propagation so it never reaches FitNesse's global key event listeners
-        e.stopPropagation();
-        
-        // Prevent default actions (like browser shortcuts, scroll, backspace navigation, etc.) if not in login fields
-        if (!isLoginField) {
-          e.preventDefault();
-        }
-      }
-    };
-
-    window.addEventListener("keydown", blockHotkeys, true);
-    window.addEventListener("keypress", blockHotkeys, true);
-    window.addEventListener("keyup", blockHotkeys, true);
-
-    // Focus trap: Redirect focus back to the login box if user tries to focus background elements
-    document.addEventListener("focus", function(e) {
-      var session = sessionStorage.getItem("ici_session");
-      if (!session) {
-        var loginBox = document.getElementById("icici-login-box");
-        if (loginBox && !loginBox.contains(e.target)) {
-          e.stopPropagation();
-          var uField = document.getElementById("icici-username");
-          if (uField) {
-            uField.focus();
-          }
-        }
-      }
-    }, true);
-  })();
 
   /* Enter key on login form */
   document.addEventListener("keydown", function(e) {
-    if (e.key === "Enter" && document.getElementById("icici-login-overlay") &&
-        document.getElementById("icici-login-overlay").style.display !== "none") {
+    if (e.key === "Enter" && document.getElementById("fitnesse-login-overlay") &&
+        document.getElementById("fitnesse-login-overlay").style.display !== "none") {
       iciLogin();
     }
   });
@@ -1040,14 +1587,14 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   /* Click-to-toggle user profile dropdown */
   window.iciToggleProfileDropdown = function(e) {
     e.stopPropagation();
-    var dropdown = document.getElementById("icici-profile-dropdown");
+    var dropdown = document.getElementById("fitnesse-profile-dropdown");
     if (dropdown) {
       dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
     }
   };
 
   document.addEventListener("click", function() {
-    var dropdown = document.getElementById("icici-profile-dropdown");
+    var dropdown = document.getElementById("fitnesse-profile-dropdown");
     if (dropdown) dropdown.style.display = "none";
   });
 
@@ -1057,10 +1604,10 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   var DEFAULT_CONFIG = {
     active: "Dev",
     environments: {
-      "Dev": "http://192.168.4.187/trubi25v2rel",
-      "QA": "https://dummyjson.com",
-      "UAT": "http://uat-api.icicipru.com/api",
-      "Prod": "https://api.icicipru.com/api"
+      "Dev": { api: "http://192.168.4.187/trubi25v2rel", ui: "https://www.saucedemo.com" },
+      "QA": { api: "https://dummyjson.com", ui: "https://www.saucedemo.com" },
+      "UAT": { api: "https://dummyjson.com", ui: "https://www.saucedemo.com" },
+      "Prod": { api: "https://dummyjson.com", ui: "https://www.saucedemo.com" }
     }
   };
 
@@ -1072,7 +1619,23 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_CONFIG));
       return DEFAULT_CONFIG;
     }
-    try { return JSON.parse(stored); } catch(e) { return DEFAULT_CONFIG; }
+    try { 
+      var parsed = JSON.parse(stored);
+      // Auto-migrate old string-only configurations seamlessly to support both API and UI URLs!
+      var migrated = false;
+      for (var env in parsed.environments) {
+        if (typeof parsed.environments[env] === "string") {
+          var oldUrl = parsed.environments[env];
+          var defaultUi = DEFAULT_CONFIG.environments[env] ? DEFAULT_CONFIG.environments[env].ui : "https://www.saucedemo.com";
+          parsed.environments[env] = { api: oldUrl, ui: defaultUi };
+          migrated = true;
+        }
+      }
+      if (migrated) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      }
+      return parsed; 
+    } catch(e) { return DEFAULT_CONFIG; }
   }
 
   function saveConfig(config) {
@@ -1102,10 +1665,16 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     config.active = selectedEnv;
     saveConfig(config);
     
-    var activeUrl = config.environments[selectedEnv];
+    // Write both API_BASE_URL and UI_BASE_URL dynamically to FitNesse VariablePage!
+    var activeUrl = config.environments[selectedEnv].api || "";
+    var activeUiUrl = config.environments[selectedEnv].ui || "https://www.saucedemo.com";
+    
+    // Force strictly sequential suite-by-suite executions to prevent parallel thread clashing!
+    var parallelStr = "!define runInParallel {false}\n!define fitnesse.runner.parallel {1}\n";
+    
     var formData = new URLSearchParams();
     formData.append("responder", "saveData");
-    formData.append("pageContent", "!define BASE_URL {" + activeUrl + "}\n");
+    formData.append("pageContent", "!define API_BASE_URL {" + activeUrl + "}\n!define UI_BASE_URL {" + activeUiUrl + "}\n" + parallelStr);
     
     fetch("/VariablePage", {
       method: "POST",
@@ -1121,17 +1690,63 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
     });
   };
 
+  window.iciSetActivePage = function() {
+    return fetch("http://127.0.0.1:8090/active-page", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ page: location.pathname })
+    }).catch(function(err) {
+      console.warn("User store offline; active page not set:", err);
+    });
+  };
+
   window.iciOpenManageEnvModal = function() {
     var config = loadConfig();
-    tempEnvironments = Object.assign({}, config.environments);
+    // Deep clone environments to avoid direct state mutation
+    tempEnvironments = JSON.parse(JSON.stringify(config.environments));
     document.getElementById("ici-add-env-name").value = "";
     document.getElementById("ici-add-env-url").value = "";
+    document.getElementById("ici-add-env-ui-url").value = "";
+    
+    // Reset to environments tab by default on open
+    iciSwitchModalTab('env');
+    
+    // Populate Config tab inputs with currently loaded active settings
+    document.getElementById("ici-config-browser").value = config.browser || "chromium";
+    document.getElementById("ici-config-headless").value = config.headless !== undefined ? String(config.headless) : "true";
+    document.getElementById("ici-config-retries").value = config.retries || "3";
+    document.getElementById("ici-config-delay").value = config.delay || "1.0";
+    document.getElementById("ici-config-workers").value = config.workers || "1";
+    
     renderModalTable();
     document.getElementById("ici-env-modal").style.display = "flex";
   };
 
   window.iciCloseManageEnvModal = function() {
     document.getElementById("ici-env-modal").style.display = "none";
+  };
+
+  window.iciSwitchModalTab = function(tabName) {
+    var tabEnv = document.getElementById("ici-tab-env");
+    var tabConfig = document.getElementById("ici-tab-config");
+    var paneEnv = document.getElementById("ici-pane-env");
+    var paneConfig = document.getElementById("ici-pane-config");
+    
+    if (tabName === "env") {
+      tabEnv.style.borderBottom = "2px solid #2563EB";
+      tabEnv.style.color = "#2563EB";
+      tabConfig.style.borderBottom = "none";
+      tabConfig.style.color = "#64748b";
+      paneEnv.style.display = "block";
+      paneConfig.style.display = "none";
+    } else {
+      tabConfig.style.borderBottom = "2px solid #2563EB";
+      tabConfig.style.color = "#2563EB";
+      tabEnv.style.borderBottom = "none";
+      tabEnv.style.color = "#64748b";
+      paneEnv.style.display = "none";
+      paneConfig.style.display = "block";
+    }
   };
 
   function renderModalTable() {
@@ -1147,19 +1762,37 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       tdName.textContent = env;
       tr.appendChild(tdName);
       
+      // API URL Input column
       var tdUrl = document.createElement("td");
-      var input = document.createElement("input");
-      input.type = "text";
-      input.className = "ici-env-input";
-      input.value = tempEnvironments[env];
-      input.setAttribute("data-env", env);
-      input.onchange = function(e) {
-        var envName = e.target.getAttribute("data-env");
-        tempEnvironments[envName] = e.target.value.trim();
+      var inputApi = document.createElement("input");
+      inputApi.type = "text";
+      inputApi.className = "ici-env-input";
+      inputApi.value = tempEnvironments[env].api || "";
+      inputApi.setAttribute("data-env-api", env);
+      inputApi.onchange = function(e) {
+        var envName = e.target.getAttribute("data-env-api");
+        if (!tempEnvironments[envName]) tempEnvironments[envName] = {};
+        tempEnvironments[envName].api = e.target.value.trim();
       };
-      tdUrl.appendChild(input);
+      tdUrl.appendChild(inputApi);
       tr.appendChild(tdUrl);
       
+      // UI URL Input column
+      var tdUiUrl = document.createElement("td");
+      var inputUi = document.createElement("input");
+      inputUi.type = "text";
+      inputUi.className = "ici-env-input";
+      inputUi.value = tempEnvironments[env].ui || "";
+      inputUi.setAttribute("data-env-ui", env);
+      inputUi.onchange = function(e) {
+        var envName = e.target.getAttribute("data-env-ui");
+        if (!tempEnvironments[envName]) tempEnvironments[envName] = {};
+        tempEnvironments[envName].ui = e.target.value.trim();
+      };
+      tdUiUrl.appendChild(inputUi);
+      tr.appendChild(tdUiUrl);
+      
+      // Delete Action column
       var tdAction = document.createElement("td");
       tdAction.style.textAlign = "center";
       var delBtn = document.createElement("button");
@@ -1181,10 +1814,14 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   window.iciSaveEnvironments = function() {
     var addName = (document.getElementById("ici-add-env-name").value || "").trim();
     var addUrl = (document.getElementById("ici-add-env-url").value || "").trim();
+    var addUiUrl = (document.getElementById("ici-add-env-ui-url").value || "").trim();
     
     if (addName && addUrl) {
       addName = addName.toUpperCase().replace(/\s+/g, "_");
-      tempEnvironments[addName] = addUrl;
+      tempEnvironments[addName] = { 
+        api: addUrl, 
+        ui: addUiUrl || "https://www.saucedemo.com" 
+      };
     }
     
     if (Object.keys(tempEnvironments).length === 0) {
@@ -1192,13 +1829,52 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
       return;
     }
     
+    // Read all modified input fields currently in the table
+    for (var env in tempEnvironments) {
+      var apiInput = document.querySelector("[data-env-api='" + env + "']");
+      var uiInput = document.querySelector("[data-env-ui='" + env + "']");
+      if (apiInput) tempEnvironments[env].api = apiInput.value.trim();
+      if (uiInput) tempEnvironments[env].ui = uiInput.value.trim();
+    }
+    
     var config = loadConfig();
     config.environments = tempEnvironments;
     if (!config.environments[config.active]) {
-      config.active = Object.keys(tempEnvironments)[0];
+      var firstEnv = Object.keys(tempEnvironments)[0];
+      config.active = firstEnv;
     }
     
+    // Read and save all the values from the Config Tab on Save!
+    config.browser = document.getElementById("ici-config-browser").value;
+    config.headless = document.getElementById("ici-config-headless").value;
+    config.retries = document.getElementById("ici-config-retries").value.trim() || "3";
+    config.delay = document.getElementById("ici-config-delay").value.trim() || "1.0";
+    config.workers = document.getElementById("ici-config-workers").value.trim() || "1";
+    
     saveConfig(config);
+    
+    // Construct the structured payload to match what our Python backend expects!
+    var payload = {
+      environments: tempEnvironments,
+      config: {
+        browser: config.browser,
+        headless: config.headless,
+        retries: config.retries,
+        delay: config.delay,
+        workers: config.workers
+      }
+    };
+    
+    // Natively POST the updated environments to your Python backend to write straight to .env on disk!
+    fetch("http://127.0.0.1:8090/environments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .catch(function(err) {
+      console.warn("User store server offline; .env on disk was not updated:", err);
+    });
+    
     iciCloseManageEnvModal();
     iciSwitchEnv(config.active);
   };
@@ -1263,17 +1939,961 @@ body { padding-top: 0 !important; margin-top: 0 !important; }
   }
   updateBrowserTabTitle();
 
+  // Fetch true suite test total on load dynamically from the static wiki contents list!
+  window._iciTotalSuiteTests = 0;
+  if (/[?&]suite/i.test(location.search)) {
+    fetch(location.pathname)
+      .then(function(res) { return res.text(); })
+      .then(function(html) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, "text/html");
+        var items = doc.querySelectorAll(".contents li, table.suite tr, .toc-item");
+        if (items.length > 0) {
+          window._iciTotalSuiteTests = items.length;
+        }
+      })
+      .catch(function(err) {
+        console.warn("Failed to fetch suite total count:", err);
+      });
+  }
+
+  /* ── Dynamic Test Output & JSON Accordion Formatter ── */
+  function formatTestOutput() {
+    // No special layout classes needed - use natural page scroll everywhere
+
+    // 1. Format the Master Test Summary Banner Universally!
+    var summaryEl = document.getElementById("test-summary") || document.querySelector(".test-summary");
+    if (!summaryEl) {
+      // Fallback: scan all elements on the page for one containing both "Assertions:" and "right"
+      var divs = document.querySelectorAll("div, p, h2, pre");
+      for (var i = 0; i < divs.length; i++) {
+        var txt = divs[i].textContent;
+        if (txt.indexOf("Assertions:") > -1 && txt.indexOf("right") > -1) {
+          summaryEl = divs[i];
+          break;
+        }
+      }
+    }
+
+    // ── Handle Real-Time Processing (Running) States ──
+    var runBtn = null;
+    var navBtns = document.querySelectorAll(".fitnesse-nav-btn");
+    navBtns.forEach(function(btn) {
+      var t = btn.textContent.trim();
+      if (t.indexOf("Run") > -1 || t.indexOf("Running") > -1) {
+        runBtn = btn;
+      }
+    });
+
+    // Detect if a test run is actively executing by the presence of FitNesse's native "Stop" button in the DOM!
+    var stopBtn = document.getElementById("stop-test") || document.querySelector(".stop-test");
+    if (!stopBtn) {
+      var els = document.querySelectorAll("input, button, a");
+      for (var idx = 0; idx < els.length; idx++) {
+        var val = (els[idx].value || els[idx].textContent || "").trim();
+        if (val.indexOf("Stop") > -1) {
+          stopBtn = els[idx];
+          break;
+        }
+      }
+    }
+    var isPageRunning = stopBtn !== null;
+    
+    var progressSpinner = document.getElementById("ici-header-progress");
+    var isRunningPage = /[?&](test|suite)/i.test(location.search);
+    var hasFinished = !isPageRunning && summaryEl;
+    
+    if (isRunningPage) {
+      if (!hasFinished) {
+        // A. Toggle Header Progress Spinner to FLEX (Visible!)
+        if (progressSpinner) {
+          progressSpinner.style.display = "flex";
+        }
+
+        // B. Update Navigation Button to "⏳ Running..." with pulsing state
+        if (runBtn) {
+          runBtn.innerHTML = "⏳ Running...";
+          runBtn.style.background = "#2563EB";
+          runBtn.style.borderColor = "#2563EB";
+          runBtn.classList.add("ici-pulse");
+        }
+      } else {
+        // Test finished! Restore "▶ Run" state cleanly
+        if (progressSpinner) {
+          progressSpinner.style.display = "none"; // Hide progress spinner!
+        }
+        if (runBtn) {
+          runBtn.innerHTML = "▶ Run";
+          runBtn.style.background = "";
+          runBtn.style.borderColor = "";
+          runBtn.classList.remove("ici-pulse");
+        }
+      }
+    }
+
+    // 2. Format individual test summaries list (Suite Page)
+    var summariesContainer = document.getElementById("test-summaries");
+    if (summariesContainer) {
+      var summaryRows = summariesContainer.querySelectorAll("li");
+      summaryRows.forEach(function(li) {
+        if (li._formatted) return;
+        li._formatted = true;
+        li.className = "ici-summary-li";
+        
+        var text = li.innerHTML;
+        // Parse: "X right, Y wrong, Z ignored, W exceptions Name (duration seconds)"
+        var matches = text.match(/(\d+)\s+right,\s+(\d+)\s+wrong,\s+(\d+)\s+ignored,\s+(\d+)\s+exceptions\s+([a-zA-Z0-9._-]+)\s*\((.*)\)/);
+        if (matches) {
+          var r = matches[1], w = matches[2], ig = matches[3], ex = matches[4], name = matches[5], dur = matches[6];
+          var isPagePass = parseInt(w) === 0 && parseInt(ex) === 0;
+          var statusBadge = isPagePass ? '<span class="ici-row-status pass">PASS</span>' : '<span class="ici-row-status fail">FAIL</span>';
+          
+          li.innerHTML = '<div class="ici-summary-row-content">' +
+            statusBadge +
+            '<span class="ici-row-name">' + name + '</span>' +
+            '<span class="ici-row-duration">⏱️ ' + dur + '</span>' +
+            '<span class="ici-row-counts">' +
+              '<span class="c-right">' + r + ' ✔️</span> | ' +
+              '<span class="c-wrong">' + w + ' ❌</span> | ' +
+              '<span class="c-ignored">' + ig + ' 💤</span>' +
+            '</span>' +
+          '</div>';
+        }
+      });
+    }
+    
+    // 3. Scan and dynamically target ONLY the "response" column cells inside tables for an ultra-compact placeholder & expand button!
+    var tables = document.querySelectorAll("table, .fit_table, .instructions");
+    tables.forEach(function(table) {
+      var responseColIdx = -1;
+      var headerRowIdx = -1;
+      var rows = table.querySelectorAll("tr");
+      
+      // Scan the first 3 rows of the table to find the correct column headers row!
+      for (var i = 0; i < Math.min(rows.length, 3); i++) {
+        var cells = rows[i].querySelectorAll("td, th");
+        cells.forEach(function(cell, idx) {
+          var txt = cell.textContent.toLowerCase().trim();
+          if (txt.indexOf("response") > -1) {
+            responseColIdx = idx;
+            headerRowIdx = i; // Track the exact index of the column header row!
+          }
+        });
+        if (responseColIdx > -1) {
+          break; // Found the header row! Stop searching.
+        }
+      }
+      
+      // If a "response" column is successfully identified, target only its cells!
+      if (responseColIdx > -1) {
+        var rows = table.querySelectorAll("tr");
+        rows.forEach(function(row, rowIdx) {
+          if (rowIdx <= headerRowIdx) return; // Skip BOTH the fixture name row AND the column header row!
+          
+          var cells = row.querySelectorAll("td");
+          var responseCell = cells[responseColIdx];
+          if (responseCell && !responseCell._jsonFormatted) {
+            responseCell._jsonFormatted = true;
+            
+            var rawHtml = responseCell.innerHTML;
+            
+            // 1. Clean HTML tags (like <br>) and unescape HTML entities to get clean JSON text
+            var rawText = rawHtml.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "");
+            var txtNode = document.createElement("textarea");
+            txtNode.innerHTML = rawText;
+            var cleanText = txtNode.value.trim();
+            
+            // 2. Extract inner content if it uses double curly braces {{ ... }}
+            var isBraced = cleanText.startsWith("{{") && cleanText.endsWith("}}");
+            var jsonToParse = cleanText;
+            if (isBraced) {
+              jsonToParse = cleanText.substring(2, cleanText.length - 2).trim();
+            }
+            
+            // 3. Render a highly readable, single-line truncated preview of the actual JSON payload!
+            var singleLineText = cleanText.replace(/\s+/g, " ");
+            var preview = singleLineText;
+            if (preview.length > 45) {
+              preview = preview.substring(0, 45) + "...";
+            }
+            
+            var pretty = jsonToParse;
+            try {
+              var parsed = JSON.parse(jsonToParse);
+              if (parsed && typeof parsed === "object") {
+                pretty = JSON.stringify(parsed, null, 2);
+              }
+            } catch(e) {}
+            
+            responseCell.innerHTML = '<div class="ici-response-wrapper" style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; width: 100% !important;">' +
+              '<span style="font-family: monospace !important; font-size: 11px !important; color: #475569 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; flex: 1 !important; max-width: calc(100% - 30px) !important;">' + preview + '</span>' +
+              '<button class="ici-inspect-btn-inline" onclick="iciOpenJSONInspector(this)" title="View Full Response Payload">⛶</button>' +
+              '<code style="display: none !important;">' + pretty + '</code>' +
+            '</div>';
+          }
+        });
+      }
+    });
+
+    // 4. Scan all table headers and cleanly strip the trailing '?' from their visible display!
+    var ths = document.querySelectorAll("table th, .fit_table th, .instructions th, td.leader");
+    ths.forEach(function(th) {
+      if (th._questionMarkCleaned) return;
+      th._questionMarkCleaned = true;
+      
+      var txt = th.textContent.trim();
+      if (txt.endsWith("?")) {
+        th.textContent = txt.slice(0, -1); // Strip the trailing '?' for a pristine, professional look!
+      }
+    });
+  }
+  
+  // Run formatting periodically in real-time to catch chunked streamed blocks instantly!
+  setInterval(formatTestOutput, 300);
+
+  /* ── Response Body Modal Inspector Global Controllers ── */
+  var inspectorJSONText = "";
+
+  function ensureInspectorModal() {
+    if (document.getElementById("ici-json-inspector-modal")) return;
+    
+    var modalDiv = document.createElement("div");
+    modalDiv.id = "ici-json-inspector-modal";
+    modalDiv.className = "ici-modal-overlay";
+    modalDiv.style.display = "none";
+    modalDiv.onclick = function() { iciCloseJSONInspector(); };
+    
+    modalDiv.innerHTML = '<div class="ici-modal-box" style="width: 80% !important; max-width: 900px !important; border-top: 4px solid #2563EB;" onclick="event.stopPropagation()">' +
+      '<div class="ici-modal-title" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 16px;">' +
+        '<span style="font-weight: 800; color: #1E293B;">🔍 Response Body Inspector</span>' +
+        '<button onclick="iciCloseJSONInspector()" style="background: transparent; border: none; font-size: 20px; cursor: pointer;">❌</button>' +
+      '</div>' +
+      '<div style="background: #ffffff; border-radius: 6px; overflow: hidden; border: 1px solid #cbd5e1;">' +
+        '<pre id="ici-inspector-code" style="margin: 0; padding: 18px 24px; max-height: 50vh; overflow: auto; font-family: monospace; font-size: 13px; color: #000000; background: #ffffff; line-height: 1.6; text-align: left !important; white-space: pre !important;"></pre>' +
+      '</div>' +
+      '<div class="ici-modal-actions" style="margin-top: 16px; padding-top: 12px;">' +
+        '<button class="ici-modal-btn cancel" onclick="iciCloseJSONInspector()">Close</button>' +
+      '</div>' +
+    '</div>';
+    
+    document.body.appendChild(modalDiv);
+  }
+
+  window.iciOpenJSONInspector = function(btn) {
+    ensureInspectorModal();
+    var wrapper = btn.closest(".ici-response-wrapper");
+    if (!wrapper) return;
+    var codeEl = wrapper.querySelector("code");
+    if (!codeEl) return;
+    
+    inspectorJSONText = codeEl.textContent;
+    var inspectorCode = document.getElementById("ici-inspector-code");
+    if (inspectorCode) {
+      inspectorCode.textContent = inspectorJSONText;
+    }
+    
+    document.getElementById("ici-json-inspector-modal").style.display = "flex";
+    document.body.style.overflow = "hidden"; // Disable background scrolling while inspecting!
+  };
+
+  window.iciCloseJSONInspector = function() {
+    var modal = document.getElementById("ici-json-inspector-modal");
+    if (modal) modal.style.display = "none";
+    
+    // Only restore body overflow if we are not on the login screen
+    var loginOverlay = document.getElementById("fitnesse-login-overlay");
+    if (!loginOverlay || loginOverlay.style.display === "none") {
+      document.body.style.overflow = "";
+    }
+  };
+
+  window.iciCopyInspectorJSON = function() {
+    if (!navigator.clipboard) {
+      var textArea = document.createElement("textarea");
+      textArea.value = inspectorJSONText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      alert("📋 Response JSON copied to clipboard successfully!");
+      return;
+    }
+    navigator.clipboard.writeText(inspectorJSONText)
+      .then(function() {
+        alert("📋 Response JSON copied to clipboard successfully!");
+      })
+      .catch(function(err) {
+        console.error("Copy failed:", err);
+      });
+  };
+
+  window.iciDownloadInspectorJSON = function() {
+    var blob = new Blob([inspectorJSONText], { type: "application/json" });
+    var link = document.createElement("a");
+    link.download = "Response_Payload.json";
+    link.href = URL.createObjectURL(blob);
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  /* ── Bulletproof Favicon Override with MutationObserver ── */
+  function overrideFavicon() {
+    var faviconUrl = "/files/fitnesse/images/favicon.png";
+    
+    // Resolve faviconUrl to its absolute form once to prevent relative-to-absolute infinite loop triggers!
+    var tempA = document.createElement("a");
+    tempA.href = faviconUrl;
+    var absoluteFaviconUrl = tempA.href;
+    var normTarget = (absoluteFaviconUrl || "").split("?")[0].replace(/^https?:/, "").toLowerCase();
+    
+    function lockLink(link) {
+      if (!link || link._locked) return;
+      link._locked = true;
+      
+      // 1. Force-lock ID
+      link.id = "favicon";
+      
+      // 2. Intercept and completely block setAttribute("href", ...) and setAttribute("type", ...)
+      try {
+        var originalSetAttribute = link.setAttribute;
+        link.setAttribute = function(name, val) {
+          if (name === "href" || name === "type" || name === "rel") {
+            return; // Block any changes to these crucial attributes!
+          }
+          originalSetAttribute.call(this, name, val);
+        };
+      } catch (e) {}
+      
+      // 3. Lock href and type properties at the JS engine compiler level using getters and setters!
+      try {
+        Object.defineProperty(link, 'href', {
+          get: function() { return absoluteFaviconUrl; },
+          set: function(val) { /* Blocked! */ },
+          configurable: true
+        });
+        
+        Object.defineProperty(link, 'type', {
+          get: function() { return "image/png"; },
+          set: function(val) { /* Blocked! */ },
+          configurable: true
+        });
+      } catch (e) {}
+    }
+    
+    function apply() {
+      var links = document.querySelectorAll("link[rel*='icon']");
+      
+      if (links.length === 0) {
+        var iconLink = document.createElement("link");
+        iconLink.rel = "icon";
+        iconLink.href = absoluteFaviconUrl;
+        lockLink(iconLink);
+        if (document.head) {
+          document.head.appendChild(iconLink);
+        } else {
+          document.getElementsByTagName("head")[0].appendChild(iconLink);
+        }
+        
+        var shortcutLink = document.createElement("link");
+        shortcutLink.rel = "shortcut icon";
+        shortcutLink.href = absoluteFaviconUrl;
+        lockLink(shortcutLink);
+        if (document.head) {
+          document.head.appendChild(shortcutLink);
+        } else {
+          document.getElementsByTagName("head")[0].appendChild(shortcutLink);
+        }
+      } else {
+        links.forEach(function(link) {
+          lockLink(link);
+          
+          // One-time inline sync in case it was already altered before we locked it
+          var normCurrent = (link.href || "").split("?")[0].replace(/^https?:/, "").toLowerCase();
+          var normTarget = (absoluteFaviconUrl || "").split("?")[0].replace(/^https?:/, "").toLowerCase();
+          if (normCurrent !== normTarget) {
+            try {
+              link.href = absoluteFaviconUrl;
+            } catch(e) {}
+          }
+        });
+      }
+    }
+
+    apply();
+    // Run on key loading stages
+    document.addEventListener("DOMContentLoaded", apply);
+    window.addEventListener("load", apply);
+    
+    // Set up MutationObserver to block child and attribute attempts to overwrite our favicon!
+    var target = document.documentElement;
+    if (target && typeof MutationObserver !== 'undefined') {
+      var observer = new MutationObserver(function(mutations) {
+        var needsApply = false;
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'childList') {
+            var addedNodes = Array.prototype.slice.call(mutation.addedNodes);
+            var hasIcon = addedNodes.some(function(node) {
+              return node.nodeType === 1 && node.tagName.toUpperCase() === 'LINK' && node.getAttribute('rel') && node.getAttribute('rel').indexOf('icon') !== -1;
+            });
+            if (hasIcon) needsApply = true;
+          } else if (mutation.type === 'attributes') {
+            var node = mutation.target;
+            if (node && node.nodeType === 1 && node.tagName.toUpperCase() === 'LINK') {
+              var rel = node.getAttribute('rel');
+              if (rel && rel.indexOf('icon') !== -1) {
+                var normCurrent = (node.href || "").split("?")[0].replace(/^https?:/, "").toLowerCase();
+                if (normCurrent !== normTarget) {
+                  needsApply = true;
+                }
+              }
+            }
+          }
+        });
+        if (needsApply) {
+          apply();
+        }
+      });
+      observer.observe(target, { 
+        childList: true, 
+        subtree: true, 
+        attributes: true
+      });
+    }
+    
+    // 200ms high-frequency heartbeat sweep to guarantee absolute victory over FitNesse scripts
+    setInterval(apply, 200);
+  }
+  overrideFavicon();
+
   /* ── Auto-restore session on page load ────────────────────────── */
   var existing = loadSession();
   if (existing) {
     showApp(existing);
   } else {
+    if (document.body) {
+      document.body.style.overflow = "hidden"; // Prevent background scroll leakage when login is active!
+    } else {
+      document.addEventListener("DOMContentLoaded", function() {
+        if (document.body) document.body.style.overflow = "hidden";
+      });
+    }
     // Focus the username field on load
     document.addEventListener("DOMContentLoaded", function() {
-      var uField = document.getElementById("icici-username");
+      var uField = document.getElementById("fitnesse-username");
       if (uField) uField.focus();
     });
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+     FITNESSE UX ENHANCEMENTS - All 5 fixes consolidated
+     ═══════════════════════════════════════════════════════════════ */
+  document.addEventListener("DOMContentLoaded", function() {
+    // Target and hide ONLY the specific table of fixtures.SuiteHelper and its closest parent collapsible!
+    // This leaves all other collapsible sections, list of test pages, and contents perfectly intact and visible!
+    var tables = document.querySelectorAll("table");
+    tables.forEach(function(tbl) {
+      if (tbl.textContent.indexOf("fixtures.SuiteHelper") > -1) {
+        var parentCollapsible = tbl.closest(".collapsible, .collapse_rim");
+        if (parentCollapsible) {
+          parentCollapsible.style.setProperty("display", "none", "important");
+        }
+      }
+    });
+
+    console.log('%c═══ FITNESSE UX ENHANCEMENTS LOADED ═══', 'background: #2563EB; color: #fff; padding: 5px; font-weight: bold;');
+    console.log('Page URL:', window.location.href);
+    
+    /* ────────────────────────────────────────────────────────────
+       FIX 1 & 4: CANCEL BUTTON FIX - Smart cancel with change detection
+       ──────────────────────────────────────────────────────────── */
+    var formDataChanged = {};
+    var forms = document.querySelectorAll('form');
+    
+    forms.forEach(function(form, index) {
+      var formId = 'form_' + index;
+      formDataChanged[formId] = false;
+      
+      // Track any input changes in the form
+      form.addEventListener('input', function() {
+        var hasData = false;
+        var inputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select');
+        
+        for (var i = 0; i < inputs.length; i++) {
+          var input = inputs[i];
+          var value = input.value || '';
+          var defaultValue = input.defaultValue || '';
+          
+          // Check if value differs from default or if it has any content
+          if (value !== defaultValue && value.trim() !== '') {
+            hasData = true;
+            break;
+          }
+        }
+        
+        formDataChanged[formId] = hasData;
+      });
+    });
+    
+    // Fix all cancel links (FitNesse uses <a class="button">Cancel</a>)
+    var cancelLinks = document.querySelectorAll('a.button, a[href]:not([href="#"])');
+    
+    cancelLinks.forEach(function(link) {
+      if (link.textContent.trim() === 'Cancel' || link.innerText.trim() === 'Cancel') {
+        console.log('FitNesse UX: Found cancel link:', link.href);
+        
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Find the closest form to check if it has changes
+          var closestForm = link.closest('form') || document.querySelector('form');
+          var formIndex = Array.prototype.indexOf.call(forms, closestForm);
+          var formId = 'form_' + formIndex;
+          var hasChanges = formDataChanged[formId] || false;
+          
+          if (!hasChanges) {
+            // No changes, just go back
+            console.log('FitNesse UX: No changes detected, navigating back');
+            window.history.back();
+          } else {
+            // Ask for confirmation
+            if (confirm('You have unsaved changes. Discard them?')) {
+              console.log('FitNesse UX: User confirmed discard, navigating back');
+              window.history.back();
+            }
+          }
+          
+          return false;
+        });
+      }
+    });
+    
+    /* ────────────────────────────────────────────────────────────
+       FIX 2: SMART RADIO BUTTON DEFAULTS
+       ──────────────────────────────────────────────────────────── */
+    // FitNesse uses name="PageType" with capitals!
+    var pageTypeRadios = document.getElementsByName('PageType');
+    
+    if (pageTypeRadios && pageTypeRadios.length > 0) {
+      var currentPath = window.location.pathname;
+      var currentSearch = window.location.search;
+      
+      console.log('%cRadio Buttons Found!', 'color: #004A80; font-weight: bold;');
+      console.log('  Path:', currentPath);
+      console.log('  Search:', currentSearch);
+      console.log('  Radio count:', pageTypeRadios.length);
+      
+      // Check current state
+      for (var j = 0; j < pageTypeRadios.length; j++) {
+        console.log('  Radio', j, ':', pageTypeRadios[j].value, '- checked:', pageTypeRadios[j].checked);
+      }
+      
+      // Detect context
+      var isAddingChild = currentSearch.indexOf('responder=addChild') !== -1 || currentSearch.indexOf('addChild') !== -1;
+      var isProperties = currentSearch.indexOf('properties') !== -1;
+      var isInSuite = currentPath.match(/\/(Sanity|Smoke|DummyAPI|FrontPage)/i);
+      
+      // Skip auto-selection on properties page (shows current page type)
+      if (isProperties) {
+        console.log('  → Properties page detected, keeping current selection');
+        return;
+      }
+      
+      var defaultType = 'Suite'; // Default for new pages
+      
+      if (isAddingChild && isInSuite) {
+        // Adding child to a suite → default to Test
+        defaultType = 'Test';
+        console.log('  → Context: Adding child to suite → Defaulting to TEST');
+      } else {
+        console.log('  → Context: New page → Defaulting to SUITE');
+      }
+      
+      // Apply selection
+      for (var i = 0; i < pageTypeRadios.length; i++) {
+        if (pageTypeRadios[i].value === defaultType) {
+          pageTypeRadios[i].checked = true;
+          console.log('%c  ✓ Auto-selected:', 'color: green; font-weight: bold;', defaultType);
+          
+          // Trigger change event
+          if (typeof Event === 'function') {
+            pageTypeRadios[i].dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          break;
+        }
+      }
+    } else {
+      console.log('No PageType radio buttons found on this page');
+    }
+    
+    /* ────────────────────────────────────────────────────────────
+       FIX 3: UNIVERSAL FITNESSE THEME
+       ──────────────────────────────────────────────────────────── */
+    if (document.body && !document.body.classList.contains('fitnesse-theme')) {
+      document.body.classList.add('fitnesse-theme');
+      console.log('FitNesse UX: Applied fitnesse-theme class to body');
+    }
+    
+    // Watch for dynamically added content
+    if (typeof MutationObserver !== 'undefined') {
+      var themeObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.addedNodes) {
+            for (var i = 0; i < mutation.addedNodes.length; i++) {
+              var node = mutation.addedNodes[i];
+              if (node.nodeType === 1) {
+                // Apply theme classes to new elements
+                if (node.tagName === 'BUTTON' || (node.tagName === 'INPUT' && node.type === 'submit')) {
+                  node.classList.add('fitnesse-styled');
+                }
+                if (node.tagName === 'TABLE') {
+                  node.classList.add('fitnesse-table');
+                }
+              }
+            }
+          }
+        });
+      });
+      
+      themeObserver.observe(document.body, { childList: true, subtree: true });
+      console.log('FitNesse UX: Theme observer active');
+    }
+    
+    /* ────────────────────────────────────────────────────────────
+       FIX 6: PREVENT DUPLICATE RESPONDER FORM SERIALIZATION
+       ──────────────────────────────────────────────────────────── */
+    document.addEventListener("submit", function(e) {
+      var form = e.target;
+      if (form && form.tagName === "FORM") {
+        var action = form.getAttribute("action") || "";
+        // If action already has a responder query parameter, prevent duplicate form fields
+        if (action.indexOf("responder=") !== -1) {
+          var hiddenResponders = form.querySelectorAll("input[type='hidden'][name='responder']");
+          hiddenResponders.forEach(function(input) {
+            input.removeAttribute("name"); // Prevents the browser from serializing this element!
+            console.log("FitNesse UX: Suppressed duplicate hidden responder input name to avoid Java errors.");
+          });
+        }
+      }
+    });
+
+    /* ── Report Selection Dropdown Controllers ── */
+    window.iciToggleReportDropdown = function(e, btn) {
+      var ev = e || window.event;
+      if (ev) {
+        if (ev.stopPropagation) ev.stopPropagation();
+        ev.cancelBubble = true;
+      }
+
+      // Close profile dropdown if open
+      var profDropdown = document.getElementById("fitnesse-profile-dropdown");
+      if (profDropdown) profDropdown.style.display = "none";
+
+      var dropdown = document.getElementById("ici-report-dropdown");
+      if (!dropdown) {
+        // Create the report dropdown dynamically matching profile design exactly!
+        dropdown = document.createElement("div");
+        dropdown.id = "ici-report-dropdown";
+        dropdown.className = "fitnesse-report-dropdown"; // Natively uses the new, unlocked class!
+        dropdown.style.width = "180px";
+        dropdown.innerHTML =
+          '<button class="ici-dropdown-item" onclick="iciOpenSimpleReport()"><span class="ici-dropdown-icon">📝</span><span>Simple Report</span></button>' +
+          '<button class="ici-dropdown-item" onclick="iciOpenAllureReport()"><span class="ici-dropdown-icon">📈</span><span>Allure Report</span></button>';
+        document.body.appendChild(dropdown);
+      }
+
+      if (dropdown.style.display === "none" || !dropdown.style.display) {
+        // Directly utilize the passed 'btn' element (which is guaranteed to be the <a> tag!)
+        var targetBtn = btn || (ev ? (ev.currentTarget || ev.target) : null) || document.querySelector(".fitnesse-nav-btn");
+        var rect = targetBtn.getBoundingClientRect();
+        dropdown.style.left = rect.left + "px";
+        dropdown.style.top = (rect.bottom + window.scrollY + 6) + "px";
+        dropdown.style.display = "block";
+      } else {
+        dropdown.style.display = "none";
+      }
+    };
+
+    window.iciOpenSimpleReport = function() {
+      window.open("http://localhost:8090/report.html", "_blank");
+      var repDropdown = document.getElementById("ici-report-dropdown");
+      if (repDropdown) repDropdown.style.display = "none";
+    };
+
+    window.iciOpenLogs = function() {
+      window.open("http://localhost:8090/framework-logs", "_blank");
+      var profDropdown = document.getElementById("fitnesse-profile-dropdown");
+      if (profDropdown) profDropdown.style.display = "none";
+    };
+
+    window.iciOpenAllureReport = function() {
+      // Prevent opening Allure Report prematurely if a test suite is actively running!
+      var stopBtn = document.getElementById("stop-test") || document.querySelector(".stop-test");
+      if (!stopBtn) {
+        var els = document.querySelectorAll("input, button, a");
+        for (var idx = 0; idx < els.length; idx++) {
+          var val = (els[idx].value || els[idx].textContent || "").trim();
+          if (val.indexOf("Stop") > -1) {
+            stopBtn = els[idx];
+            break;
+          }
+        }
+      }
+      if (stopBtn) {
+        alert("⚠️ Suite execution is still in progress!\n\nPlease wait for the FitNesse run to completely finish (turn green/red) before opening your Allure Report.");
+        return;
+      }
+
+      var repDropdown = document.getElementById("ici-report-dropdown");
+      if (repDropdown) repDropdown.style.display = "none";
+
+      var progressSpinner = document.getElementById("ici-header-progress");
+      if (progressSpinner) progressSpinner.style.display = "flex";
+
+      fetch("http://127.0.0.1:8090/serve-allure")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (progressSpinner) progressSpinner.style.display = "none";
+        if (data.error) {
+          alert("Allure Launch Failed:\n\nAllure command-line utility was not found in your system PATH!\n\nTo install Allure globally on Windows, open your command prompt and run:\nnpm install -g allure-commandline\n\nOnce installed, restart start_server.bat and click Allure Report again!");
+        } else if (data.url) {
+          // Open the permanent, local FitNesse-hosted Allure dashboard directly on port 8080!
+          window.open(data.url, "_blank");
+        }
+      })
+      .catch(function(err) {
+        if (progressSpinner) progressSpinner.style.display = "none";
+        console.error("Allure launch request failed:", err);
+        alert("Failed to connect to local server on port 8090. Make sure your start_server.bat is active!");
+      });
+    };
+
+    // Close both collapsible dropdowns natively on document click (focus lost)
+    document.addEventListener("click", function(event) {
+      var target = event.target;
+      
+      // 1. Only close the user profile dropdown if we didn't click inside the user chip
+      var userChip = document.getElementById("fitnesse-user-chip");
+      if (userChip && !userChip.contains(target)) {
+        var profDropdown = document.getElementById("fitnesse-profile-dropdown");
+        if (profDropdown) profDropdown.style.display = "none";
+      }
+      
+      // 2. Only close the report dropdown if we didn't click inside the Report navbar button itself!
+      var isClickingReportBtn = false;
+      var navButtons = document.querySelectorAll(".fitnesse-nav-btn");
+      navButtons.forEach(function(btn) {
+        if (btn.textContent.indexOf("Report") !== -1 && (btn === target || btn.contains(target))) {
+          isClickingReportBtn = true;
+        }
+      });
+      
+      if (!isClickingReportBtn) {
+        var repDropdown = document.getElementById("ici-report-dropdown");
+        if (repDropdown) repDropdown.style.display = "none";
+      }
+    });
+
+    window.iciClearAllureResults = function() {
+      // 1. Silently register the running page name in the server's memory-queue with ZERO table edits!
+      fetch("http://127.0.0.1:8090/register-run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ page: location.pathname })
+      }).catch(function(err) {});
+
+      // 2. Silently clear older allure results to keep the history logs fresh and clean!
+      return fetch("http://127.0.0.1:8090/clear-allure", {
+        method: "POST"
+      }).catch(function(err) {
+        console.warn("User store offline; allure results not cleared:", err);
+      });
+    };
+
+    /* ── Locator Dictionary & Step Builder Controllers ── */
+    window.iciToggleDictDrawer = function() {
+      var drawer = document.getElementById("ici-dict-drawer");
+      if (drawer) {
+        drawer.classList.toggle("open");
+      }
+    };
+
+    window.iciSwitchDrawerTab = function(tabName) {
+      var tabDict = document.getElementById("ici-dict-tab-dict");
+      var tabBuilder = document.getElementById("ici-dict-tab-builder");
+      var paneDict = document.getElementById("ici-drawer-pane-dict");
+      var paneBuilder = document.getElementById("ici-drawer-pane-builder");
+
+      if (tabName === 'dict') {
+        tabDict.classList.add("active");
+        tabBuilder.classList.remove("active");
+        paneDict.style.display = "block";
+        paneBuilder.style.display = "none";
+      } else {
+        tabBuilder.classList.add("active");
+        tabDict.classList.remove("active");
+        paneBuilder.style.display = "block";
+        paneDict.style.display = "none";
+        iciOnBuilderActionChange(); // Auto-render first step
+      }
+    };
+
+    window.iciCopyToClipboard = function(text) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function() {
+          alert("📋 Copied to clipboard: " + text);
+        });
+      } else {
+        var textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("📋 Copied to clipboard: " + text);
+      }
+    };
+
+    window.iciOnBuilderActionChange = function() {
+      var action = document.getElementById("ici-builder-action").value;
+      var locatorContainer = document.getElementById("ici-builder-locator-container");
+      var param1Container = document.getElementById("ici-builder-param-1-container");
+      var param2Container = document.getElementById("ici-builder-param-2-container");
+      var param1Label = document.getElementById("ici-builder-param-1-label");
+      var param2Label = document.getElementById("ici-builder-param-2-label");
+      var param1Input = document.getElementById("ici-builder-param-1");
+      var param2Input = document.getElementById("ici-builder-param-2");
+
+      if (action === "navigate") {
+        locatorContainer.style.display = "none";
+        param1Container.style.display = "block";
+        param2Container.style.display = "none";
+        param1Label.textContent = "Target URL";
+        param1Input.placeholder = "e.g. https://www.saucedemo.com/";
+      } else if (action === "fill") {
+        locatorContainer.style.display = "block";
+        param1Container.style.display = "none"; // Handled by locator container
+        param2Container.style.display = "block";
+        param2Label.textContent = "Value to Type";
+        param2Input.placeholder = "e.g. standard_user";
+        iciOnBuilderLocatorChange(); // Update locator parameters
+      } else if (action === "click") {
+        locatorContainer.style.display = "block";
+        param1Container.style.display = "none";
+        param2Container.style.display = "none";
+        iciOnBuilderLocatorChange();
+      } else if (action === "wait") {
+        locatorContainer.style.display = "none";
+        param1Container.style.display = "block";
+        param2Container.style.display = "block";
+        param1Label.textContent = "Text Content to wait for";
+        param1Input.placeholder = "e.g. Products";
+        param2Label.textContent = "Timeout (ms)";
+        param2Input.placeholder = "e.g. 5000";
+      } else if (action === "verify") {
+        locatorContainer.style.display = "none";
+        param1Container.style.display = "block";
+        param2Container.style.display = "none";
+        param1Label.textContent = "Expected Text";
+        param1Input.placeholder = "e.g. Products";
+      }
+      iciGenerateBuilderOutput();
+    };
+
+    window.iciOnBuilderLocatorChange = function() {
+      var selectVal = document.getElementById("ici-builder-locator-select").value;
+      var customInput = document.getElementById("ici-builder-locator-custom");
+      if (selectVal === "custom") {
+        customInput.style.display = "block";
+      } else {
+        customInput.style.display = "none";
+      }
+      iciGenerateBuilderOutput();
+    };
+
+    window.iciGenerateBuilderOutput = function() {
+      var action = document.getElementById("ici-builder-action").value;
+      var param1 = document.getElementById("ici-builder-param-1").value || "";
+      var param2 = document.getElementById("ici-builder-param-2").value || "";
+      
+      // Determine the locator string (either selected from dropdown or custom typed)
+      var locatorStr = "";
+      if (action === "fill" || action === "click") {
+        var selectVal = document.getElementById("ici-builder-locator-select").value;
+        if (selectVal === "custom") {
+          locatorStr = document.getElementById("ici-builder-locator-custom").value || "";
+        } else {
+          locatorStr = selectVal;
+        }
+      }
+
+      var output = "";
+      if (action === "navigate") {
+        output = "| navigate to | " + param1 + " |";
+      } else if (action === "fill") {
+        output = "| fill field | " + locatorStr + " | with value | " + param2 + " |";
+      } else if (action === "click") {
+        output = "| click button | " + locatorStr + " |";
+      } else if (action === "wait") {
+        output = "| wait for text | " + param1 + " | timeout | " + (param2 || "5000") + " |";
+      } else if (action === "verify") {
+        output = "| check | verify text present | " + param1 + " | true |";
+      } else if (action === "close") {
+        output = "| close browser |";
+      }
+      
+      // Update single step preview
+      document.getElementById("ici-builder-step-preview").textContent = output;
+    };
+
+    window.iciAppendStepToScript = function() {
+      var step = document.getElementById("ici-builder-step-preview").textContent;
+      if (!step) return;
+      
+      var scriptBox = document.getElementById("ici-builder-script");
+      var currentVal = scriptBox.value.trim();
+      
+      // If script is completely empty, initialize it with a proper SLiM script fixture header block!
+      if (currentVal === "") {
+        currentVal = "| script | fixtures.UiFixture |\n| start browser |";
+      }
+      
+      // Append the new step as a clean line
+      currentVal += "\n" + step;
+      scriptBox.value = currentVal;
+    };
+
+    window.iciClearBuilderScript = function() {
+      document.getElementById("ici-builder-script").value = "";
+    };
+
+    window.iciCopyBuilderScript = function() {
+      var text = document.getElementById("ici-builder-script").value;
+      if (text) {
+        iciCopyToClipboard(text);
+      } else {
+        alert("Your test script table is currently empty. Append some steps first!");
+      }
+    };
+
+    window.iciLiveDebug = function() {
+      // POST to local backend on 8090 to activate the headless=false override
+      fetch("http://127.0.0.1:8090/live-debug", {
+        method: "POST"
+      })
+      .then(function() {
+        // Redirect browser to trigger the test run
+        location.href = getRunUrl();
+      })
+      .catch(function(err) {
+        console.error("Live debug trigger failed:", err);
+        location.href = getRunUrl(); // Fallback to standard run anyway
+      });
+    };
+    
+    console.log('%c✓ All 6 UX fixes initialized successfully', 'color: green; font-weight: bold;');
+  });
 
 })();
 </script>

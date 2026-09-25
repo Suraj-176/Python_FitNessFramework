@@ -1,0 +1,195 @@
+{
+  "test_name": "API_Test",
+  "timestamp": "2026-09-25 14:53:41",
+  "request": {
+    "method": "GET",
+    "url": "https://dummyjson.com/users/search?q=Emily",
+    "headers": {},
+    "body": ""
+  },
+  "response": {
+    "status_code": 200,
+    "headers": {
+      "Date": "Fri, 25 Sep 2026 09:23:41 GMT",
+      "Content-Type": "application/json; charset=utf-8",
+      "Transfer-Encoding": "chunked",
+      "Connection": "keep-alive",
+      "access-control-allow-credentials": "true",
+      "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=GBXM0riC0ofakhXCm49DtCfx6ElsHh08OJLXTVLZYDJgSOD9dIFvu3vGJLTOxZxrkCGzB6MnuP%2F60jx4jmUP3UY7TWJVOjDWR83x90kTHp%2B%2BiV7bb%2FgXOonTqlDAC9wglVqbFrna7covXRq4\"}]}",
+      "etag": "W/\"b33-ZT0uf5XOK4s2qOhUtFgDIwmO9nw\"",
+      "strict-transport-security": "max-age=15552000; includeSubDomains",
+      "vary": "Origin, Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-dns-prefetch-control": "off",
+      "x-download-options": "noopen",
+      "x-frame-options": "SAMEORIGIN",
+      "x-ratelimit-limit": "100",
+      "x-ratelimit-remaining": "98",
+      "x-ratelimit-reset": "1790328231",
+      "x-xss-protection": "1; mode=block",
+      "cf-cache-status": "DYNAMIC",
+      "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+      "Content-Encoding": "gzip",
+      "Server": "cloudflare",
+      "CF-RAY": "a408f8b80c4ae1c5-MRS"
+    },
+    "body": {
+      "users": [
+        {
+          "id": 1,
+          "firstName": "Emily",
+          "lastName": "Johnson",
+          "maidenName": "Smith",
+          "age": 29,
+          "gender": "female",
+          "email": "emily.johnson@x.dummyjson.com",
+          "phone": "+81 965-431-3024",
+          "username": "emilys",
+          "password": "em******ss",
+          "birthDate": "1996-5-30",
+          "image": "https://dummyjson.com/icon/emilys/128",
+          "bloodGroup": "O-",
+          "height": 193.24,
+          "weight": 63.16,
+          "eyeColor": "Green",
+          "hair": {
+            "color": "Brown",
+            "type": "Curly"
+          },
+          "ip": "42.48.100.32",
+          "address": {
+            "address": "626 Main Street",
+            "city": "Phoenix",
+            "state": "Mississippi",
+            "stateCode": "MS",
+            "postalCode": "29112",
+            "coordinates": {
+              "lat": -77.16213,
+              "lng": -92.084824
+            },
+            "country": "United States"
+          },
+          "macAddress": "47:fa:41:18:ec:eb",
+          "university": "University of Wisconsin--Madison",
+          "bank": {
+            "cardExpire": "05/28",
+            "cardNumber": "36************44",
+            "cardType": "Diners Club International",
+            "currency": "GBP",
+            "iban": "GB74MH2UZLR9TRPHYNU8F8"
+          },
+          "company": {
+            "department": "Engineering",
+            "name": "Dooley, Kozey and Cronin",
+            "title": "Sales Manager",
+            "address": {
+              "address": "263 Tenth Street",
+              "city": "San Francisco",
+              "state": "Wisconsin",
+              "stateCode": "WI",
+              "postalCode": "37657",
+              "coordinates": {
+                "lat": 71.814525,
+                "lng": -161.150263
+              },
+              "country": "United States"
+            }
+          },
+          "ein": "977-175",
+          "ssn": "90*******89",
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36",
+          "crypto": {
+            "coin": "Bitcoin",
+            "wallet": "0xb9fc2fe63b2a6c003f1c324c3bfa53259162181a",
+            "network": "Ethereum (ERC20)"
+          },
+          "role": "admin"
+        },
+        {
+          "id": 103,
+          "firstName": "Emily",
+          "lastName": "Brown",
+          "maidenName": "Taylor",
+          "age": 43,
+          "gender": "female",
+          "email": "emily.brown@x.dummyjson.com",
+          "phone": "+61 875-999-8871",
+          "username": "emilyt",
+          "password": "em******ss",
+          "birthDate": "1982-12-5",
+          "image": "https://dummyjson.com/icon/emilyt/128",
+          "bloodGroup": "AB-",
+          "height": 181.96,
+          "weight": 89.65,
+          "eyeColor": "Blue",
+          "hair": {
+            "color": "Brown",
+            "type": "Kinky"
+          },
+          "ip": "41.156.197.109",
+          "address": {
+            "address": "1962 Fourth Street",
+            "city": "Houston",
+            "state": "Hawaii",
+            "stateCode": "HI",
+            "postalCode": "67104",
+            "coordinates": {
+              "lat": -64.336051,
+              "lng": 135.876737
+            },
+            "country": "United States"
+          },
+          "macAddress": "3b:9b:ee:cf:1f:de",
+          "university": "Georgetown University",
+          "bank": {
+            "cardExpire": "09/30",
+            "cardNumber": "37***********90",
+            "cardType": "American Express",
+            "currency": "INR",
+            "iban": "DE06646067555223276327"
+          },
+          "company": {
+            "department": "Research and Development",
+            "name": "Pfannerstill Inc",
+            "title": "Data Analyst",
+            "address": {
+              "address": "1998 Main Street",
+              "city": "Indianapolis",
+              "state": "Arizona",
+              "stateCode": "AZ",
+              "postalCode": "57190",
+              "coordinates": {
+                "lat": -83.995771,
+                "lng": 127.669213
+              },
+              "country": "United States"
+            }
+          },
+          "ein": "844-425",
+          "ssn": "11*******30",
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36",
+          "crypto": {
+            "coin": "Bitcoin",
+            "wallet": "0xb9fc2fe63b2a6c003f1c324c3bfa53259162181a",
+            "network": "Ethereum (ERC20)"
+          },
+          "role": "user"
+        }
+      ],
+      "total": 2,
+      "skip": 0,
+      "limit": 2
+    },
+    "duration_ms": 955
+  },
+  "assertions": {
+    "right": 1,
+    "wrong": 0,
+    "ignored": 0,
+    "exceptions": 0
+  },
+  "metadata": {
+    "sanitized": true,
+    "captured_at": "2026-09-25T14:53:41.116125"
+  }
+}

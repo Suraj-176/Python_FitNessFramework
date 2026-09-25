@@ -9,5 +9,7 @@ from .options_request_fixture import OptionsRequestFixture
 from .mock_server_fixture import MockServerFixture
 from .websocket_fixture import WebSocketFixture
 from .grpc_request_fixture import GrpcRequestFixture
-from .graphql_request_fixture import GraphqlRequestFixture
-from .oauth2_fixture import Oauth2Fixture
+from .oauth2_fixture import OAuth2Fixture
+from .graphql_fixture import GraphQLFixture
+from .ui_fixture import UiFixture
+

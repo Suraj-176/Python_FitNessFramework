@@ -1,0 +1,120 @@
+{
+  "test_name": "API_Test",
+  "timestamp": "2026-09-25 14:53:13",
+  "request": {
+    "method": "DELETE",
+    "url": "https://dummyjson.com/users/1",
+    "headers": {},
+    "body": ""
+  },
+  "response": {
+    "status_code": 200,
+    "headers": {
+      "Date": "Fri, 25 Sep 2026 09:23:14 GMT",
+      "Content-Type": "application/json; charset=utf-8",
+      "Transfer-Encoding": "chunked",
+      "Connection": "keep-alive",
+      "access-control-allow-credentials": "true",
+      "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=PPwNwuU5TcSy26S6VO31%2BKlj0EP%2ByAsk5Wi%2FSqweYkX%2Btpv74l%2Fryw4CIObuB3ylkj94lUo1OC%2F0pOUvADhjVLMohVGooupyT1EPNGXhIwCNiWyeR5jKEcjPotwIJSOs%2BrGwlTgalhQ0TlkO\"}]}",
+      "etag": "W/\"5c7-DBuTFGAWdx2sAdFVeTPYgRvaenU\"",
+      "strict-transport-security": "max-age=15552000; includeSubDomains",
+      "vary": "Origin, Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-dns-prefetch-control": "off",
+      "x-download-options": "noopen",
+      "x-frame-options": "SAMEORIGIN",
+      "x-ratelimit-limit": "100",
+      "x-ratelimit-remaining": "93",
+      "x-ratelimit-reset": "1790328201",
+      "x-xss-protection": "1; mode=block",
+      "cf-cache-status": "DYNAMIC",
+      "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+      "Content-Encoding": "gzip",
+      "Server": "cloudflare",
+      "CF-RAY": "a408f80d397de1a4-MRS"
+    },
+    "body": {
+      "id": 1,
+      "firstName": "Emily",
+      "lastName": "Johnson",
+      "maidenName": "Smith",
+      "age": 29,
+      "gender": "female",
+      "email": "emily.johnson@x.dummyjson.com",
+      "phone": "+81 965-431-3024",
+      "username": "emilys",
+      "password": "em******ss",
+      "birthDate": "1996-5-30",
+      "image": "https://dummyjson.com/icon/emilys/128",
+      "bloodGroup": "O-",
+      "height": 193.24,
+      "weight": 63.16,
+      "eyeColor": "Green",
+      "hair": {
+        "color": "Brown",
+        "type": "Curly"
+      },
+      "ip": "42.48.100.32",
+      "address": {
+        "address": "626 Main Street",
+        "city": "Phoenix",
+        "state": "Mississippi",
+        "stateCode": "MS",
+        "postalCode": "29112",
+        "coordinates": {
+          "lat": -77.16213,
+          "lng": -92.084824
+        },
+        "country": "United States"
+      },
+      "macAddress": "47:fa:41:18:ec:eb",
+      "university": "University of Wisconsin--Madison",
+      "bank": {
+        "cardExpire": "05/28",
+        "cardNumber": "36************44",
+        "cardType": "Diners Club International",
+        "currency": "GBP",
+        "iban": "GB74MH2UZLR9TRPHYNU8F8"
+      },
+      "company": {
+        "department": "Engineering",
+        "name": "Dooley, Kozey and Cronin",
+        "title": "Sales Manager",
+        "address": {
+          "address": "263 Tenth Street",
+          "city": "San Francisco",
+          "state": "Wisconsin",
+          "stateCode": "WI",
+          "postalCode": "37657",
+          "coordinates": {
+            "lat": 71.814525,
+            "lng": -161.150263
+          },
+          "country": "United States"
+        }
+      },
+      "ein": "977-175",
+      "ssn": "90*******89",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36",
+      "crypto": {
+        "coin": "Bitcoin",
+        "wallet": "0xb9fc2fe63b2a6c003f1c324c3bfa53259162181a",
+        "network": "Ethereum (ERC20)"
+      },
+      "role": "admin",
+      "isDeleted": true,
+      "deletedOn": "2026-09-25T09:23:14.165Z"
+    },
+    "duration_ms": 837
+  },
+  "assertions": {
+    "right": 1,
+    "wrong": 0,
+    "ignored": 0,
+    "exceptions": 0
+  },
+  "metadata": {
+    "sanitized": true,
+    "captured_at": "2026-09-25T14:53:13.711646"
+  }
+}

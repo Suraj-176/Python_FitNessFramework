@@ -1,0 +1,26 @@
+{
+  "test_name": "API_Test",
+  "timestamp": "2026-09-25 15:19:09",
+  "request": {
+    "method": "GET",
+    "url": "https://invalid-domain-that-does-not-exist-12345.com/api",
+    "headers": {},
+    "body": ""
+  },
+  "response": {
+    "status_code": 0,
+    "headers": {},
+    "body": "exception after 3 attempts: HTTPSConnectionPool(host='invalid-domain-that-does-not-exist-12345.com', port=443): Max retries exceeded with url: /api (Caused by NameResolutionError(\"HTTPSConnection(host='invalid-domain-that-does-not-exist-12345.com', port=443): Failed to resolve 'invalid-domain-that-does-not-exist-12345.com' ([Errno 11001] getaddrinfo failed)\"))",
+    "duration_ms": 0
+  },
+  "assertions": {
+    "right": 0,
+    "wrong": 0,
+    "ignored": 0,
+    "exceptions": 1
+  },
+  "metadata": {
+    "sanitized": true,
+    "captured_at": "2026-09-25T15:19:09.481888"
+  }
+}

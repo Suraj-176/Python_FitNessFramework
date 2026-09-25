@@ -77,10 +77,10 @@ jobs:
         run: |
           $envStr = @"
           ENVIRONMENT=uat
-          DEV_BASE_URL=https://dev-api.icici.com
-          STAGING_BASE_URL=https://staging-api.icici.com
-          UAT_BASE_URL=https://uat-api.icici.com
-          PROD_BASE_URL=https://api.icici.com
+          DEV_BASE_URL=https://dummyjson.com
+          STAGING_BASE_URL=https://dummyjson.com
+          UAT_BASE_URL=https://dummyjson.com
+          PROD_BASE_URL=https://dummyjson.com
           API_ADMIN_USER=admin
           API_ADMIN_PASS=admin123
           TOKEN_ENCRYPTION_KEY=uz827x4e_RwsYDfghjklmnopqrstudvwxyz12345678=
@@ -104,14 +104,14 @@ jobs:
           # Configure base URLs for different environments
           switch ($env:TEST_ENV) {
             "dev" {
-              echo "BASE_URL=https://dev-api.icici.com" >> $env:GITHUB_ENV
+              echo "BASE_URL=https://dummyjson.com" >> $env:GITHUB_ENV
               echo "MOCK_SERVER_URL=http://localhost:8089" >> $env:GITHUB_ENV
             }
             "staging" {
-              echo "BASE_URL=https://staging-api.icici.com" >> $env:GITHUB_ENV
+              echo "BASE_URL=https://dummyjson.com" >> $env:GITHUB_ENV
             }
             "uat" {
-              echo "BASE_URL=https://uat-api.icici.com" >> $env:GITHUB_ENV
+              echo "BASE_URL=https://dummyjson.com" >> $env:GITHUB_ENV
             }
           }
 

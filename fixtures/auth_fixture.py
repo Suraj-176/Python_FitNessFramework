@@ -1,12 +1,14 @@
-import os
 import html
 import json
 import base64
+import os
 import requests
 import time
 from typing import List
 from .json_utils import extract_json_field
 from core.logger import logger, log_request, log_response
+from core.allure_helper import AllureHelper
+from .ui_fixture import clean_html_text
 
 class AuthFixture:
     """
@@ -17,18 +19,13 @@ class AuthFixture:
     _auth_token = ""  # Static/Class variable to share token across requests
 
     def __init__(self) -> None:
-        self._token_url: str = os.getenv("OAUTH2_TOKEN_URL", "")
+        self._token_url: str = ""
         self._body_json: str = "{}"
         self._token_field: str = "token"
         self._expected_codes: List[int] = []
         self._basic_auth_header: str = ""
         self._ssl_verify: bool = True
-        
-        self._grant_type: str = ""
-        self._username: str = ""
-        self._password: str = ""
-        self._client_id: str = os.getenv("OAUTH2_CLIENT_ID", "")
-        self._client_secret: str = os.getenv("OAUTH2_CLIENT_SECRET", "")
+        self._timeout: int = 15
         
         self._actual_status_code: int = 0
         self._response_body: str = ""
@@ -46,19 +43,29 @@ class AuthFixture:
         cls._auth_token = token
 
     @classmethod
+    def set_token(cls, token: str) -> None:
+        """Sets the stored bearer token statically."""
+        cls._auth_token = token
+
+    @classmethod
     def clear_token(cls) -> None:
         """Clears the stored token."""
         cls._auth_token = ""
 
     # Setters mapped to columns
     def set_token_url(self, token_url: str) -> None:
-        self._token_url = token_url
+        self._token_url = token_url.strip() if token_url else ""
+        # Validate URL format
+        if not self._token_url:
+            logger.warning("[Auth] Token URL is empty. Authentication will fail.")
+        elif not (self._token_url.startswith("http://") or self._token_url.startswith("https://")):
+            logger.warning(f"[Auth] Token URL should start with http:// or https://: {self._token_url}")
     def setTokenUrl(self, token_url: str) -> None:
         self.set_token_url(token_url)
         
     def set_url(self, url: str) -> None:
         """Alias to support 'url' column natively, matching PostRequestFixture."""
-        self._token_url = url
+        self.set_token_url(url)
     def setUrl(self, url: str) -> None:
         self.set_url(url)
 
@@ -66,11 +73,6 @@ class AuthFixture:
         self._body_json = body_json
     def setBodyJson(self, body_json: str) -> None:
         self.set_body_json(body_json)
-
-    def set_body(self, body: str) -> None:
-        self._body_json = body
-    def setBody(self, body: str) -> None:
-        self.set_body(body)
 
     def set_token_field(self, token_field: str) -> None:
         self._token_field = token_field
@@ -97,42 +99,56 @@ class AuthFixture:
                 logger.warning(f"[Auth] Invalid status code: {code}")
     def setStatusCodes(self, codes: str) -> None:
         self.set_status_codes(codes)
-        
-    def set_grant_type(self, grant_type: str) -> None:
-        self._grant_type = grant_type
-    def setGrantType(self, grant_type: str) -> None:
-        self.set_grant_type(grant_type)
 
-    def set_username(self, username: str) -> None:
-        self._username = username
-    def setUsername(self, username: str) -> None:
-        self.set_username(username)
+    def set_timeout(self, seconds: str) -> None:
+        """Sets request timeout in seconds for authentication request. Default is 15 seconds."""
+        try:
+            self._timeout = int(seconds)
+            logger.debug(f"[Auth] Timeout set to {self._timeout} seconds")
+        except ValueError:
+            logger.warning(f"[Auth] Invalid timeout value: '{seconds}', using default 15s")
+            self._timeout = 15
+    def setTimeout(self, seconds: str) -> None:
+        self.set_timeout(seconds)
 
-    def set_password(self, password: str) -> None:
-        self._password = password
-    def setPassword(self, password: str) -> None:
-        self.set_password(password)
+    def _record_to_report(self, method: str, url: str, status_code: int, response_time_ms: int, 
+                          curl_cmd: str, request_body: str, response_body: str, 
+                          right: int = 0, wrong: int = 0, exceptions: int = 0) -> None:
+        """Shared helper to record request details to the HTML report generator."""
+        try:
+            from core.report_generator import add_record
+            add_record({
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "method": method,
+                "url": url,
+                "status_code": status_code,
+                "response_time_ms": response_time_ms,
+                "curl": curl_cmd,
+                "request_body": request_body,
+                "response_body": response_body,
+                "right": right,
+                "wrong": wrong,
+                "ignored": 0,
+                "exceptions": exceptions
+            })
+        except Exception as e:
+            logger.error(f"[Report] Failed to trigger report generator: {e}")
 
-    def set_auth_url(self, auth_url: str) -> None:
-        self._token_url = auth_url
-    def setAuthUrl(self, auth_url: str) -> None:
-        self.set_auth_url(auth_url)
-
-    def set_client_id(self, client_id: str) -> None:
-        self._client_id = client_id
-    def setClientId(self, client_id: str) -> None:
-        self.set_client_id(client_id)
-
-    def set_client_secret(self, client_secret: str) -> None:
-        self._client_secret = client_secret
-    def setClientSecret(self, client_secret: str) -> None:
-        self.set_client_secret(client_secret)
-
-    def get_access_token(self) -> str:
-        return self.get_stored_token()
-
-    def authenticate(self) -> bool:
-        return self.generate_token()
+    def _calculate_assertion_counts(self, status_code: int, expected_codes: list) -> tuple:
+        """Calculate right/wrong counts based on status code validation."""
+        right_count = 0
+        wrong_count = 0
+        if expected_codes:
+            if status_code in expected_codes:
+                right_count = 1
+            else:
+                wrong_count = 1
+        else:
+            if 200 <= status_code < 400 or status_code == 204:
+                right_count = 1
+            else:
+                wrong_count = 1
+        return right_count, wrong_count
 
     # Action mapped to execute
     def execute(self) -> bool:
@@ -141,39 +157,18 @@ class AuthFixture:
 
     def generate_token(self) -> bool:
         """Sends a POST request to generate the token and stores it statically."""
+        # Validate URL before making request
+        if not self._token_url:
+            logger.error("[Auth] Cannot execute authentication: Token URL is empty")
+            return False
+        if not (self._token_url.startswith("http://") or self._token_url.startswith("https://")):
+            logger.error(f"[Auth] Cannot execute authentication: Invalid URL format: {self._token_url}")
+            return False
+            
         try:
-            # Auto-resolve token url from environment if empty
-            if not self._token_url:
-                self._token_url = os.getenv("OAUTH2_TOKEN_URL", "")
-
-            # If grant type is password and body json is empty, build standard body payload
-            if self._grant_type == "password" and (self._body_json == "{}" or not self._body_json):
-                if "dummyjson.com" in self._token_url:
-                    self._body_json = json.dumps({
-                        "username": self._username,
-                        "password": self._password
-                    })
-                else:
-                    self._body_json = f"grant_type=password&username={self._username}&password={self._password}"
-
-            # If client credentials grant type, build standard header authorization and payload
-            is_urlencoded = False
-            if self._grant_type == "client_credentials":
-                is_urlencoded = True
-                client_id = self._client_id or os.getenv("OAUTH2_CLIENT_ID", "")
-                client_secret = self._client_secret or os.getenv("OAUTH2_CLIENT_SECRET", "")
-                encoded = base64.b64encode(f"{client_id}:{client_secret}".encode("utf-8")).decode("utf-8")
-                self._basic_auth_header = f"Basic {encoded}"
-                self._body_json = "grant_type=client_credentials"
-
             unescaped_body = html.unescape(self._body_json)
             
-            headers = {}
-            if is_urlencoded:
-                headers["Content-Type"] = "application/x-www-form-urlencoded"
-            else:
-                headers["Content-Type"] = "application/json"
-
+            headers = {"Content-Type": "application/json"}
             if self._basic_auth_header:
                 headers["Authorization"] = self._basic_auth_header
 
@@ -185,10 +180,10 @@ class AuthFixture:
             try:
                 # NATIVE JSON serialization to match Postman! 🟢
                 json_payload = json.loads(unescaped_body)
-                response = requests.post(self._token_url, json=json_payload, headers=headers, timeout=15, verify=self._ssl_verify)
+                response = requests.post(self._token_url, json=json_payload, headers=headers, timeout=self._timeout, verify=self._ssl_verify)
             except Exception:
                 # Fallback to raw data bytes
-                response = requests.post(self._token_url, data=unescaped_body.encode('utf-8'), headers=headers, timeout=15, verify=self._ssl_verify)
+                response = requests.post(self._token_url, data=unescaped_body.encode('utf-8'), headers=headers, timeout=self._timeout, verify=self._ssl_verify)
                 
             self._response_time_ms = int((time.perf_counter() - start) * 1000)
             self._actual_status_code = response.status_code
@@ -212,114 +207,108 @@ class AuthFixture:
 
             token = extract_json_field(self._response_body_json, self._token_field)
             if not token or token in ("key not found", "no key set"):
-                # Fallback check for standard OAuth2 access_token field
-                if "access_token" in self._response_body_json:
-                    token = self._response_body_json["access_token"]
-                else:
-                    logger.error(f"[Auth] Token field '{self._token_field}' not found in response: {response.text}")
-                    return False
+                logger.error(f"[Auth] Token field '{self._token_field}' not found in response: {response.text}")
+                return False
 
             AuthFixture._auth_token = token
             logger.info("[Auth] Token acquired successfully.")
             
-            # Calculate assertion counts
-            right_count = 0
-            wrong_count = 0
-            if self._expected_codes:
-                if self._actual_status_code in self._expected_codes:
-                    right_count = 1
-                else:
-                    wrong_count = 1
-            else:
-                if 200 <= self._actual_status_code < 400 or self._actual_status_code == 204:
-                    right_count = 1
-                else:
-                    wrong_count = 1
+            # Calculate assertion counts and record to report
+            right_count, wrong_count = self._calculate_assertion_counts(self._actual_status_code, self._expected_codes)
+            curl_cmd = f"curl -s -X POST \"{self._token_url}\" -H \"Content-Type: application/json\" -d \"{self._body_json.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace(chr(34), '%22')}\""
+            self._record_to_report(
+                method="POST",
+                url=self._token_url,
+                status_code=self._actual_status_code,
+                response_time_ms=self._response_time_ms,
+                curl_cmd=curl_cmd,
+                request_body=unescaped_body or "",
+                response_body=self._response_body or "",
+                right=right_count,
+                wrong=wrong_count
+            )
 
-            # Auto-generate our 3rd-party corporate HTML report dynamically on the fly!
+            # Symmetrical Allure API Reporting Compile!
             try:
-                from core.report_generator import add_record
-                add_record({
-                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "method": "POST",
-                    "url": self._token_url,
-                    "status_code": self._actual_status_code,
-                    "response_time_ms": self._response_time_ms,
-                    "curl": f"curl -s -X POST \"{self._token_url}\" -H \"Content-Type: application/json\" -d \"{self._body_json.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace(chr(34), '%22')}\"",
-                    "request_body": unescaped_body or "",
-                    "response_body": self._response_body or "",
-                    "right": right_count,
-                    "wrong": wrong_count,
-                    "ignored": 0,
-                    "exceptions": 0
-                })
-            except Exception as e:
-                logger.error(f"[Report] Failed to trigger report generator: {e}")
+                clean_url = clean_html_text(self._token_url)
+                
+                # Dynamically extract and immediately erase the FitNesse variables to prevent cross-test state leakages!
+                env_page_name = os.environ.get("FITNESSE_PAGE_NAME")
+                test_name = f"POST {clean_url}"
+                if env_page_name:
+                    test_name = env_page_name
+                    
+                suite_name = "API Tests"
+                env_page_path = os.environ.get("FITNESSE_PAGE_PATH")
+                if env_page_path:
+                    parts = [p.strip() for p in env_page_path.split(".") if p.strip()]
+                    if len(parts) >= 3:
+                        # E.g. "FrontPage.DummyAPI.AuthenticateUser" -> suite is "DummyAPI"
+                        suite_name = parts[-2]
+                    elif len(parts) == 2:
+                        # E.g. "FrontPage.DummyAPI" -> suite is "DummyAPI"
+                        suite_name = parts[-1]
+                        
+                # Only write results if this is NOT a parent suite page itself to prevent duplicate empty cards!
+                if test_name != suite_name:
+                    allure = AllureHelper(test_name=test_name, suite_name=suite_name)
+                    allure.add_step("Prepare Request Headers & Body", "passed", 2)
+                    allure.add_step("Send HTTP POST Request", "passed", self._response_time_ms)
+                    
+                    # Attach Request Info
+                    allure.add_attachment("Request_Headers", json.dumps(headers, indent=2), "application/json", "json")
+                    if unescaped_body:
+                        allure.add_attachment("Request_Body", unescaped_body, "application/json", "json")
+                        
+                    # Attach Response Info
+                    response_headers = dict(response.headers) if 'response' in locals() else {}
+                    allure.add_attachment("Response_Headers", json.dumps(response_headers, indent=2), "application/json", "json")
+                    allure.add_attachment("Response_Body", self._response_body, "application/json" if "json" in str(response_headers.get("Content-Type", "")).lower() else "text/plain", "json" if "json" in str(response_headers.get("Content-Type", "")).lower() else "txt")
+                    
+                    allure.write_result()
+            except Exception as allure_err:
+                logger.debug(f"Failed to compile Allure API results inside AuthFixture: {allure_err}")
                 
             return True
 
         except requests.exceptions.Timeout:
             logger.error(f"[Auth] Timeout [{self._token_url}]")
-            try:
-                from core.report_generator import add_record
-                add_record({
-                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "method": "POST",
-                    "url": self._token_url,
-                    "status_code": 0,
-                    "response_time_ms": 0,
-                    "curl": f"curl -s -X POST \"{self._token_url}\"",
-                    "request_body": self._body_json or "",
-                    "response_body": "timeout exception",
-                    "right": 0,
-                    "wrong": 0,
-                    "ignored": 0,
-                    "exceptions": 1
-                })
-            except Exception:
-                pass
+            self._record_to_report(
+                method="POST",
+                url=self._token_url,
+                status_code=0,
+                response_time_ms=0,
+                curl_cmd=f"curl -s -X POST \"{self._token_url}\"",
+                request_body=self._body_json or "",
+                response_body="timeout exception",
+                exceptions=1
+            )
             return False
         except requests.exceptions.ConnectionError as e:
             logger.error(f"[Auth] Connection error [{self._token_url}]: {e}")
-            try:
-                from core.report_generator import add_record
-                add_record({
-                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "method": "POST",
-                    "url": self._token_url,
-                    "status_code": 0,
-                    "response_time_ms": 0,
-                    "curl": f"curl -s -X POST \"{self._token_url}\"",
-                    "request_body": self._body_json or "",
-                    "response_body": f"connection error: {str(e)}",
-                    "right": 0,
-                    "wrong": 0,
-                    "ignored": 0,
-                    "exceptions": 1
-                })
-            except Exception:
-                pass
+            self._record_to_report(
+                method="POST",
+                url=self._token_url,
+                status_code=0,
+                response_time_ms=0,
+                curl_cmd=f"curl -s -X POST \"{self._token_url}\"",
+                request_body=self._body_json or "",
+                response_body=f"connection error: {str(e)}",
+                exceptions=1
+            )
             return False
         except Exception as e:
             logger.error(f"[Auth] Exception: {e}")
-            try:
-                from core.report_generator import add_record
-                add_record({
-                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "method": "POST",
-                    "url": self._token_url,
-                    "status_code": 0,
-                    "response_time_ms": 0,
-                    "curl": f"curl -s -X POST \"{self._token_url}\"",
-                    "request_body": self._body_json or "",
-                    "response_body": f"exception: {str(e)}",
-                    "right": 0,
-                    "wrong": 0,
-                    "ignored": 0,
-                    "exceptions": 1
-                })
-            except Exception:
-                pass
+            self._record_to_report(
+                method="POST",
+                url=self._token_url,
+                status_code=0,
+                response_time_ms=0,
+                curl_cmd=f"curl -s -X POST \"{self._token_url}\"",
+                request_body=self._body_json or "",
+                response_body=f"exception: {str(e)}",
+                exceptions=1
+            )
             return False
 
     # Getters/Assertions mapped to columns

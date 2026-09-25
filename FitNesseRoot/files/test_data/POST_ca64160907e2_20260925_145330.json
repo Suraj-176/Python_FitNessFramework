@@ -1,0 +1,121 @@
+{
+  "test_name": "API_Test",
+  "timestamp": "2026-09-25 14:53:30",
+  "request": {
+    "method": "POST",
+    "url": "https://dummyjson.com/users/add",
+    "headers": {},
+    "body": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "age": 30
+    }
+  },
+  "response": {
+    "status_code": 201,
+    "headers": {
+      "Date": "Fri, 25 Sep 2026 09:23:30 GMT",
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "764",
+      "Connection": "keep-alive",
+      "access-control-allow-credentials": "true",
+      "etag": "W/\"2fc-gaIjw+vkutGBcrdFGjfN8vfBSZQ\"",
+      "strict-transport-security": "max-age=15552000; includeSubDomains",
+      "vary": "Origin, Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-dns-prefetch-control": "off",
+      "x-download-options": "noopen",
+      "x-frame-options": "SAMEORIGIN",
+      "x-ratelimit-limit": "100",
+      "x-ratelimit-remaining": "99",
+      "x-ratelimit-reset": "1790328211",
+      "x-xss-protection": "1; mode=block",
+      "cf-cache-status": "DYNAMIC",
+      "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+      "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=yrgp6hqFmGCoLiP5a%2FMMUL8AcVcHcfWqUCXM0%2Fi51JzvRxaj3AhA4O4JaILQRSTYVhojyiT5GH2pxYAe1gHWn1%2FsUEiNGsK4Aa4g%2B6TfCoQonxLF2CbQ7YW70%2BuM8jWKPfLGTXahF%2FF80Z9o\"}]}",
+      "Server": "cloudflare",
+      "CF-RAY": "a408f874dac4e9ea-MRS"
+    },
+    "body": {
+      "id": 209,
+      "firstName": "John",
+      "lastName": "Doe",
+      "maidenName": "",
+      "age": 30,
+      "gender": "",
+      "email": "",
+      "phone": "",
+      "username": "",
+      "password": "***",
+      "birthDate": "",
+      "image": "",
+      "bloodGroup": "",
+      "height": null,
+      "weight": null,
+      "eyeColor": "",
+      "hair": {
+        "color": "",
+        "type": ""
+      },
+      "ip": "",
+      "address": {
+        "address": "",
+        "city": "",
+        "state": "",
+        "stateCode": "",
+        "postalCode": "",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "country": ""
+      },
+      "macAddress": "",
+      "university": "",
+      "bank": {
+        "cardExpire": "",
+        "cardNumber": "***",
+        "cardType": "",
+        "currency": "",
+        "iban": ""
+      },
+      "company": {
+        "department": "",
+        "name": "",
+        "title": "",
+        "address": {
+          "address": "",
+          "city": "",
+          "state": "",
+          "stateCode": "",
+          "postalCode": "",
+          "coordinates": {
+            "lat": null,
+            "lng": null
+          },
+          "country": ""
+        }
+      },
+      "ein": "",
+      "ssn": "***",
+      "userAgent": "",
+      "crypto": {
+        "coin": "",
+        "wallet": "",
+        "network": ""
+      },
+      "role": "user"
+    },
+    "duration_ms": 855
+  },
+  "assertions": {
+    "right": 1,
+    "wrong": 0,
+    "ignored": 0,
+    "exceptions": 0
+  },
+  "metadata": {
+    "sanitized": true,
+    "captured_at": "2026-09-25T14:53:30.302614"
+  }
+}

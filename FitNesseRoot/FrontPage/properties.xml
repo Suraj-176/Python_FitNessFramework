@@ -2,9 +2,6 @@
 <properties>
   <Suite/>
   <Help></Help>
-  <SecureRead/>
-  <SecureWrite/>
-  <SecureTest/>
   <Edit/>
   <Files/>
   <Properties/>

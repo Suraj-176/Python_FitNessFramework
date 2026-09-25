@@ -2,84 +2,151 @@ import os
 import glob
 import datetime
 import json
+import xml.etree.ElementTree as ET
+from typing import List, Optional
 
 report_history = []
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HISTORY_FILE = os.path.join(BASE_DIR, "FitNesseRoot", "files", "report_history.json")
 REPORT_FILE = os.path.join(BASE_DIR, "FitNesseRoot", "files", "report.html")
-HISTORY_JSON = os.path.join(BASE_DIR, "FitNesseRoot", "files", "report_history.json")
 
 def html_escape(text: str) -> str:
-    if not isinstance(text, str):
-        text = str(text)
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#x27;")
+    """Symmetrical HTML escape helper."""
+    if not text:
+        return ""
+    return (str(text)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+            .replace("'", "&#x27;"))
 
 def load_history() -> None:
     global report_history
-    if os.path.exists(HISTORY_JSON):
+    if os.path.exists(HISTORY_FILE):
         try:
-            with open(HISTORY_JSON, "r", encoding="utf-8") as f:
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
                 report_history = json.load(f)
         except Exception:
             report_history = []
-    else:
-        report_history = []
 
 def save_history() -> None:
-    global report_history
     try:
-        os.makedirs(os.path.dirname(HISTORY_JSON), exist_ok=True)
-        # Cap history list to last 150 requests to maintain speed and file size limits
-        history_to_save = report_history[-150:]
-        with open(HISTORY_JSON, "w", encoding="utf-8") as f:
-            json.dump(history_to_save, f, indent=2)
+        os.makedirs(os.path.dirname(HISTORY_FILE), exist_ok=True)
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(report_history, f, indent=2)
     except Exception:
         pass
 
-def scan_test_results() -> list:
+def scan_test_results() -> List[dict]:
+    """Scans FitNesse Zip History and XML run outputs to get actual assertion counts."""
     results = []
-    test_results_dir = os.path.join(BASE_DIR, "FitNesseRoot", "files", "testResults")
-    if not os.path.exists(test_results_dir):
+    fitnesse_root_dir = os.path.join(BASE_DIR, "FitNesseRoot")
+    if not os.path.exists(fitnesse_root_dir):
         return results
 
-    # Walk through the test results directory to find test run XML files
-    for root, dirs, files in os.walk(test_results_dir):
-        for d in dirs:
-            dir_path = os.path.join(root, d)
-            xml_files = glob.glob(os.path.join(dir_path, "*.xml"))
-            if not xml_files:
+    import zipfile
+    # Symmetrically scan FitNesse .zip execution history archives recursively inside FitNesseRoot!
+    zip_files = glob.glob(os.path.join(fitnesse_root_dir, "**", "*.zip"), recursive=True)
+    for zip_path in zip_files:
+        try:
+            # The directory name under FitNesseRoot represents the test page path (e.g. FrontPage/SwagLabs/LoginPage)
+            rel_dir = os.path.dirname(os.path.relpath(zip_path, fitnesse_root_dir))
+            clean_name = rel_dir.replace(os.sep, ".").replace("FrontPage.", "")
+            
+            if not clean_name or clean_name.endswith("SuiteSetUp") or clean_name.endswith("SuiteTearDown"):
                 continue
 
-            # Get the latest XML run file by sorting filenames (starts with timestamp)
-            latest_file = max(xml_files, key=os.path.basename)
-            filename = os.path.basename(latest_file)
+            with zipfile.ZipFile(zip_path, 'r') as z:
+                for member in z.namelist():
+                    if member.endswith(".xml"):
+                        filename = os.path.basename(member)
+                        timestamp_str = filename.replace(".xml", "")
+                        
+                        xml_bytes = z.read(member)
+                        root = ET.fromstring(xml_bytes)
+                        
+                        # Find the standard FitNesse counts block
+                        counts_el = root.find(".//counts")
+                        if counts_el is not None:
+                            right = int(counts_el.find("right").text or 0)
+                            wrong = int(counts_el.find("wrong").text or 0)
+                            ignored = int(counts_el.find("ignores").text or 0)
+                            exceptions = int(counts_el.find("exceptions").text or 0)
+                        else:
+                            right, wrong, ignored, exceptions = 0, 0, 0, 0
+                            
+                        try:
+                            formatted_time = f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:{timestamp_str[12:14]}"
+                        except Exception:
+                            formatted_time = timestamp_str
 
-            # Format: YYYYMMDDHHMMSS_R_W_I_E.xml
-            name_part = filename.replace(".xml", "")
-            parts = name_part.split("_")
-            if len(parts) >= 5:
-                timestamp_str = parts[0]
-                right = int(parts[1])
-                wrong = int(parts[2])
-                ignored = int(parts[3])
-                exceptions = int(parts[4])
+                        results.append({
+                            "name": clean_name,
+                            "timestamp": formatted_time,
+                            "timestamp_raw": timestamp_str,
+                            "right": right,
+                            "wrong": wrong,
+                            "ignored": ignored,
+                            "exceptions": exceptions
+                        })
+        except Exception:
+            pass
 
-                try:
-                    formatted_time = f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:{timestamp_str[12:14]}"
-                except Exception:
-                    formatted_time = timestamp_str
+    # Also fallback to scanning raw XML files if any exist inside files/testResults
+    test_results_dir = os.path.join(BASE_DIR, "FitNesseRoot", "files", "testResults")
+    if os.path.exists(test_results_dir):
+        xml_files = glob.glob(os.path.join(test_results_dir, "**", "*.xml"), recursive=True)
+        for path in xml_files:
+            if "allure" in path.lower():
+                continue
+            try:
+                filename = os.path.basename(path)
+                # Check for standard FitNesse XML suffix: YYYYMMDDHHMMSS_R_W_I_E.xml
+                if "_" in filename and filename.endswith(".xml"):
+                    parts = filename.split("_")
+                    timestamp_str = parts[0]
+                    counts = parts[1].replace(".xml", "").split(" ")
+                    
+                    # Check for standard results naming
+                    if len(counts) >= 4:
+                        right = int(counts[0])
+                        wrong = int(counts[1])
+                        ignored = int(counts[2])
+                        exceptions = int(counts[3])
+                    else:
+                        parts_dash = parts[1].replace(".xml", "").split("-")
+                        if len(parts_dash) >= 4:
+                            right = int(parts_dash[0])
+                            wrong = int(parts_dash[1])
+                            ignored = int(parts_dash[2])
+                            exceptions = int(parts_dash[3])
+                        else:
+                            continue
 
-                # Exclude root directory runs and format names beautifully
-                clean_name = d.replace("FrontPage.", "")
-                if clean_name and not clean_name.endswith("SuiteSetUp") and not clean_name.endswith("SuiteTearDown"):
-                    results.append({
-                        "name": clean_name,
-                        "timestamp": formatted_time,
-                        "timestamp_raw": timestamp_str,
-                        "right": right,
-                        "wrong": wrong,
-                        "ignored": ignored,
-                        "exceptions": exceptions
-                    })
+                    # Get clean path relative to testResults folder
+                    rel_path = os.path.relpath(path, test_results_dir)
+                    d = os.path.dirname(rel_path).replace(os.sep, ".")
+                    
+                    try:
+                        formatted_time = f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:{timestamp_str[12:14]}"
+                    except Exception:
+                        formatted_time = timestamp_str
+
+                    clean_name = d.replace("FrontPage.", "")
+                    if clean_name and not clean_name.endswith("SuiteSetUp") and not clean_name.endswith("SuiteTearDown"):
+                        results.append({
+                            "name": clean_name,
+                            "timestamp": formatted_time,
+                            "timestamp_raw": timestamp_str,
+                            "right": right,
+                            "wrong": wrong,
+                            "ignored": ignored,
+                            "exceptions": exceptions
+                        })
+            except Exception:
+                pass
+            
     # Sort results showing the most recently executed tests first
     results.sort(key=lambda x: x["timestamp_raw"], reverse=True)
     return results
@@ -87,17 +154,16 @@ def scan_test_results() -> list:
 def trigger_delayed_report() -> None:
     import subprocess
     import sys
-    
-    # We want to run the report generator after FitNesse writes the XML results to disk.
-    # This happens immediately after the waferslim process exits.
+
+    # Delay execution slightly to ensure FitNesse finished writing XML files
     creationflags = 0
     if os.name == 'nt':
-        creationflags = 0x08000000  # CREATE_NO_WINDOW on Windows to prevent console flashing
-
+        creationflags = 0x08000000  # CREATE_NO_WINDOW
+        
     cmd = [
         sys.executable,
         "-c",
-        "import time, core.report_generator; time.sleep(2.0); core.report_generator.generate_html_report()"
+        "import time, core.report_generator; time.sleep(1.5); core.report_generator.generate_html_report()"
     ]
     try:
         subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True, creationflags=creationflags)
@@ -108,123 +174,39 @@ def add_record(record: dict) -> None:
     load_history()
     report_history.append(record)
     save_history()
-    # Write the report immediately (fallback with current memory data)
+    # Regenerate immediately with current memory cache
     generate_html_report()
-    # Trigger the delayed report so that it updates with the fresh XML file 2 seconds later!
+    # Trigger a delayed refresh to merge with fresh XML result logs 2 seconds later!
     trigger_delayed_report()
 
 def generate_html_report() -> None:
     if not report_history:
         load_history()
 
-    # Scan native FitNesse XML run history to get actual assertion counts
     results = scan_test_results()
-
-    # Detect if the latest execution session is a Suite Run or a Single Test Run.
-    # results contains ALL pages, including suite pages (e.g., "DummyAPI", "Sanity")
-    # Detect if the latest execution session is a Suite Run or a Single Test Run.
     active_pages = []
     suite_name = "FITNESSE RUN"
 
     if results:
-        # Helper to locate parent suite directory on disk
-        def get_suite_dir(page_name: str) -> str:
-            parts = ["FrontPage"]
-            if page_name != "FrontPage":
-                clean_name = page_name.replace("FrontPage.", "")
-                parts.extend(clean_name.split("."))
-            
-            if len(parts) > 1:
-                parent_folder = ".".join(parts[:-1])
-            else:
-                parent_folder = parts[0]
-                
-            return os.path.join(BASE_DIR, "FitNesseRoot", "files", "testResults", parent_folder)
-
         latest_page = results[0]["name"]
-        latest_raw = results[0]["timestamp_raw"]
-        
-        try:
-            latest_dt = datetime.datetime.strptime(latest_raw[:14], "%Y%m%d%H%M%S")
-            
-            # 1. Determine if it was a Suite Run by checking if a suite XML file was written
-            # in either the root Homepage (FrontPage) directory or the parent suite folder
-            # whose modification time (mtime) is within 3 seconds of the latest test page completion.
-            is_suite_run = False
-            is_homepage_run = False
-            suite_dir = get_suite_dir(latest_page)
-            
-            homepage_dir = os.path.join(BASE_DIR, "FitNesseRoot", "files", "testResults", "FrontPage")
-            if os.path.exists(homepage_dir):
-                for s_xml in glob.glob(os.path.join(homepage_dir, "*.xml")):
-                    try:
-                        s_mtime = os.path.getmtime(s_xml)
-                        s_dt = datetime.datetime.fromtimestamp(s_mtime)
-                        # We use 12 seconds here to allow for disk write latency of the master suite XML file
-                        if abs((latest_dt - s_dt).total_seconds()) <= 12:
-                            is_suite_run = True
-                            is_homepage_run = True
-                            suite_dir = homepage_dir
-                            break
-                    except Exception:
-                        pass
-            
-            if not is_homepage_run and os.path.exists(suite_dir):
-                suite_xmls = glob.glob(os.path.join(suite_dir, "*.xml"))
-                for s_xml in suite_xmls:
-                    try:
-                        s_mtime = os.path.getmtime(s_xml)
-                        s_dt = datetime.datetime.fromtimestamp(s_mtime)
-                        if abs((latest_dt - s_dt).total_seconds()) <= 3:
-                            is_suite_run = True
-                            break
-                    except Exception:
-                        pass
-            
-            if is_suite_run:
-                # 2. If it's a Suite Run, check if it was classified as a homepage run.
-                # If yes, this is a master run of all suites, so we include all test pages from all suites.
-                # If no, we include only test pages belonging to the active suite namespace.
-                
-                if is_homepage_run:
-                    # Homepage run: Include all test pages from all suites completed within 90 seconds
-                    for r in results:
-                        if r["name"] != "FrontPage":
-                            try:
-                                dt = datetime.datetime.strptime(r["timestamp_raw"][:14], "%Y%m%d%H%M%S")
-                                if abs((latest_dt - dt).total_seconds()) <= 90:
-                                    active_pages.append(r)
-                            except Exception:
-                                pass
-                else:
-                    # Namespace-specific suite run: Include only pages in this suite's namespace
-                    suite_name = latest_page.split(".")[0] if "." in latest_page else latest_page
-                    current_suite_pages = [r for r in results if r["name"].startswith(suite_name + ".") and r["name"] != suite_name]
-                    for r in current_suite_pages:
-                        try:
-                            dt = datetime.datetime.strptime(r["timestamp_raw"][:14], "%Y%m%d%H%M%S")
-                            if abs((latest_dt - dt).total_seconds()) <= 60:
-                                active_pages.append(r)
-                        except Exception:
-                            pass
-            else:
-                # Single Test Run: Include ONLY the single latest test page run
-                active_pages = [results[0]]
-        except Exception:
-            active_pages = [results[0]]
+        suite_name = latest_page.split(".")[0] if "." in latest_page else latest_page
+
+        # Filter results for the active parent suite namespace
+        current_suite_pages = [r for r in results if (r["name"].startswith(suite_name + ".") or r["name"] == suite_name) and r["name"] != suite_name]
+        if current_suite_pages:
+            # Symmetrically include ALL test pages executed during this session!
+            active_pages = current_suite_pages
 
     # Initialize empty request lists on all active pages
     for p in active_pages:
         p["requests"] = []
 
-    # Map HTTP requests directly to their parent Test Pages using a strict proximity-matching logic.
-    # Each request is matched to EXACTLY ONE page (the closest page in time), preventing duplicates
-    # and mixing up requests between adjacent tests in a suite run.
+    # Map HTTP requests / Playwright steps directly to their parent test pages
+    recent_history = report_history[-100:] if len(report_history) > 100 else report_history
     active_requests = []
-    for req in report_history:
+    for req in recent_history:
         try:
             req_dt = datetime.datetime.strptime(req["timestamp"], "%Y-%m-%d %H:%M:%S")
-            
             closest_page = None
             min_diff = 999999
             
@@ -233,8 +215,8 @@ def generate_html_report() -> None:
                     p_dt = datetime.datetime.strptime(p["timestamp_raw"][:14], "%Y%m%d%H%M%S")
                     diff = (p_dt - req_dt).total_seconds()
                     
-                    # Request must execute during the page execution window (typically within 12s before completion)
-                    if -2 <= diff <= 12:
+                    # 60s window safely maps both fast API and slower Playwright UI execution steps!
+                    if -5 <= diff <= 60:
                         abs_diff = abs(diff)
                         if abs_diff < min_diff:
                             min_diff = abs_diff
@@ -249,15 +231,13 @@ def generate_html_report() -> None:
         except Exception:
             pass
 
-    # Sort active pages showing the most recently executed first
+    # Sort pages showing most recent first
     grouped_pages = sorted(active_pages, key=lambda x: x["timestamp_raw"], reverse=True)
 
-    # Determine Active Suite Name from first active page
     if grouped_pages:
         latest_name = grouped_pages[0]["name"]
         suite_name = latest_name.split(".")[0] if "." in latest_name else latest_name
 
-    # Calculate page-level metrics (Executive Summary KPI Cards)
     total_pages = len(grouped_pages)
     passed_pages = sum(1 for p in grouped_pages if p["wrong"] == 0 and p["exceptions"] == 0 and p["right"] > 0)
     failed_pages = total_pages - passed_pages
@@ -265,35 +245,38 @@ def generate_html_report() -> None:
     total_duration_ms = sum(r["response_time_ms"] for r in active_requests)
     formatted_duration = f"{total_duration_ms / 1000:.2f}s"
 
-    # Calculate overall health summary across the active session test pages
     total_right = sum(r["right"] for r in active_pages) if active_pages else 0
     total_wrong = sum(r["wrong"] for r in active_pages) if active_pages else 0
     total_ignored = sum(r["ignored"] for r in active_pages) if active_pages else 0
     total_exceptions = sum(r["exceptions"] for r in active_pages) if active_pages else 0
 
-    # Status Banner Details (Executive Level)
     if failed_pages > 0:
         status_banner_class = "banner-fail"
         status_banner_text = f"🚨 TEST RUN FAILED — {failed_pages} / {total_pages} Test Cases Failed (Action Required)"
     elif total_pages > 0:
         status_banner_class = "banner-pass"
-        status_banner_text = "🎉 TEST RUN PASSED — 100% Succeeded! All APIs are operational."
+        status_banner_text = "🎉 TEST RUN PASSED — 100% Succeeded! All tests executed cleanly."
     else:
         status_banner_class = "banner-empty"
         status_banner_text = "⚪ NO TEST RESULTS CAPTURED"
 
-    # Compile HTML Rows for the Single Unified Dashboard Table (Simplified: Removed Assertions Column)
     pages_html = ""
     for idx, p in enumerate(grouped_pages):
+        full_name = p["name"]
+        display_suite = ""
+        display_test = full_name
+        if "." in full_name:
+            parts = full_name.split(".")
+            display_suite = parts[0]
+            display_test = ".".join(parts[1:])
+
         is_page_pass = p["wrong"] == 0 and p["exceptions"] == 0 and p["right"] > 0
         page_status_class = "status-pass" if is_page_pass else "status-fail"
         page_status_text = "✓ PASSED" if is_page_pass else "✗ FAILED"
         page_status_value = "passed" if is_page_pass else "failed"
 
-        # Auto-expand failed rows automatically for QA & Dev immediate troubleshooting
         row_display_style = "table-row" if not is_page_pass else "none"
         
-        # Build defect helpers if page failed
         defect_helper = ""
         if not is_page_pass:
             if p["exceptions"] > 0:
@@ -301,7 +284,6 @@ def generate_html_report() -> None:
             elif p["wrong"] > 0:
                 defect_helper = f"<div class='defect-msg'>❌ Failed {p['wrong']} verification checks</div>"
 
-        # Build clean assertion text
         assertion_info = f"{p['right']} right"
         if p['wrong'] > 0:
             assertion_info += f" • <span style='color:var(--fail); font-weight:700;'>{p['wrong']} wrong</span>"
@@ -311,28 +293,47 @@ def generate_html_report() -> None:
         requests_sub_html = ""
         if p["requests"]:
             for r_idx, r in enumerate(p["requests"]):
-                is_success = 200 <= r["status_code"] < 400 or r["status_code"] == 204
+                if r["method"] == "SCREENSHOT":
+                    # Render a highly customized, gorgeous inline failure screenshot card!
+                    requests_sub_html += f"""
+                    <div class="nested-request-row" style="border-color: var(--fail); margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                        <div class="nested-request-header" onclick="toggleRequest({idx}, {r_idx})" style="display: flex; align-items: center; gap: 16px; padding: 14px 20px; cursor: pointer; user-select: none; transition: background 0.15s; background: #fff5f5;">
+                            <span class="badge badge-screenshot" style="background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; width: 110px; text-align: center;">📷 SCREENSHOT</span>
+                            <span class="nested-url" style="color: var(--fail); font-weight: 700; font-family: monospace; font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{html_escape(r['request_body'])}</span>
+                            <span class="nested-time" style="color: var(--fail); font-weight: 700; font-size: 12px;">FAIL</span>
+                        </div>
+                        <div id="req-details-{idx}-{r_idx}" class="nested-request-details" style="display: block; background: #fff5f5; border-top: 1px solid rgba(244,63,94,0.15); padding: 20px 24px;">
+                            {r['response_body']}
+                        </div>
+                    </div>
+                    """
+                    continue
+                    
+                if r["method"] == "STEP":
+                    # Render a highly customized, gorgeous Playwright action step card!
+                    requests_sub_html += f"""
+                    <div class="nested-request-row" style="border-color: #0284c7; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                        <div class="nested-request-header" style="display: flex; align-items: center; gap: 16px; padding: 14px 20px; cursor: default; user-select: none;">
+                            <span class="badge badge-step" style="background: rgba(2, 132, 199, 0.1); color: #0284c7; border: 1px solid rgba(2, 132, 199, 0.2); display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; width: 110px; text-align: center;">⚙ STEP</span>
+                            <span class="nested-url" style="color: var(--text-main); font-weight: 600; font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{html_escape(r['url'])}</span>
+                            <span class="nested-time" style="color: var(--success); font-weight: 700; font-size: 12px;">PASS</span>
+                        </div>
+                    </div>
+                    """
+                    continue
+
+                is_success = isinstance(r["status_code"], int) and (200 <= r["status_code"] < 400 or r["status_code"] == 204)
                 status_class = "status-pass" if is_success else "status-fail"
                 method_class = f"badge-{r['method'].lower()}"
                 
                 req_body = html_escape(r["request_body"])
-                full_resp_body = r["response_body"]
-                resp_body_escaped = html_escape(full_resp_body)
-                
-                resp_body_str = full_resp_body or '[Empty Body]'
-                lines = resp_body_str.split('\n')
-                
-                if len(resp_body_str) > 150 or len(lines) > 4:
-                    resp_body_preview_html = f"""
-                    <div class="large-response-placeholder" onclick="openResponseModal(this.nextElementSibling.textContent, event)" title="Click to view full response body">
-                        🔍 Response body is large. Click here to view details.
-                    </div>
-                    <span class="hidden-full-response" style="display:none;">{resp_body_escaped}</span>
-                    """
-                else:
-                    resp_body_preview_html = f"""<pre><code>{resp_body_escaped}</code></pre>"""
-                
+                resp_body = html_escape(r["response_body"])
                 curl_cmd = html_escape(r["curl"])
+                
+                json_file = r.get("json_file", "")
+                download_btn = ""
+                if json_file:
+                    download_btn = f'<a href="/files/{json_file}" download class="download-json-btn" title="Download complete test data with assertions">📥 Download JSON</a>'
 
                 req_details_display = "block" if not is_success else "none"
 
@@ -343,6 +344,7 @@ def generate_html_report() -> None:
                         <span class="nested-url" title="{html_escape(r['url'])}">{html_escape(r['url'])}</span>
                         <span class="status-indicator {status_class}">{r['status_code']}</span>
                         <span class="nested-time">{r['response_time_ms']} ms</span>
+                        {download_btn}
                     </div>
                     <div id="req-details-{idx}-{r_idx}" class="nested-request-details" style="display: {req_details_display};">
                         <div class="curl-section">
@@ -361,36 +363,47 @@ def generate_html_report() -> None:
                             </div>
                             <div class="body-block">
                                 <h4>📥 Response Body</h4>
-                                {resp_body_preview_html}
+                                <pre><code>{resp_body or '[Empty Body]'}</code></pre>
                             </div>
                         </div>
                     </div>
                 </div>
                 """
         else:
-            requests_sub_html = "<div class='no-requests'>No API HTTP requests were logged for this page run.</div>"
+            requests_sub_html = "<div class='no-requests'>No API HTTP requests or UI execution steps were logged for this page run.</div>"
+
+        json_files = [r.get("json_file", "") for r in p["requests"] if r.get("json_file")]
+        download_all_btn = ""
+        if json_files:
+            json_files_list = ",".join([f"'/files/{jf}'" for jf in json_files])
+            download_all_btn = f'''
+                <button class="download-all-btn" onclick="downloadAll([{json_files_list}], '{html_escape(p['name'])}')">
+                    📦 Download All ({len(json_files)})
+                </button>
+            '''
 
         pages_html += f"""
         <tr class="summary-row" onclick="togglePage({idx})" data-name="{html_escape(p['name'])}" data-status="{page_status_value}" title="Click to view requests audit trail">
             <td>
                 <div class="test-title">
-                    <strong>{html_escape(p['name'])}</strong>
-                    <span class="assertion-summary">{assertion_info}</span>
+                    <span class="suite-badge">{html_escape(display_suite or 'Suite')}</span>
+                    <strong>{html_escape(display_test)}</strong>
+                    <span class="assertion-summary" style="margin-left: 10px;">{assertion_info}</span>
                 </div>
             </td>
             <td>{p['timestamp']}</td>
             <td>
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-                    <span class="status-indicator {page_status_class}">{page_status_text}</span>
-                    <button class="download-single-btn" onclick="downloadSinglePage({idx}, event)" title="Download this test case JSON">📥 JSON</button>
-                </div>
+                <span class="status-indicator {page_status_class}">{page_status_text}</span>
                 {defect_helper}
             </td>
         </tr>
         <tr id="page-details-{idx}" class="details-row" style="display: {row_display_style};">
             <td colspan="3">
                 <div class="nested-requests-container">
-                    <h3>🔍 Executed API Requests Audit Trail</h3>
+                    <div class="audit-header">
+                        <h3>🔍 Executed API Requests Audit Trail</h3>
+                        {download_all_btn}
+                    </div>
                     {requests_sub_html}
                 </div>
             </td>
@@ -405,7 +418,9 @@ def generate_html_report() -> None:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitNesse API Automation Test Report</title>
+    <title>FitNesse Automation Test Report - Latest Test Run</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {{
@@ -413,8 +428,8 @@ def generate_html_report() -> None:
             --bg-card: #ffffff;
             --text-main: #0f172a;
             --text-sub: #475569;
-            --primary: #1e3a8a;
-            --primary-hover: #1d4ed8;
+            --primary: #A6192E;
+            --primary-hover: #7E1322;
             --success: #16a34a;
             --fail: #ef4444;
             --border: #e2e8f0;
@@ -446,7 +461,7 @@ def generate_html_report() -> None:
         .header-title h1 {{
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #7E1322 0%, #A6192E 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }}
@@ -460,52 +475,6 @@ def generate_html_report() -> None:
             font-size: 13px;
             color: var(--text-sub);
             line-height: 1.6;
-        }}
-        
-        .download-json-btn {{
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.15s;
-            margin-top: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }}
-        .download-json-btn:hover {{
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }}
-        .download-json-btn:active {{
-            transform: translateY(0);
-        }}
-        
-        .download-single-btn {{
-            background: #f1f5f9;
-            color: var(--text-sub);
-            border: 1px solid var(--border);
-            padding: 4px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.15s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }}
-        .download-single-btn:hover {{
-            background: #e2e8f0;
-            color: var(--text-main);
-            border-color: #cbd5e1;
         }}
         
         /* Master Status Banner */
@@ -703,7 +672,6 @@ def generate_html_report() -> None:
             font-size: 14px;
             color: var(--text-main);
             vertical-align: middle;
-            word-break: break-all;
         }}
         
         .summary-row {{
@@ -721,6 +689,21 @@ def generate_html_report() -> None:
         .test-title strong {{
             font-size: 15px;
             font-weight: 700;
+        }}
+        .suite-badge {{
+            display: inline-block;
+            background: #f1f5f9;
+            color: var(--text-sub);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border: 1px solid var(--border);
+            margin-right: 8px;
+            vertical-align: middle;
+            width: fit-content;
         }}
         .assertion-summary {{
             font-size: 11px;
@@ -745,13 +728,39 @@ def generate_html_report() -> None:
             background: #f8fafc;
             border-left: 4px solid var(--primary);
         }}
+        .audit-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }}
         .nested-requests-container h3 {{
             font-size: 14px;
             font-weight: 700;
             color: var(--text-sub);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 16px;
+            margin: 0;
+        }}
+        .download-all-btn {{
+            background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }}
+        .download-all-btn:hover {{
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }}
         .nested-request-row {{
             background: var(--bg-card);
@@ -867,6 +876,26 @@ def generate_html_report() -> None:
         .copy-btn:hover {{
             background: rgba(255,255,255,0.25);
         }}
+        .download-json-btn {{
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 12px;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }}
+        .download-json-btn:hover {{
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }}
         .body-split {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -900,162 +929,8 @@ def generate_html_report() -> None:
             from {{ opacity: 0; transform: translateY(-4px); }}
             to {{ opacity: 1; transform: translateY(0); }}
         }}
-        
-        /* Modal Popup styles */
-        .modal-overlay {{
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 100000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }}
-        .modal-content {{
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            width: 650px;
-            max-width: 90%;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-            overflow: hidden;
-            animation: slideDown 0.2s ease-out;
-        }}
-        .modal-header {{
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #f8fafc;
-        }}
-        .modal-header h3 {{
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0;
-        }}
-        .modal-close {{
-            background: none;
-            border: none;
-            font-size: 24px;
-            font-weight: 500;
-            color: var(--text-sub);
-            cursor: pointer;
-            line-height: 1;
-            padding: 0;
-        }}
-        .modal-close:hover {{
-            color: var(--text-main);
-        }}
-        .modal-content pre {{
-            padding: 24px;
-            margin: 0;
-            overflow-y: auto;
-            flex: 1;
-            background: var(--code-bg);
-            border: none;
-            max-height: none;
-        }}
-        .modal-content code {{
-            font-family: monospace;
-            font-size: 12px;
-            color: var(--code-text);
-            white-space: pre-wrap;
-        }}
-        .modal-actions {{
-            padding: 12px 24px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: flex-end;
-            background: #f8fafc;
-        }}
-        .modal-copy-btn {{
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.15s;
-        }}
-        .modal-copy-btn:hover {{
-            background: var(--primary-hover);
-        }}
-        .large-response-placeholder {{
-            background: var(--bg-card);
-            border: 1.5px dashed var(--border);
-            color: var(--primary);
-            font-size: 13px;
-            font-weight: 600;
-            padding: 18px 24px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.15s;
-            margin: 8px 0;
-            display: block;
-        }}
-        .large-response-placeholder:hover {{
-            background: #eff6ff;
-            color: #1d4ed8;
-            border-color: #3b82f6;
-        }}
     </style>
     <script>
-        const reportData = {json.dumps(grouped_pages)};
-
-        function downloadJSONReport() {{
-            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(reportData, null, 2));
-            var downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "fitnesse_api_report.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }}
-
-        function downloadSinglePage(idx, event) {{
-            if (event) event.stopPropagation();
-            var pageData = reportData[idx];
-            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pageData, null, 2));
-            var downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", pageData.name + "_report.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }}
-
-        function openResponseModal(content, event) {{
-            if (event) event.stopPropagation();
-            document.getElementById("modal-response-code").textContent = content;
-            document.getElementById("response-modal").style.display = "flex";
-        }}
-
-        function closeResponseModal() {{
-            document.getElementById("response-modal").style.display = "none";
-        }}
-
-        function copyModalCode() {{
-            var codeText = document.getElementById("modal-response-code").textContent;
-            navigator.clipboard.writeText(codeText).then(function() {{
-                var btn = document.querySelector(".modal-copy-btn");
-                var original = btn.textContent;
-                btn.textContent = "✔️ Copied!";
-                setTimeout(function() {{
-                    btn.textContent = original;
-                }}, 1500);
-            }});
-        }}
-
         function togglePage(idx) {{
             var el = document.getElementById("page-details-" + idx);
             if (el.style.display === "none") {{
@@ -1083,6 +958,31 @@ def generate_html_report() -> None:
                     btn.textContent = original;
                 }}, 1500);
             }});
+        }}
+
+        function downloadAll(filePaths, testName) {{
+            // Download all JSON files for a test
+            if (!filePaths || filePaths.length === 0) {{
+                alert("No test data files available to download.");
+                return;
+            }}
+            
+            // Download each file sequentially with small delay
+            filePaths.forEach(function(path, index) {{
+                setTimeout(function() {{
+                    var link = document.createElement('a');
+                    link.href = path;
+                    link.download = '';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }}, index * 200); // 200ms delay between downloads
+            }});
+            
+            // Show success message
+            setTimeout(function() {{
+                alert('Downloaded ' + filePaths.length + ' test data file(s) for ' + testName);
+            }}, filePaths.length * 200 + 100);
         }}
 
         function filterAndSearch() {{
@@ -1120,15 +1020,18 @@ def generate_html_report() -> None:
 <body>
     <div class="container">
         <header>
-            <div class="header-title">
-                <h1>FitNesse API Test Automation Portal</h1>
-                <p>Enterprise API Verification & Reporting Dashboard</p>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <img src="/logo.png" alt="FitNesse Automation" style="height: 52px; width: auto; object-fit: contain;">
+                <div class="header-title">
+                    <h1>FitNesse Automation Test Report</h1>
+                    <p>Latest Test Run - Showing Most Recent Results</p>
+                </div>
             </div>
             <div class="header-meta">
                 <strong>Active Suite:</strong> {html_escape(suite_name) if suite_name else 'N/A'}<br>
                 <strong>Environment:</strong> UAT Testing Portal<br>
-                <strong>Execution Duration:</strong> {formatted_duration}<br>
-                <button class="download-json-btn" onclick="downloadJSONReport()">📥 Download JSON Report</button>
+                <strong>Report Generated:</strong> {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}<br>
+                <strong>Execution Duration:</strong> {formatted_duration}
             </div>
         </header>
 
@@ -1188,9 +1091,9 @@ def generate_html_report() -> None:
             <table class="report-table">
                 <thead>
                     <tr>
-                        <th>Test Case Name</th>
-                        <th style="white-space: nowrap; width: 1%;">Last Execution Time</th>
-                        <th style="white-space: nowrap; width: 1%;">Status</th>
+                        <th style="width: 50%;">Test Case Name</th>
+                        <th style="width: 30%;">Last Execution Time</th>
+                        <th style="width: 20%;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1199,20 +1102,6 @@ def generate_html_report() -> None:
             </table>
         </section>
     </div>
-
-    <!-- Response Body Modal -->
-    <div id="response-modal" class="modal-overlay" style="display:none;" onclick="closeResponseModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3>📥 Full Response Body</h3>
-                <button class="modal-close" onclick="closeResponseModal()">&times;</button>
-            </div>
-            <pre><code id="modal-response-code"></code></pre>
-            <div class="modal-actions">
-                <button class="modal-copy-btn" onclick="copyModalCode()">📋 Copy Content</button>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
 """
@@ -1220,5 +1109,5 @@ def generate_html_report() -> None:
         os.makedirs(os.path.dirname(REPORT_FILE), exist_ok=True)
         with open(REPORT_FILE, "w", encoding="utf-8") as f:
             f.write(html_content)
-    except Exception:
-        pass
+    except Exception as e:
+        print("ERROR WRITING REPORT_FILE:", e)

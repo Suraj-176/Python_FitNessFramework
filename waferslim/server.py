@@ -119,6 +119,10 @@ def _get_options():
     parser.add_option('-s', '--syspath', dest='syspath', 
                       metavar='SYSPATH', default='', 
                       help='add entries from SYSPATH to sys.path')
+    parser.add_option('--pagename', dest='pagename', default='', 
+                      help='running fitnesse page name')
+    parser.add_option('--pagepath', dest='pagepath', default='', 
+                      help='running fitnesse page path')
     return parser.parse_args()
 
 def _setup_logging(options):
@@ -153,6 +157,11 @@ def _setup_port(options, args):
 def start_server():
     ''' Convenience method to start the server (used by __main__)'''
     (options, args) = _get_options()
+
+    if getattr(options, 'pagename', None):
+        os.environ['FITNESSE_PAGE_NAME'] = options.pagename
+    if getattr(options, 'pagepath', None):
+        os.environ['FITNESSE_PAGE_PATH'] = options.pagepath
 
     _setup_logging(options)
     _setup_syspath(options)

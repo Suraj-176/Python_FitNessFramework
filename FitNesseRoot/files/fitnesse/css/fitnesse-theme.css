@@ -1,0 +1,888 @@
+/* =========================================================
+   FitNesse Blue Theme
+   Official Theme for FitNesse Test Automation Framework
+   ========================================================= */
+
+/* FitNesse Blue Theme */
+ 
+/* Navbar */
+.fitnesse-navbar {
+  background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%) !important;
+  border-bottom: 3px solid #2563EB !important;
+}
+ 
+.fitnesse-brand img {
+  height: 36px;
+}
+ 
+/* Hide the default FitNesse logo */
+.navbar-brand {
+  background-image: none !important;
+}
+ 
+/* Nav links */
+.navbar .nav-link,
+.navbar a,
+.navbar .nav-item a,
+nav a,
+nav .nav-link,
+.fitnesse-navbar a,
+.fitnesse-navbar .nav-link,
+.navbar-nav .nav-link,
+.navbar-nav > li > a {
+  color: #FFFFFF !important;
+}
+ 
+.navbar .nav-link:hover,
+.navbar a:hover,
+nav a:hover {
+  color: #EFF6FF !important;
+}
+ 
+/* Dropdown menu items (Tools, Add) */
+.dropdown-menu a,
+.dropdown-menu .dropdown-item,
+.dropdown-menu li a,
+.navbar .dropdown-menu a,
+nav .dropdown-menu a {
+  color: #1E3A8A !important;
+  background-color: #FFFFFF !important;
+}
+ 
+.dropdown-menu a:hover,
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu li a:hover,
+.navbar .dropdown-menu a:hover,
+nav .dropdown-menu a:hover {
+  color: #2563EB !important;
+  background-color: #EFF6FF !important;
+}
+ 
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: #1E3A8A;
+}
+ 
+h1 {
+  border-bottom: 2px solid #2563EB;
+  padding-bottom: 8px;
+}
+ 
+/* Links */
+a {
+  color: #2563EB;
+}
+ 
+a:hover {
+  color: #1D4ED8;
+}
+ 
+/* Breadcrumb */
+.breadcrumb {
+  background-color: #EFF6FF !important;
+}
+ 
+.breadcrumb a,
+.breadcrumb li,
+.breadcrumb .breadcrumb-item,
+.breadcrumb .breadcrumb-item a,
+.breadcrumb span {
+  color: #1E3A8A !important;
+}
+ 
+.breadcrumb .breadcrumb-item.active {
+  color: #2563EB !important;
+}
+ 
+.breadcrumb a:hover,
+.breadcrumb .breadcrumb-item a:hover {
+  color: #2563EB !important;
+}
+ 
+/* Body */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #F8FAFC;
+}
+ 
+/* Table headers */
+table.hash_table th,
+table.decision_table th,
+table th {
+  background-color: #1E3A8A !important;
+  color: #FFFFFF !important;
+}
+ 
+/* Buttons */
+.btn-primary {
+  background-color: #2563EB !important;
+  border-color: #1D4ED8 !important;
+}
+ 
+.btn-primary:hover {
+  background-color: #1D4ED8 !important;
+}
+ 
+/* Pass/Fail */
+.pass, .right, td.pass {
+  background-color: #16A34A !important;
+  color: #FFFFFF !important;
+}
+ 
+.fail, .wrong, td.fail {
+  background-color: #FEE2E2 !important;
+}
+ 
+/* Test result ribbon (pass) */
+.test-summary, .summary, .alert-success, .test-output-name {
+  background-color: #16A34A !important;
+  color: #FFFFFF !important;
+  border-color: #15803D !important;
+}
+ 
+.test-summary a, .summary a, .alert-success a {
+  color: #FFFFFF !important;
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   FitNesse Comprehensive Component Styles
+   ========================================================= */
+
+/* =========================================================
+   FitNesse Blue Theme
+   Brand colors:
+     Primary Blue   #2563EB
+     Dark Blue      #1E3A8A
+     Accent Blue    #3B82F6
+     Secondary Blue #1D4ED8
+     Slate/Navy     #0F172A
+     Light Blue bg  #EFF6FF
+   ========================================================= */
+
+:root {
+  --fitnesse-maroon:      #2563EB;
+  --fitnesse-maroon-dark: #1E3A8A;
+  --fitnesse-orange:      #3B82F6;
+  --fitnesse-navy:        #1D4ED8;
+  --fitnesse-navy-dark:   #0F172A;
+  --fitnesse-linen:       #EFF6FF;
+  --fitnesse-gray:        #64748B;
+  --fitnesse-light-gray:  #F8FAFC;
+}
+
+/* ==========================================
+   GLOBAL BASE
+   ========================================== */
+body {
+  background-color: #F7F7F7;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #333333;
+}
+
+h1, h2, h3 {
+  color: var(--fitnesse-maroon-dark);
+}
+
+a {
+  color: var(--fitnesse-navy);
+}
+
+a:hover {
+  color: var(--fitnesse-orange);
+  text-decoration: underline;
+}
+
+/* ==========================================
+   TOP NAVIGATION BAR
+   ========================================== */
+.navbar,
+nav.navbar,
+.navbar-default,
+.navbar-inverse {
+  background: linear-gradient(90deg, var(--fitnesse-maroon) 0%, var(--fitnesse-maroon-dark) 100%) !important;
+  border: none !important;
+  border-bottom: 3px solid var(--fitnesse-orange) !important;
+  min-height: 64px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.navbar .navbar-brand,
+.navbar-brand {
+  height: auto;
+  padding: 8px 15px;
+}
+
+.navbar a,
+.navbar .navbar-nav > li > a,
+.navbar-default .navbar-nav > li > a {
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.navbar .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:hover {
+  color: var(--fitnesse-orange) !important;
+  background-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Hide the default FitNesse logo in navbar — replaced by our header banner */
+.navbar-brand img,
+.navbar-brand {
+  display: none !important;
+}
+
+/* Shift nav links to the left since brand is hidden */
+.navbar-nav {
+  margin-left: 0 !important;
+}
+
+
+.navbar .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a {
+  background-color: rgba(255,255,255,0.12) !important;
+  border-bottom: 2px solid var(--fitnesse-orange);
+  color: #ffffff !important;
+}
+
+/* Collapse toggle button */
+.navbar-toggle {
+  border-color: rgba(255,255,255,0.4) !important;
+}
+.navbar-toggle .icon-bar {
+  background-color: #ffffff !important;
+}
+
+/* ==========================================
+   FITNESSE BRAND HEADER LOCKUP
+   ========================================== */
+.fitnesse-header-banner {
+  background: linear-gradient(135deg, var(--fitnesse-maroon) 0%, var(--fitnesse-navy) 100%);
+  color: #ffffff;
+  padding: 18px 32px 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 4px solid var(--fitnesse-orange);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.fitnesse-header-logo {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fitnesse-header-logo img {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+
+.fitnesse-header-text {
+  flex: 1;
+}
+
+.fitnesse-header-title {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+}
+
+.fitnesse-header-subtitle {
+  font-size: 11px;
+  color: var(--fitnesse-linen);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.fitnesse-header-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: var(--fitnesse-orange);
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Legacy brand lockup class (kept for backward compat) */
+.fitnesse-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+.fitnesse-brand-lockup img {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+.fitnesse-brand-wordmark {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.1;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+.fitnesse-brand-wordmark span {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--fitnesse-linen);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+/* ==========================================
+   PAGE CONTENT AREA
+   ========================================== */
+.page-content-wrapper,
+#content,
+.container.main-content {
+  padding-top: 20px;
+}
+
+/* ==========================================
+   FITNESSE BANNER BLOCK (FrontPage hero)
+   ========================================== */
+.fitnesse-banner {
+  background: linear-gradient(135deg, var(--fitnesse-maroon) 0%, var(--fitnesse-navy) 100%);
+  color: #ffffff;
+  padding: 32px 36px;
+  border-radius: 6px;
+  margin-bottom: 28px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+  border-left: 6px solid var(--fitnesse-orange);
+}
+
+.fitnesse-banner h1 {
+  color: #ffffff;
+  margin-top: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.fitnesse-banner p {
+  color: var(--fitnesse-linen);
+  margin-bottom: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.fitnesse-banner .fitnesse-tagline {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 5px 14px;
+  background-color: var(--fitnesse-orange);
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
+.btn-primary,
+input[type=submit].btn-primary {
+  background-color: var(--fitnesse-maroon) !important;
+  border-color: var(--fitnesse-maroon-dark) !important;
+  font-weight: 600;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--fitnesse-orange) !important;
+  border-color: var(--fitnesse-orange) !important;
+}
+
+.btn-default {
+  border-color: var(--fitnesse-maroon);
+  color: var(--fitnesse-maroon);
+}
+
+.btn-default:hover {
+  background-color: var(--fitnesse-linen);
+  border-color: var(--fitnesse-maroon-dark);
+  color: var(--fitnesse-maroon-dark);
+}
+
+/* ==========================================
+   TABLES (wiki tables + test results)
+   ========================================== */
+table {
+  border-color: #ddd8cc;
+}
+
+table th {
+  background-color: var(--fitnesse-linen);
+  color: var(--fitnesse-maroon-dark);
+  border-color: #ccc8bc;
+}
+
+/* Plain wiki tables only — do not override Slim pass/fail colors */
+.wiki table:not(.fit_table) th {
+  background-color: var(--fitnesse-linen);
+  color: var(--fitnesse-maroon-dark);
+}
+
+/* Slim decision table header row */
+table.fit_table thead tr,
+table.statistics thead tr {
+  background-color: var(--fitnesse-maroon) !important;
+  color: #ffffff !important;
+}
+
+table.fit_table thead tr th,
+table.statistics thead tr th {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+/* Slim/Fit table alternating rows */
+table.fit_table tbody tr:nth-child(even) {
+  background-color: #faf8f4;
+}
+
+/* ==========================================================
+   TEST RESULT COLORING
+   (High-Contrast, Soft Pastel Green & Crisp Text)
+   ========================================================== */
+.test-summary-pass,
+.pass,
+td.pass,
+span.pass,
+div.pass {
+  background-color: #f0fdf4 !important; /* Whisper-light, extremely soft mint-green */
+  color: #155724 !important; /* Deep dark-green text for maximum readability! */
+  border-color: #dcfce7 !important;
+}
+
+.test-summary-pass a,
+.pass a {
+  color: #155724 !important;
+  font-weight: 700 !important;
+}
+
+.test-summary-fail,
+.fail,
+td.fail {
+  background-color: #f8d7da !important; /* Soft, light pastel red */
+  color: #721c24 !important; /* Deep dark-red text */
+  border-color: #f5c6cb !important;
+}
+
+.test-summary-ignore,
+.ignore,
+td.ignore {
+  background-color: #fff3cd !important; /* Soft, light pastel yellow */
+  color: #856404 !important; /* Deep dark-yellow text */
+  border-color: #ffeeba !important;
+}
+
+.test-summary-error,
+.error,
+td.error {
+  background-color: #e2e3e5 !important; /* Soft, light pastel grey */
+  color: #383d41 !important; /* Deep dark-grey text */
+  border-color: #d6d8db !important;
+}
+
+/* Test result summary bar */
+.test-summary {
+  border-left: 5px solid var(--fitnesse-maroon);
+  padding-left: 12px;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-direction: row !important;
+}
+#test-summary .buttons, 
+.test-summary .buttons {
+  order: 2 !important; /* Push buttons (Execution Log) to the right! */
+  margin-left: auto !important;
+}
+
+/* ==========================================
+   PAGE TITLE / HEADING AREA
+   ========================================== */
+.page-title,
+#page-title {
+  border-bottom: 2px solid var(--fitnesse-orange);
+  padding-bottom: 6px;
+  margin-bottom: 20px;
+}
+
+/* Breadcrumb styling */
+.breadcrumb {
+  background-color: var(--fitnesse-linen);
+  border-radius: 4px;
+  border: 1px solid #ddd8cc;
+}
+
+.breadcrumb > li + li::before {
+  color: var(--fitnesse-orange);
+}
+
+.breadcrumb a {
+  color: var(--fitnesse-navy);
+}
+
+/* ==========================================
+   SIDEBAR / PAGE TREE
+   ========================================== */
+.sidebar,
+#sidebar {
+  border-right: 2px solid var(--fitnesse-linen);
+}
+
+.sidebar a,
+#sidebar a {
+  color: var(--fitnesse-navy);
+}
+
+.sidebar a:hover,
+#sidebar a:hover {
+  color: var(--fitnesse-orange);
+}
+
+/* ==========================================
+   CODE BLOCKS & PRE
+   ========================================== */
+pre, code {
+  background-color: #F0EDE6;
+  border: 1px solid #DDD8CC;
+  border-radius: 3px;
+  color: var(--fitnesse-navy-dark);
+}
+
+/* ==========================================
+   INFO CARDS (for FrontPage quick-links)
+   ========================================== */
+.fitnesse-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.fitnesse-card {
+  background: #ffffff;
+  border: 1px solid #e0dbd0;
+  border-top: 4px solid var(--fitnesse-maroon);
+  border-radius: 5px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  transition: box-shadow 0.2s;
+}
+
+.fitnesse-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.13);
+  border-top-color: var(--fitnesse-orange);
+}
+
+.fitnesse-card h3 {
+  margin-top: 0;
+  font-size: 15px;
+  color: var(--fitnesse-maroon);
+}
+
+.fitnesse-card p {
+  font-size: 13px;
+  color: var(--fitnesse-gray);
+  margin-bottom: 0;
+}
+
+/* ==========================================
+   STATUS BADGE (inline use)
+   ========================================== */
+.fitnesse-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.fitnesse-badge-pass   { background:#DFF0DB; color:#1a5c1a; }
+.fitnesse-badge-fail   { background:#F9E0E0; color:#8B0000; }
+.fitnesse-badge-info   { background:var(--fitnesse-linen); color:var(--fitnesse-navy); }
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+.fitnesse-footer,
+#footer.fitnesse-footer {
+  background-color: var(--fitnesse-maroon-dark);
+  color: var(--fitnesse-linen);
+  padding: 16px 32px;
+  margin-top: 40px;
+  font-size: 12px;
+  border-top: 4px solid var(--fitnesse-orange);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fitnesse-footer a {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.fitnesse-footer a:hover {
+  color: var(--fitnesse-orange);
+}
+
+.fitnesse-footer .fitnesse-footer-disclaimer {
+  opacity: 0.75;
+  margin-top: 4px;
+  font-size: 11px;
+  width: 100%;
+}
+
+.fitnesse-footer-brand {
+  font-weight: 700;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+/* ==========================================
+   DROPDOWN MENUS — must stay visible
+   ========================================== */
+.dropdown-menu {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.15) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
+  z-index: 9999 !important;
+  display: none;
+}
+
+.open > .dropdown-menu {
+  display: block !important;
+}
+
+.dropdown-menu > li > a {
+  color: #333333 !important;
+  padding: 6px 16px !important;
+  font-weight: 400 !important;
+  background-color: transparent !important;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  background-color: var(--fitnesse-linen) !important;
+  color: var(--fitnesse-maroon) !important;
+}
+
+.dropdown-menu > .divider {
+  background-color: #e5e5e5 !important;
+}
+
+/* ==========================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================== */
+@media (max-width: 768px) {
+  .fitnesse-header-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 18px;
+    gap: 10px;
+  }
+
+  .fitnesse-banner {
+    padding: 20px 18px;
+  }
+
+  .fitnesse-banner h1 {
+    font-size: 22px;
+  }
+
+  .fitnesse-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fitnesse-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   HIDE DEFAULT FITNESSE TOP NAV COMPLETELY
+   (Edit/Add/Tools moved into our banner)
+   ========================================== */
+
+/* The fixed-top navbar that contains Edit/Add/Tools/Search */
+nav.navbar-expand-md,
+nav.navbar-expand-md.fixed-top {
+  display: none !important;
+}
+
+/* The breadcrumb bar below the navbar */
+ol.breadcrumb,
+nav ol.breadcrumb,
+.page-actions.btn-group,
+ol.page-actions {
+  display: none !important;
+}
+
+/* Remove the body padding-top that FitNesse JS adds for the fixed navbar */
+body {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Ensure our header banner sticks to the very top */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* The FitNesse page title h1 (FrontPage, etc.) and the li links below it */
+article > h1:first-child,
+article > ul:first-child {
+  /* Keep page title but hide the raw Edit/Add/Tools bullet list */
+}
+
+/* Target the specific ul that FitNesse renders with Edit/Add/Tools links
+   These appear as the first <ul> directly inside <article> */
+article > ul:first-of-type {
+  display: none !important;
+}
+
+/* Also hide the raw page name h1 that duplicates our banner */
+article > h1.page-header,
+.page-header {
+  display: none !important;
+}
+
+/* ==========================================
+   HIDE DEFAULT FITNESSE <header> CONTENT
+   (the FitNesse link, breadcrumb ul, and h1)
+   All replaced by our banner in PageHeader
+   ========================================== */
+
+header > a#art_niche,
+header > ul,
+header > h1,
+header > h5 {
+  display: none !important;
+}
+
+/* Also hide the first <ul> that appears right after
+   the PageHeader renders — FitNesse puts Edit/Add/Tools there */
+header + article > ul:first-child {
+  display: none !important;
+}
+
+/* ==========================================
+   NUCLEAR OPTION: hide every FitNesse nav
+   element by very specific selectors
+   ========================================== */
+
+/* The fixed navbar with Edit/Add/Tools */
+.navbar.justify-content-start,
+.navbar.justify-content-start.bg-light,
+div.navbar.justify-content-start {
+  display: none !important;
+}
+
+/* The wrapping nav element */
+nav[role="navigation"],
+nav.navbar-expand-md[role="navigation"] {
+  display: none !important;
+}
+
+/* =========================================================
+   PAGE HISTORY & TEST HISTORY CONTRAST OVERRIDES
+   ========================================================= */
+.history, 
+.test-history, 
+.history table, 
+.test-history table {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+  border: 1px solid #e2e8f0 !important;
+  width: 100% !important;
+  margin-top: 20px !important;
+}
+.history th, 
+.test-history th {
+  background-gradient: none !important;
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  font-weight: 700 !important;
+  padding: 12px 16px !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+  letter-spacing: 0.5px !important;
+}
+.history td, 
+.test-history td {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-size: 13px !important;
+  vertical-align: middle !important;
+}
+.history tr:hover td, 
+.test-history tr:hover td {
+  background-color: #f8fafc !important;
+}
+.history td a, 
+.test-history td a {
+  color: #004A80 !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+}
+.history td a:hover, 
+.test-history td a:hover {
+  color: #E06336 !important;
+  text-decoration: underline !important;
+}
+.history input[type="submit"], 
+.test-history input[type="submit"] {
+  background-color: #A6192E !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  transition: background 0.15s !important;
+}
+.history input[type="submit"]:hover, 
+.test-history input[type="submit"]:hover {
+  background-color: #E06336 !important;
+}
+
+/* bootstrap breadcrumb row */
+nav > ol.breadcrumb { display: none !important; }
+
