@@ -134,5 +134,20 @@ To allow the entire suite to run 100% offline, locally, and inside headless CI/C
 
 ---
 
+## 7. Visual Regression Testing
+
+Visual checks run in their own FitNesse suite and do not change the existing API or UI suites:
+
+* **Compare approved screenshots:** `FrontPage.VisualRegression`
+* **Refresh approved baselines:** `FrontPage.RefreshVisualBaselines`
+
+Run `RefreshVisualBaselines` only when a UI change is intentional and the new appearance has been reviewed. It captures the Swag Labs login and inventory screens into `tests/visual_baselines/`. Normal runs only read these files and fail if a baseline is missing.
+
+The visual fixture uses headless Chromium at a fixed 1280x800 viewport, disables animations, and waits for web fonts. By default, channel differences up to 16 are ignored and a change passes only when no more than 0.2% of pixels differ. Each check produces baseline, current, and red-highlighted diff images in the simple report and Allure report. Failed comparisons include the changed-pixel percentage and viewport sizes. Runtime images are stored under `FitNesseRoot/files/testResults/visual-regression/`.
+
+For pages with timestamps or other intentionally changing areas, a test can mask CSS selectors with `set mask selectors`, separating selectors with `||` (for example, `.clock||[data-test='live-price']`). Thresholds can be changed per test using `set pixel tolerance` and `set allowed difference percent`.
+
+---
+
 ### 🏆 Enterprise QA Engineering Standard Certified 🏆
 Developed for **highly scalable, secure API test automation**. Pure Python, ultra-secure, and beautifully customized!

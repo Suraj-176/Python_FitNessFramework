@@ -5,7 +5,6 @@ Suite
 
 !note This page is automatically generated when running tests. It will be overwritten by the next Suite or Test execution.
 
-Tests failed (first failure was at 2026-09-25T14:55:04.606584):
+Tests failed (first failure was at 2026-09-27T17:07:08.187220800):
 
-!see [[FrontPage.SwagLabs.InventoryPage][.FrontPage.SwagLabs.InventoryPage]]
 !see [[FrontPage.SwagLabs.LoginPage][.FrontPage.SwagLabs.LoginPage]]

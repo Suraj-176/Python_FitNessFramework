@@ -61,6 +61,8 @@ class UiFixture:
         self._default_url = Config.UI_BASE_URL
         self._default_browser = Config.UI_BROWSER
         self._default_headless = Config.UI_HEADLESS
+        self._viewport = {"width": 1920, "height": 1080}
+        self._force_headless = False
         
         self._playwright = None
         self._browser = None
@@ -162,7 +164,7 @@ class UiFixture:
             if os.path.exists(debug_file):
                 try:
                     with open(debug_file, "r", encoding="utf-8") as f:
-                        if f.read().strip() == "true":
+                        if f.read().strip() == "true" and not self._force_headless:
                             headless_mode = False
                             logger.info("[UiFixture] Live Debug Active! Forcing headed browser execution.")
                     os.remove(debug_file)  # Delete so future runs use the default env setting
@@ -178,10 +180,10 @@ class UiFixture:
             
             if "firefox" in b_type:
                 self._browser = self._playwright.firefox.launch(headless=headless_mode)
-                self._context = self._browser.new_context(viewport={"width": 1920, "height": 1080})
+                self._context = self._browser.new_context(viewport=self._viewport)
             elif "webkit" in b_type or "safari" in b_type:
                 self._browser = self._playwright.webkit.launch(headless=headless_mode)
-                self._context = self._browser.new_context(viewport={"width": 1920, "height": 1080})
+                self._context = self._browser.new_context(viewport=self._viewport)
             else:
                 # Chromium supports true OS-level window maximization!
                 if not headless_mode:
@@ -189,7 +191,7 @@ class UiFixture:
                     self._context = self._browser.new_context(no_viewport=True)
                 else:
                     self._browser = self._playwright.chromium.launch(headless=headless_mode)
-                    self._context = self._browser.new_context(viewport={"width": 1920, "height": 1080})
+                    self._context = self._browser.new_context(viewport=self._viewport)
                 
             self._page = self._context.new_page()
             logger.info("[UiFixture] Browser started successfully.")
@@ -453,6 +455,8 @@ class UiFixture:
         if not self._page:
             return
 
+        page_name = self._test_name or "UI Test Run"
+        suite_name = self._suite_name or "UI Tests"
         self._screenshot_counter += 1
         screenshot_name = f"failure-{reason_prefix}-{self._screenshot_counter}.png"
 
@@ -484,14 +488,17 @@ class UiFixture:
                 el = raw_key.replace("verify_element_present_failed_", "")
                 attachment_label = f"Failure Screenshot - Element not present '{el}'"
                 error_message = f"Verification failed: Element '{el}' was not found on the page."
-            elif raw_key.startswith("wait_text_failed_"):
-                txt = raw_key.replace("wait_text_failed_", "")
+            elif raw_key.startswith("wait_for_text_failed_"):
+                txt = raw_key.replace("wait_for_text_failed_", "")
                 attachment_label = f"Failure Screenshot - Wait for text failed '{txt}'"
                 error_message = f"Timeout failed: Wait for text '{txt}' timed out."
+
+            self._log_simple_step(error_message, status="FAILED", body=error_message)
 
             # Symmetrical Allure UI Reporting Sourcing!
             if self._allure:
                 try:
+                    self._allure.add_step(error_message, "failed")
                     # Read the screenshot bytes and attach to Allure
                     with open(screenshot_path, "rb") as sf:
                         screenshot_bytes = sf.read()
@@ -517,6 +524,8 @@ class UiFixture:
                     "request_body": f"UI Assertion failed on step: {raw_key.replace('_', ' ').title()}",
                     "response_body": f'<div style="text-align: center; padding: 10px;"><img src="/{self._screenshot_dir_path}/{screenshot_name}" style="max-width: 100%; max-height: 450px; border: 2px solid var(--fail); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" alt="Failure Screenshot" /></div>',
                     "curl": f"http://localhost:8080/{self._screenshot_dir_path}/{screenshot_name}",
+                    "page_name": page_name,
+                    "suite_name": suite_name,
                     "json_file": "" # No JSON file for UI failures!
                 })
             except Exception as simple_err:
@@ -542,6 +551,8 @@ class UiFixture:
                 "request_body": "",
                 "response_body": body,
                 "curl": "",
+                "page_name": self._test_name or "UI Test Run",
+                "suite_name": self._suite_name or "UI Tests",
                 "json_file": "" # No JSON file for UI steps!
             })
         except Exception as simple_err:

@@ -9,6 +9,52 @@
      This minimal reset just ensures no leftover padding or margins appear. -->
 <style>
 body { padding-top: 64px !important; margin-top: 0 !important; }
+
+/* Symmetrical Stop Button Styling */
+#test-action {
+  display: block !important;
+  margin: 10px 0 14px 0 !important;
+  clear: both !important;
+}
+#test-action a.stop,
+a.stop,
+a[href*="responder=stoptest"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  padding: 8px 18px !important;
+  border-radius: 6px !important;
+  text-decoration: none !important;
+  border: 1px solid #991B1B !important;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4) !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+}
+#test-action a.stop::before,
+a.stop::before {
+  content: "⏹ ";
+  font-size: 13px;
+}
+#test-action a.stop:hover,
+a.stop:hover,
+a[href*="responder=stoptest"]:hover {
+  background: linear-gradient(135deg, #B91C1C 0%, #991B1B 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.55) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Suppress repeating slim service headers */
+#test-summaries h3 {
+  display: none !important;
+}
+.test-system-header, .test-system {
+  display: none !important;
+}
 </style>
 
 <!-- ═══════════════════════════════════════════════════
@@ -244,49 +290,50 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
     <button class="ici-drawer-tab-btn active" id="ici-dict-tab-dict" onclick="iciSwitchDrawerTab('dict')">📖 Locators</button>
     <button class="ici-drawer-tab-btn" id="ici-dict-tab-builder" onclick="iciSwitchDrawerTab('builder')">✍️ Step Builder</button>
   </div>
+  <div id="ici-dict-toast" class="ici-dict-toast" role="status" aria-live="polite"></div>
 
   <!-- Tab 1: Locator Dictionary Pane -->
   <div id="ici-drawer-pane-dict" class="ici-drawer-pane">
-    <p class="ici-drawer-hint">Copy predefined SwagLabs locators in 1 click:</p>
-    
-    <div class="ici-dict-group">
-      <div class="ici-dict-group-title">👤 Input Fields</div>
-      <div class="ici-dict-item" onclick="iciCopyToClipboard('username')">
-        <span class="ici-dict-key">username</span>
-        <span class="ici-dict-desc">User ID input textbox</span>
-        <span class="ici-dict-copy-icon">📋</span>
-      </div>
-      <div class="ici-dict-item" onclick="iciCopyToClipboard('password')">
-        <span class="ici-dict-key">password</span>
-        <span class="ici-dict-desc">Password input textbox</span>
-        <span class="ici-dict-copy-icon">📋</span>
-      </div>
+    <div class="ici-dict-search-wrap">
+      <input id="ici-dict-search" class="ici-dict-search" type="search" placeholder="Search locators" oninput="iciFilterLocators()" aria-label="Search locator dictionary">
     </div>
 
-    <div class="ici-dict-group">
-      <div class="ici-dict-group-title">🎯 Buttons &amp; Badges</div>
-      <div class="ici-dict-item" onclick="iciCopyToClipboard('login button')">
-        <span class="ici-dict-key">login button</span>
-        <span class="ici-dict-desc">Submit Login button</span>
-        <span class="ici-dict-copy-icon">📋</span>
+    <div id="ici-dict-groups">
+      <div class="ici-dict-group">
+        <div class="ici-dict-group-title">Input Fields</div>
+        <button type="button" class="ici-dict-item" onclick="iciCopyToClipboard('username')" aria-label="Copy username locator" title="Copy username">
+          <span class="ici-dict-key">username</span>
+          <span class="ici-dict-desc">User ID input</span>
+          <span class="ici-dict-copy-icon" aria-hidden="true">⧉</span>
+        </button>
+        <button type="button" class="ici-dict-item" onclick="iciCopyToClipboard('password')" aria-label="Copy password locator" title="Copy password">
+          <span class="ici-dict-key">password</span>
+          <span class="ici-dict-desc">Password input</span>
+          <span class="ici-dict-copy-icon" aria-hidden="true">⧉</span>
+        </button>
       </div>
-      <div class="ici-dict-item" onclick="iciCopyToClipboard('cart badge')">
-        <span class="ici-dict-key">cart badge</span>
-        <span class="ici-dict-desc">Shopping cart badge count selector</span>
-        <span class="ici-dict-copy-icon">📋</span>
+
+      <div class="ici-dict-group">
+        <div class="ici-dict-group-title">Buttons &amp; Badges</div>
+        <button type="button" class="ici-dict-item" onclick="iciCopyToClipboard('login button')" aria-label="Copy login button locator" title="Copy login button">
+          <span class="ici-dict-key">login button</span>
+          <span class="ici-dict-desc">Submit login form</span>
+          <span class="ici-dict-copy-icon" aria-hidden="true">⧉</span>
+        </button>
+        <button type="button" class="ici-dict-item" onclick="iciCopyToClipboard('cart badge')" aria-label="Copy cart badge locator" title="Copy cart badge">
+          <span class="ici-dict-key">cart badge</span>
+          <span class="ici-dict-desc">Cart item count</span>
+          <span class="ici-dict-copy-icon" aria-hidden="true">⧉</span>
+        </button>
       </div>
     </div>
-    
-    <div class="ici-dict-group-title" style="margin-top: 20px;">💡 Pro Tip:</div>
-    <p class="ici-drawer-hint" style="font-style: italic;">You can also pass standard CSS selectors (e.g. #login-button) directly into your steps!</p>
+    <div id="ici-dict-empty" class="ici-dict-empty" style="display: none;">No matching locators</div>
   </div>
 
   <!-- Tab 2: Interactive Step Builder Pane -->
   <div id="ici-drawer-pane-builder" class="ici-drawer-pane" style="display: none;">
-    <p class="ici-drawer-hint">Select an action and locator to visually compile full test scripts with zero code!</p>
-    
-    <div style="margin-bottom: 12px;">
-      <label class="ici-builder-label">1. Select Action</label>
+    <div class="ici-builder-field">
+      <label class="ici-builder-label" for="ici-builder-action">Action</label>
       <select id="ici-builder-action" class="ici-env-input" onchange="iciOnBuilderActionChange()">
         <option value="navigate">Navigate to URL</option>
         <option value="fill">Fill Field / Type Text</option>
@@ -298,8 +345,8 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
     </div>
 
     <!-- Locator selection: Dropdown (username, password, login button, cart badge) or custom text input -->
-    <div id="ici-builder-locator-container" style="margin-bottom: 12px; display: none;">
-      <label class="ici-builder-label">2. Target Locator</label>
+    <div id="ici-builder-locator-container" class="ici-builder-field" style="display: none;">
+      <label class="ici-builder-label" for="ici-builder-locator-select">Target Locator</label>
       <select id="ici-builder-locator-select" class="ici-env-input" onchange="iciOnBuilderLocatorChange()">
         <option value="username">username (Input)</option>
         <option value="password">password (Password)</option>
@@ -311,34 +358,37 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
     </div>
 
     <!-- Parameter 1 (for Navigate, Wait, Verify) -->
-    <div id="ici-builder-param-1-container" style="margin-bottom: 12px;">
-      <label id="ici-builder-param-1-label" class="ici-builder-label">Target URL</label>
+    <div id="ici-builder-param-1-container" class="ici-builder-field">
+      <label id="ici-builder-param-1-label" class="ici-builder-label" for="ici-builder-param-1">Target URL</label>
       <input type="text" id="ici-builder-param-1" class="ici-env-input" placeholder="e.g. https://www.saucedemo.com/" oninput="iciGenerateBuilderOutput()" />
     </div>
 
     <!-- Parameter 2 (for values or timeouts) -->
-    <div id="ici-builder-param-2-container" style="margin-bottom: 12px; display: none;">
-      <label id="ici-builder-param-2-label" class="ici-builder-label">Value to Type</label>
+    <div id="ici-builder-param-2-container" class="ici-builder-field" style="display: none;">
+      <label id="ici-builder-param-2-label" class="ici-builder-label" for="ici-builder-param-2">Value to Type</label>
       <input type="text" id="ici-builder-param-2" class="ici-env-input" placeholder="" oninput="iciGenerateBuilderOutput()" />
     </div>
 
     <!-- Single step preview and Append button -->
-    <div style="margin-top: 14px; margin-bottom: 14px; background: #eff6ff; border: 1px dashed #bfdbfe; padding: 10px; border-radius: 6px;">
-      <label class="ici-builder-label" style="color: #2563EB; font-weight: bold; margin-bottom: 2px;">Step Preview</label>
-      <div id="ici-builder-step-preview" style="font-family: monospace; font-size: 11px; font-weight: bold; color: #1e3a8a; word-break: break-all;">|navigate to|https://www.saucedemo.com/|</div>
-      <button class="ici-modal-btn save" style="width: 100%; margin-top: 8px; padding: 6px 10px; font-size: 12px; background: #2563EB;" onclick="iciAppendStepToScript()">➕ Append Step to Script</button>
+    <div class="ici-builder-preview">
+      <div class="ici-builder-preview-heading">
+        <span class="ici-builder-label">Generated Step</span>
+        <span id="ici-builder-step-count" class="ici-builder-count">0 steps</span>
+      </div>
+      <div id="ici-builder-step-preview" class="ici-builder-step-preview">| navigate to | https://www.saucedemo.com/ |</div>
+      <button type="button" class="ici-builder-append" onclick="iciAppendStepToScript()">Add Step</button>
     </div>
 
     <!-- Compiled FitNesse Wiki Table syntax output -->
-    <div style="margin-top: 14px;">
-      <label class="ici-builder-label" style="color: #003060; font-weight: bold; display: flex; justify-content: space-between;">
-        <span>Current Test Script Table</span>
-        <span style="color: #64748b; font-weight: normal; cursor: pointer; text-decoration: underline;" onclick="iciClearBuilderScript()">Clear</span>
-      </label>
-      <textarea id="ici-builder-script" class="ici-env-input" style="font-family: monospace; font-size: 11px; height: 110px; resize: none; background: #faf9f5; line-height: 1.4; border-color: #003060;" readonly onclick="this.select()"></textarea>
+    <div class="ici-builder-script-section">
+      <div class="ici-builder-preview-heading">
+        <label class="ici-builder-label" for="ici-builder-script">Test Script</label>
+        <button type="button" class="ici-builder-text-action" onclick="iciClearBuilderScript()">Clear</button>
+      </div>
+      <textarea id="ici-builder-script" class="ici-builder-script" readonly onclick="this.select()" aria-label="Generated FitNesse script"></textarea>
     </div>
 
-    <button class="ici-modal-btn save" style="width: 100%; margin-top: 10px; background: #1E3A8A;" onclick="iciCopyBuilderScript()">📋 Copy Entire Script Table</button>
+    <button type="button" class="ici-builder-copy" onclick="iciCopyBuilderScript()">Copy Script</button>
   </div>
 </div>
 
@@ -436,38 +486,107 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
   letter-spacing: 0.5px;
   margin-bottom: 8px;
 }
+.ici-dict-search-wrap {
+  position: sticky;
+  top: -20px;
+  z-index: 2;
+  padding: 2px 0 12px;
+  background: #ffffff;
+}
+.ici-dict-search {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #0f172a;
+  font: 13px Arial, sans-serif;
+  outline: none;
+}
+.ici-dict-search:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
 .ici-dict-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: #f8fafc;
+  gap: 8px;
+  width: 100%;
+  min-height: 52px;
+  text-align: left;
+  font-family: Arial, sans-serif;
+  background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
-  padding: 8px 12px;
+  padding: 8px 10px;
   margin-bottom: 8px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
 .ici-dict-item:hover {
-  border-color: #003060;
-  background: #f0f7ff;
+  border-color: #0284c7;
+  background: #f0f9ff;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+.ici-dict-item:focus-visible {
+  outline: 3px solid rgba(2, 132, 199, 0.22);
+  outline-offset: 2px;
 }
 .ici-dict-key {
   font-family: monospace;
   font-size: 12px;
   font-weight: 700;
-  color: #003060;
+  color: #0f3b59;
+  flex: 0 0 96px;
 }
 .ici-dict-desc {
   font-size: 11px;
   color: #64748b;
-  margin-left: 8px;
   flex: 1;
 }
 .ici-dict-copy-icon {
-  font-size: 14px;
-  color: #94a3b8;
-  margin-left: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 5px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 16px;
+}
+.ici-dict-empty {
+  padding: 18px 10px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+}
+.ici-dict-toast {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  z-index: 3;
+  min-height: 0;
+  padding: 0;
+  color: #166534;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.16s, transform 0.16s;
+  pointer-events: none;
+}
+.ici-dict-toast.visible {
+  min-height: 34px;
+  padding: 9px 11px;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  opacity: 1;
+  transform: translateY(0);
 }
 .ici-builder-label {
   display: block;
@@ -476,6 +595,104 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
   color: #475569;
   text-transform: uppercase;
   margin-bottom: 4px;
+}
+.ici-builder-field {
+  margin-bottom: 14px;
+}
+.ici-builder-field .ici-env-input {
+  width: 100%;
+  min-height: 38px;
+}
+.ici-builder-preview {
+  margin: 18px 0;
+  padding: 13px;
+  border: 1px solid #bae6fd;
+  border-left: 4px solid #0284c7;
+  border-radius: 6px;
+  background: #f0f9ff;
+}
+.ici-builder-preview-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.ici-builder-preview-heading .ici-builder-label {
+  margin: 0;
+}
+.ici-builder-count {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ici-builder-step-preview {
+  min-height: 42px;
+  padding: 11px;
+  border: 1px solid #dbeafe;
+  border-radius: 5px;
+  background: #ffffff;
+  color: #0f3b59;
+  font: 12px/1.5 Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+.ici-builder-append,
+.ici-builder-copy {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 5px;
+  background: #087e8b;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ici-builder-append:hover,
+.ici-builder-copy:hover {
+  background: #066873;
+}
+.ici-builder-script-section {
+  margin-top: 18px;
+}
+.ici-builder-text-action {
+  padding: 4px 7px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ici-builder-text-action:hover {
+  background: #f1f5f9;
+  color: #b91c1c;
+}
+.ici-builder-script {
+  display: block;
+  width: 100%;
+  min-height: 150px;
+  padding: 11px;
+  resize: vertical;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #f8fafc;
+  color: #0f172a;
+  font: 11px/1.55 Consolas, monospace;
+}
+@media (max-width: 420px) {
+  .ici-drawer {
+    width: calc(100vw - 12px);
+  }
+  .ici-drawer-pane {
+    padding: 16px;
+  }
+  .ici-dict-key {
+    flex-basis: 86px;
+  }
 }
 
 /* ── Login Overlay ──────────────────────────────────── */
@@ -615,7 +832,7 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
   align-items: center;
   background: linear-gradient(90deg, #0F172A 0%, #1E3A8A 50%, #2563EB 100%);
   border-bottom: 3px solid #3B82F6;
-  padding: 0 12px !important;
+  padding: 0 16px 0 12px !important;
   min-height: 60px;
   gap: 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
@@ -624,6 +841,8 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
   z-index: 9999 !important;
 }
 .fitnesse-header-left   { display:flex; align-items:center; gap:8px; flex-shrink:0; max-width: 380px; }
@@ -657,8 +876,8 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
 .fitnesse-nav-btn:hover { background:rgba(255,255,255,.22); color:#fff; text-decoration:none; }
 .fitnesse-nav-btn.admin-only { border-color:#3B82F6; }
 
-/* Right side - absolutely NO shrinking! */
-.fitnesse-header-right  { display:flex; align-items:center; gap:5px; flex-shrink:0 !important; min-width: fit-content !important; }
+/* Right side - constrained inside viewport! */
+.fitnesse-header-right  { display:flex; align-items:center; gap:6px; flex-shrink:0 !important; min-width: fit-content !important; padding-right: 8px !important; margin-right: 4px !important; box-sizing: border-box !important; }
 
 /* ── Responsive Layout overrides (prevent horizontal overflow) ── */
 @media (min-width: 769px) and (max-width: 1350px) {
@@ -760,11 +979,14 @@ body { padding-top: 64px !important; margin-top: 0 !important; }
   position: absolute !important;
   top: calc(100% + 6px) !important;
   right: 0 !important;
+  left: auto !important;
   background: #ffffff !important;
   border: 1px solid #cbd5e1 !important;
   border-radius: 6px !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
   width: 156px !important;
+  max-width: calc(100vw - 24px) !important;
+  box-sizing: border-box !important;
   z-index: 100000 !important;
   padding: 4px 0 !important;
   overflow: hidden !important;
@@ -1188,6 +1410,12 @@ body article {
     if (p() === "/" || p() === "/FrontPage" || p() === "" || p() === "/index.html") {
       return "/FrontPage?suite";
     }
+    if (/[?&]suite/i.test(location.search)) {
+      return p() + "?suite";
+    }
+    if (/[?&]test/i.test(location.search)) {
+      return p() + "?test";
+    }
     // Natively inspect the DOM for nested child lists (which only exist on SUITE pages!) to identify Suites vs Test pages flawlessly!
     var hasSuiteAction = document.querySelector('.contents') !== null || 
                          document.querySelector('.toc-item') !== null ||
@@ -1202,19 +1430,26 @@ body article {
     return p() + "?test";
   }
 
+  function handleRunClick(e, el) {
+    var btn = el || (e ? (e.currentTarget || e.target) : null);
+    if (btn) {
+      btn.innerHTML = '<span class="ici-spin">⏳</span> Running...';
+      btn.style.background = "#2563EB";
+      btn.style.borderColor = "#2563EB";
+      btn.classList.add("ici-pulse");
+      btn.style.pointerEvents = "none";
+    }
+    iciClearAllureResults().then(function() {
+      location.href = getRunUrl();
+    }).catch(function() {
+      location.href = getRunUrl();
+    });
+  }
+
   var NAV = {
     admin: [
       { label: "Home",          href: function(){ return "/"; } },
-      { label: "▶ Run",         href: "#", action: function(e){ 
-          var btn = e.target;
-          btn.innerHTML = '<span class="ici-spin">⏳</span> Running...';
-          btn.style.pointerEvents = 'none';
-          iciClearAllureResults().then(function() {
-            location.href = getRunUrl();
-          }).catch(function() {
-            location.href = getRunUrl();
-          });
-        } },
+      { label: "▶ Run",         href: "#", action: function(e, el){ handleRunClick(e, el); } },
       { label: "📊 Report",     href: "#", action: function(e, btn) { iciToggleReportDropdown(e, btn); } },
       { label: "✎ Edit",        href: function(){ return p() + "?edit"; },       adminOnly: true },
       { label: "+ Add Test",    href: function(){ return p() + "?new"; },        adminOnly: true },
@@ -1225,16 +1460,7 @@ body article {
     ],
     editor: [
       { label: "Home",          href: function(){ return "/"; } },
-      { label: "▶ Run",         href: "#", action: function(e){
-          var btn = e.target;
-          btn.innerHTML = '<span class="ici-spin">⏳</span> Running...';
-          btn.style.pointerEvents = 'none';
-          iciClearAllureResults().then(function() {
-            location.href = getRunUrl();
-          }).catch(function() {
-            location.href = getRunUrl();
-          });
-        } },
+      { label: "▶ Run",         href: "#", action: function(e, el){ handleRunClick(e, el); } },
       { label: "📊 Report",     href: "#", action: function(e, btn) { iciToggleReportDropdown(e, btn); } },
       { label: "✎ Edit",        href: function(){ return p() + "?edit"; } },
       { label: "+ Add Test",    href: function(){ return p() + "?new"; } },
@@ -1245,16 +1471,7 @@ body article {
     ],
     viewer: [
       { label: "Home",          href: function(){ return "/"; } },
-      { label: "▶ Run",         href: "#", action: function(e){ 
-          var btn = e.target;
-          btn.innerHTML = '<span class="ici-spin">⏳</span> Running...';
-          btn.style.pointerEvents = 'none';
-          iciClearAllureResults().then(function() {
-            location.href = getRunUrl();
-          }).catch(function() {
-            location.href = getRunUrl();
-          });
-        } },
+      { label: "▶ Run",         href: "#", action: function(e, el){ handleRunClick(e, el); } },
       { label: "📊 Report",     href: "#", action: function(e, btn) { iciToggleReportDropdown(e, btn); } },
       { label: "📋 Page History", href: function(){ return p() + "?pageHistory"; } }
     ]
@@ -1460,6 +1677,7 @@ body article {
       nav.appendChild(exportBtn);
     }
     
+    var isExecuting = isTestActivelyRunning();
     links.forEach(function(l) {
       var a = document.createElement("a");
       a.href = typeof l.href === "function" ? l.href() : l.href;
@@ -1477,9 +1695,18 @@ body article {
         };
       }
       a.className = "fitnesse-nav-btn" + (l.adminOnly ? " admin-only" : "");
-      a.textContent = l.label;
+      if (l.label.indexOf("Run") !== -1 && isExecuting) {
+        a.innerHTML = '<span class="ici-spin">⏳</span> Running...';
+        a.style.background = "#2563EB";
+        a.style.borderColor = "#2563EB";
+        a.classList.add("ici-pulse");
+        a.style.pointerEvents = "none";
+      } else {
+        a.textContent = l.label;
+      }
       nav.appendChild(a);
     });
+
   }
 
   function showApp(session) {
@@ -1957,23 +2184,42 @@ body article {
       });
   }
 
-  /* ── Dynamic Test Output & JSON Accordion Formatter ── */
-  function formatTestOutput() {
-    // No special layout classes needed - use natural page scroll everywhere
+  /* ── Universal Test Execution State Detector ── */
+  function isTestActivelyRunning() {
+    var isRunningPage = /[?&](test|suite)/i.test(location.search);
+    if (!isRunningPage) return false;
 
-    // 1. Format the Master Test Summary Banner Universally!
-    var summaryEl = document.getElementById("test-summary") || document.querySelector(".test-summary");
-    if (!summaryEl) {
-      // Fallback: scan all elements on the page for one containing both "Assertions:" and "right"
-      var divs = document.querySelectorAll("div, p, h2, pre");
-      for (var i = 0; i < divs.length; i++) {
-        var txt = divs[i].textContent;
-        if (txt.indexOf("Assertions:") > -1 && txt.indexOf("right") > -1) {
-          summaryEl = divs[i];
-          break;
+    // 1. FitNesse injects Execution Log link (<a href="?executionLog" class="ok">) ONLY after all tests finish!
+    var execLog = document.querySelector("#test-action a.ok, #test-action a[href*='executionLog'], a.ok[href*='executionLog'], a[href*='executionLog']");
+    if (execLog) return false;
+
+    // 2. FitNesse overwrites #test-summary with final test counts ("Assertions:" or "Test Pages:") once execution finishes
+    var testSummaryEl = document.getElementById("test-summary") || document.querySelector(".test-summary");
+    if (testSummaryEl) {
+      var summaryText = testSummaryEl.textContent || "";
+      if (summaryText.indexOf("Assertions:") !== -1 || summaryText.indexOf("Test Pages:") !== -1) {
+        var innerProgressBar = testSummaryEl.querySelector("#progressBar");
+        if (!innerProgressBar) {
+          return false;
         }
       }
     }
+
+    // 3. If native stop button is gone from #test-action AND #test-summary has a terminal class (pass/fail/error/ignore) without a progress bar inside
+    var nativeStop = document.querySelector("#test-action a.stop, a.stop[onclick*='stoptest'], a[href*='responder=stoptest']");
+    if (!nativeStop && testSummaryEl && (testSummaryEl.classList.contains("pass") || testSummaryEl.classList.contains("fail") || testSummaryEl.classList.contains("error") || testSummaryEl.classList.contains("ignore"))) {
+      if (!testSummaryEl.querySelector("#progressBar")) {
+        return false;
+      }
+    }
+
+    // On any ?test or ?suite URL where none of the terminal conditions are met, the test IS actively executing!
+    return true;
+  }
+
+  /* ── Dynamic Test Output & JSON Accordion Formatter ── */
+  function formatTestOutput() {
+    // No special layout classes needed - use natural page scroll everywhere
 
     // ── Handle Real-Time Processing (Running) States ──
     var runBtn = null;
@@ -1985,49 +2231,52 @@ body article {
       }
     });
 
-    // Detect if a test run is actively executing by the presence of FitNesse's native "Stop" button in the DOM!
-    var stopBtn = document.getElementById("stop-test") || document.querySelector(".stop-test");
-    if (!stopBtn) {
-      var els = document.querySelectorAll("input, button, a");
-      for (var idx = 0; idx < els.length; idx++) {
-        var val = (els[idx].value || els[idx].textContent || "").trim();
-        if (val.indexOf("Stop") > -1) {
-          stopBtn = els[idx];
-          break;
-        }
-      }
-    }
-    var isPageRunning = stopBtn !== null;
-    
-    var progressSpinner = document.getElementById("ici-header-progress");
     var isRunningPage = /[?&](test|suite)/i.test(location.search);
-    var hasFinished = !isPageRunning && summaryEl;
-    
-    if (isRunningPage) {
-      if (!hasFinished) {
-        // A. Toggle Header Progress Spinner to FLEX (Visible!)
-        if (progressSpinner) {
-          progressSpinner.style.display = "flex";
-        }
+    var running = isTestActivelyRunning();
+    var progressSpinner = document.getElementById("ici-header-progress");
 
-        // B. Update Navigation Button to "⏳ Running..." with pulsing state
+    if (isRunningPage) {
+      if (running) {
+        // Test is actively executing
+        if (progressSpinner) progressSpinner.style.display = "flex";
         if (runBtn) {
-          runBtn.innerHTML = "⏳ Running...";
-          runBtn.style.background = "#2563EB";
-          runBtn.style.borderColor = "#2563EB";
-          runBtn.classList.add("ici-pulse");
+          if (runBtn.textContent.indexOf("Running") === -1) {
+            runBtn.innerHTML = '<span class="ici-spin">⏳</span> Running...';
+            runBtn.style.background = "#2563EB";
+            runBtn.style.borderColor = "#2563EB";
+            runBtn.classList.add("ici-pulse");
+            runBtn.style.pointerEvents = "none";
+          }
         }
       } else {
         // Test finished! Restore "▶ Run" state cleanly
-        if (progressSpinner) {
-          progressSpinner.style.display = "none"; // Hide progress spinner!
-        }
+        if (progressSpinner) progressSpinner.style.display = "none";
         if (runBtn) {
-          runBtn.innerHTML = "▶ Run";
-          runBtn.style.background = "";
-          runBtn.style.borderColor = "";
-          runBtn.classList.remove("ici-pulse");
+          if (runBtn.textContent.indexOf("Running") !== -1 || runBtn.classList.contains("ici-pulse")) {
+            runBtn.innerHTML = "▶ Run";
+            runBtn.style.background = "";
+            runBtn.style.borderColor = "";
+            runBtn.classList.remove("ici-pulse");
+            runBtn.style.pointerEvents = "";
+          }
         }
+
+        // Stop browser loading spinner and finalize application loading state
+        if (!window._iciExecutionFinalized) {
+          window._iciExecutionFinalized = true;
+          try {
+            window.stop();
+          } catch(e) {}
+        }
+      }
+    } else {
+      if (progressSpinner) progressSpinner.style.display = "none";
+      if (runBtn && runBtn.textContent.indexOf("Running") !== -1) {
+        runBtn.innerHTML = "▶ Run";
+        runBtn.style.background = "";
+        runBtn.style.borderColor = "";
+        runBtn.classList.remove("ici-pulse");
+        runBtn.style.pointerEvents = "";
       }
     }
 
@@ -2535,9 +2784,63 @@ body article {
       console.log('FitNesse UX: Applied fitnesse-theme class to body');
     }
     
+    /* ────────────────────────────────────────────────────────────
+       SLIM SERVICE SANITIZER & STOP BUTTON CONTROLLER
+       ──────────────────────────────────────────────────────────── */
+    function sanitizeSlimServiceHeaders() {
+      // 1. Hide all h3 inside #test-summaries (where FitNesse outputs test system headers)
+      var testSummariesH3 = document.querySelectorAll("#test-summaries h3");
+      for (var s = 0; s < testSummariesH3.length; s++) {
+        testSummariesH3[s].style.setProperty("display", "none", "important");
+      }
+      // 2. Hide any h2/h3 or element containing slim:fitnesse.slim.SlimService
+      var headers = document.querySelectorAll("h2, h3, .test-system, div.test-system");
+      for (var h = 0; h < headers.length; h++) {
+        var txt = headers[h].textContent.trim();
+        if (txt === "slim:fitnesse.slim.SlimService" || txt.indexOf("Test System: slim:fitnesse.slim.SlimService") !== -1 || txt.indexOf("slim:fitnesse.slim.SlimService") !== -1) {
+          headers[h].style.setProperty("display", "none", "important");
+        }
+      }
+    }
+
+    window.iciStopCurrentTest = function() {
+      var pageStop = document.querySelector("#test-action a.stop, a.stop, a[href*='responder=stoptest']");
+      if (pageStop) {
+        pageStop.click();
+        return;
+      }
+      var scripts = document.getElementsByTagName("script");
+      for (var i = 0; i < scripts.length; i++) {
+        var m = (scripts[i].textContent || "").match(/responder=stoptest&id=(\d+)/);
+        if (m) {
+          var stopUrl = "?responder=stoptest&id=" + m[1];
+          if (typeof doSilentRequest === "function") {
+            doSilentRequest(stopUrl);
+          } else {
+            fetch(stopUrl).catch(function(){});
+          }
+          return;
+        }
+      }
+      fetch("?responder=stoptest").catch(function(){});
+    };
+
+    function updateTestExecutionUI() {
+      sanitizeSlimServiceHeaders();
+
+      var running = isTestActivelyRunning();
+      var pageStop = document.querySelector("#test-action a.stop, a.stop[href*='responder=stoptest']");
+      if (pageStop) {
+        pageStop.style.display = running ? "inline-flex" : "none";
+      }
+
+      formatTestOutput();
+    }
+
     // Watch for dynamically added content
     if (typeof MutationObserver !== 'undefined') {
       var themeObserver = new MutationObserver(function(mutations) {
+        updateTestExecutionUI();
         mutations.forEach(function(mutation) {
           if (mutation.addedNodes) {
             for (var i = 0; i < mutation.addedNodes.length; i++) {
@@ -2558,6 +2861,13 @@ body article {
       
       themeObserver.observe(document.body, { childList: true, subtree: true });
       console.log('FitNesse UX: Theme observer active');
+    }
+
+    // Run execution monitor
+    updateTestExecutionUI();
+    if (/[?&](test|suite)/i.test(location.search)) {
+      var runnerInterval = setInterval(updateTestExecutionUI, 400);
+      setTimeout(function() { clearInterval(runnerInterval); }, 60000);
     }
     
     /* ────────────────────────────────────────────────────────────
@@ -2628,20 +2938,9 @@ body article {
     };
 
     window.iciOpenAllureReport = function() {
-      // Prevent opening Allure Report prematurely if a test suite is actively running!
-      var stopBtn = document.getElementById("stop-test") || document.querySelector(".stop-test");
-      if (!stopBtn) {
-        var els = document.querySelectorAll("input, button, a");
-        for (var idx = 0; idx < els.length; idx++) {
-          var val = (els[idx].value || els[idx].textContent || "").trim();
-          if (val.indexOf("Stop") > -1) {
-            stopBtn = els[idx];
-            break;
-          }
-        }
-      }
-      if (stopBtn) {
-        alert("⚠️ Suite execution is still in progress!\n\nPlease wait for the FitNesse run to completely finish (turn green/red) before opening your Allure Report.");
+      // Prevent opening Allure Report prematurely ONLY if a test is actively running!
+      if (isTestActivelyRunning()) {
+        alert("⚠️ Test execution is still in progress!\n\nPlease wait for the FitNesse run to completely finish (turn green/red) before opening your Allure Report.");
         return;
       }
 
@@ -2716,6 +3015,7 @@ body article {
       var drawer = document.getElementById("ici-dict-drawer");
       if (drawer) {
         drawer.classList.toggle("open");
+        iciUpdateBuilderStepCount();
       }
     };
 
@@ -2739,20 +3039,57 @@ body article {
       }
     };
 
+    window.iciShowDictionaryToast = function(message) {
+      var toast = document.getElementById("ici-dict-toast");
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add("visible");
+      window.clearTimeout(window._iciDictToastTimer);
+      window._iciDictToastTimer = window.setTimeout(function() {
+        toast.classList.remove("visible");
+      }, 1800);
+    };
+
     window.iciCopyToClipboard = function(text) {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(function() {
-          alert("📋 Copied to clipboard: " + text);
-        });
-      } else {
+      function copyFallback() {
         var textarea = document.createElement("textarea");
         textarea.value = text;
         document.body.appendChild(textarea);
         textarea.select();
         document.execCommand("copy");
         document.body.removeChild(textarea);
-        alert("📋 Copied to clipboard: " + text);
       }
+
+      var copyPromise = navigator.clipboard && window.isSecureContext
+        ? navigator.clipboard.writeText(text)
+        : Promise.reject(new Error("Clipboard API unavailable"));
+      copyPromise.then(function() {
+        iciShowDictionaryToast("Copied: " + text);
+      }).catch(function() {
+        copyFallback();
+        iciShowDictionaryToast("Copied: " + text);
+      });
+    };
+
+    window.iciFilterLocators = function() {
+      var query = (document.getElementById("ici-dict-search").value || "").trim().toLowerCase();
+      var groups = document.querySelectorAll("#ici-dict-groups .ici-dict-group");
+      var visibleCount = 0;
+
+      groups.forEach(function(group) {
+        var visibleInGroup = 0;
+        group.querySelectorAll(".ici-dict-item").forEach(function(item) {
+          var matches = item.textContent.toLowerCase().indexOf(query) !== -1;
+          item.style.display = matches ? "flex" : "none";
+          if (matches) {
+            visibleInGroup++;
+            visibleCount++;
+          }
+        });
+        group.style.display = visibleInGroup ? "block" : "none";
+      });
+
+      document.getElementById("ici-dict-empty").style.display = visibleCount ? "none" : "block";
     };
 
     window.iciOnBuilderActionChange = function() {
@@ -2797,6 +3134,10 @@ body article {
         param2Container.style.display = "none";
         param1Label.textContent = "Expected Text";
         param1Input.placeholder = "e.g. Products";
+      } else if (action === "close") {
+        locatorContainer.style.display = "none";
+        param1Container.style.display = "none";
+        param2Container.style.display = "none";
       }
       iciGenerateBuilderOutput();
     };
@@ -2862,10 +3203,22 @@ body article {
       // Append the new step as a clean line
       currentVal += "\n" + step;
       scriptBox.value = currentVal;
+      iciUpdateBuilderStepCount();
+    };
+
+    window.iciUpdateBuilderStepCount = function() {
+      var scriptBox = document.getElementById("ici-builder-script");
+      var countElement = document.getElementById("ici-builder-step-count");
+      if (!scriptBox || !countElement) return;
+      var count = scriptBox.value.split(/\r?\n/).filter(function(line) {
+        return line.trim().startsWith("|") && !line.toLowerCase().includes("script | fixtures.");
+      }).length;
+      countElement.textContent = count + (count === 1 ? " step" : " steps");
     };
 
     window.iciClearBuilderScript = function() {
       document.getElementById("ici-builder-script").value = "";
+      iciUpdateBuilderStepCount();
     };
 
     window.iciCopyBuilderScript = function() {
@@ -2873,7 +3226,7 @@ body article {
       if (text) {
         iciCopyToClipboard(text);
       } else {
-        alert("Your test script table is currently empty. Append some steps first!");
+        iciShowDictionaryToast("Add a step before copying the script.");
       }
     };
 

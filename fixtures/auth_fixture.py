@@ -113,11 +113,12 @@ class AuthFixture:
 
     def _record_to_report(self, method: str, url: str, status_code: int, response_time_ms: int, 
                           curl_cmd: str, request_body: str, response_body: str, 
-                          right: int = 0, wrong: int = 0, exceptions: int = 0) -> None:
+                          right: int = 0, wrong: int = 0, exceptions: int = 0,
+                          failure_detail: str = "") -> None:
         """Shared helper to record request details to the HTML report generator."""
         try:
-            from core.report_generator import add_record
-            add_record({
+            from core.report_generator import record_api_request
+            record_api_request({
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
                 "method": method,
                 "url": url,
@@ -129,7 +130,8 @@ class AuthFixture:
                 "right": right,
                 "wrong": wrong,
                 "ignored": 0,
-                "exceptions": exceptions
+                "exceptions": exceptions,
+                "failure_detail": failure_detail,
             })
         except Exception as e:
             logger.error(f"[Report] Failed to trigger report generator: {e}")
@@ -197,24 +199,24 @@ class AuthFixture:
             # Log Response
             log_response(self._actual_status_code, self._response_body, dict(response.headers))
 
+            failure_detail = ""
             if response.status_code != 200:
-                logger.error(f"[Auth] FAILED code={response.status_code} body={response.text}")
-                return False
+                failure_detail = f"Authentication failed with HTTP {response.status_code}."
+            elif not self._response_body_json:
+                failure_detail = "Authentication response was not valid JSON."
+            else:
+                token = extract_json_field(self._response_body_json, self._token_field)
+                if not token or token in ("key not found", "no key set"):
+                    failure_detail = f"Token field '{self._token_field}' was not present in the response."
 
-            if not self._response_body_json:
-                logger.error(f"[Auth] Invalid JSON response body: {response.text}")
-                return False
+            if failure_detail:
+                logger.error(f"[Auth] {failure_detail}")
+                right_count, wrong_count = 0, 1
+            else:
+                AuthFixture._auth_token = token
+                logger.info("[Auth] Token acquired successfully.")
+                right_count, wrong_count = self._calculate_assertion_counts(self._actual_status_code, self._expected_codes)
 
-            token = extract_json_field(self._response_body_json, self._token_field)
-            if not token or token in ("key not found", "no key set"):
-                logger.error(f"[Auth] Token field '{self._token_field}' not found in response: {response.text}")
-                return False
-
-            AuthFixture._auth_token = token
-            logger.info("[Auth] Token acquired successfully.")
-            
-            # Calculate assertion counts and record to report
-            right_count, wrong_count = self._calculate_assertion_counts(self._actual_status_code, self._expected_codes)
             curl_cmd = f"curl -s -X POST \"{self._token_url}\" -H \"Content-Type: application/json\" -d \"{self._body_json.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace(chr(34), '%22')}\""
             self._record_to_report(
                 method="POST",
@@ -225,8 +227,12 @@ class AuthFixture:
                 request_body=unescaped_body or "",
                 response_body=self._response_body or "",
                 right=right_count,
-                wrong=wrong_count
+                wrong=wrong_count,
+                failure_detail=failure_detail,
             )
+
+            if failure_detail:
+                return False
 
             # Symmetrical Allure API Reporting Compile!
             try:

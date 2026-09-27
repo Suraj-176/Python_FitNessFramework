@@ -21,6 +21,23 @@ def html_escape(text: str) -> str:
             .replace('"', "&quot;")
             .replace("'", "&#x27;"))
 
+
+def extract_execution_log(root: ET.Element) -> dict:
+    """Extract only useful non-payload execution lines from a FitNesse result."""
+    execution_log = root.find(".//executionLog")
+    if execution_log is None:
+        return {}
+
+    lines = []
+    for tag in ("stdErr", "stdOut"):
+        value = execution_log.findtext(tag) or ""
+        lines.extend(line.strip() for line in value.splitlines() if line.strip())
+
+    return {
+        "lines": lines,
+        "exit_code": (execution_log.findtext("exitCode") or "").strip(),
+    }
+
 def load_history() -> None:
     global report_history
     if os.path.exists(HISTORY_FILE):
@@ -38,6 +55,57 @@ def save_history() -> None:
     except Exception:
         pass
 
+
+def infer_environment_label_from_requests(requests: List[dict]) -> str:
+    """Infer a human-friendly environment label from request URLs or the current runtime config."""
+    urls = []
+    for req in requests:
+        url = req.get("url") or ""
+        if url and isinstance(url, str):
+            urls.append(url)
+
+    for candidate in urls:
+        lowered = candidate.lower()
+        if "dummyjson.com" in lowered:
+            return "QA / DummyJSON"
+        if "saucedemo.com" in lowered:
+            return "UI / Saucedemo"
+        if "example.com" in lowered or "api.example.com" in lowered:
+            return "Prod / Example API"
+        if "uat" in lowered:
+            return "UAT"
+        if "staging" in lowered:
+            return "Staging"
+        if "dev" in lowered:
+            return "Dev"
+
+    env_from_os = os.environ.get("ENV") or os.environ.get("ACTIVE_ENVIRONMENT") or os.environ.get("SELECTED_ENV")
+    if env_from_os:
+        return str(env_from_os).strip().title()
+
+    env_file = os.path.join(BASE_DIR, ".env")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    if "=" in line and "_API_URL" in line:
+                        key, value = line.strip().split("=", 1)
+                        if value and key.lower().startswith("qa"):
+                            return "QA"
+                        if value and key.lower().startswith("uat"):
+                            return "UAT"
+                        if value and key.lower().startswith("prod"):
+                            return "Prod"
+                        if value and key.lower().startswith("staging"):
+                            return "Staging"
+                        if value and key.lower().startswith("dev"):
+                            return "Dev"
+        except Exception:
+            pass
+
+    return "Runtime / Active Session"
+
+
 def scan_test_results() -> List[dict]:
     """Scans FitNesse Zip History and XML run outputs to get actual assertion counts."""
     results = []
@@ -46,11 +114,10 @@ def scan_test_results() -> List[dict]:
         return results
 
     import zipfile
-    # Symmetrically scan FitNesse .zip execution history archives recursively inside FitNesseRoot!
+    # 1. Scan FitNesse .zip execution history archives recursively inside FitNesseRoot
     zip_files = glob.glob(os.path.join(fitnesse_root_dir, "**", "*.zip"), recursive=True)
     for zip_path in zip_files:
         try:
-            # The directory name under FitNesseRoot represents the test page path (e.g. FrontPage/SwagLabs/LoginPage)
             rel_dir = os.path.dirname(os.path.relpath(zip_path, fitnesse_root_dir))
             clean_name = rel_dir.replace(os.sep, ".").replace("FrontPage.", "")
             
@@ -61,20 +128,27 @@ def scan_test_results() -> List[dict]:
                 for member in z.namelist():
                     if member.endswith(".xml"):
                         filename = os.path.basename(member)
-                        timestamp_str = filename.replace(".xml", "")
+                        stem = filename[:-4]
+                        # Must be 14-digit timestamp: YYYYMMDDHHMMSS (filter out properties.xml, etc.)
+                        if not stem.isdigit() or len(stem) != 14:
+                            continue
+                        timestamp_str = stem
                         
                         xml_bytes = z.read(member)
                         root = ET.fromstring(xml_bytes)
                         
-                        # Find the standard FitNesse counts block
-                        counts_el = root.find(".//counts")
+                        # Find the standard FitNesse counts or finalCounts block
+                        counts_el = root.find(".//finalCounts")
+                        if counts_el is None:
+                            counts_el = root.find(".//counts")
+                            
                         if counts_el is not None:
-                            right = int(counts_el.find("right").text or 0)
-                            wrong = int(counts_el.find("wrong").text or 0)
-                            ignored = int(counts_el.find("ignores").text or 0)
-                            exceptions = int(counts_el.find("exceptions").text or 0)
+                            right = int(counts_el.findtext("right") or 0)
+                            wrong = int(counts_el.findtext("wrong") or 0)
+                            ignored = int(counts_el.findtext("ignores") or 0)
+                            exceptions = int(counts_el.findtext("exceptions") or 0)
                         else:
-                            right, wrong, ignored, exceptions = 0, 0, 0, 0
+                            continue
                             
                         try:
                             formatted_time = f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:{timestamp_str[12:14]}"
@@ -88,12 +162,13 @@ def scan_test_results() -> List[dict]:
                             "right": right,
                             "wrong": wrong,
                             "ignored": ignored,
-                            "exceptions": exceptions
+                            "exceptions": exceptions,
+                            "execution_log": extract_execution_log(root) if "." in clean_name else {},
                         })
         except Exception:
             pass
 
-    # Also fallback to scanning raw XML files if any exist inside files/testResults
+    # 2. Scan raw XML result files in files/testResults
     test_results_dir = os.path.join(BASE_DIR, "FitNesseRoot", "files", "testResults")
     if os.path.exists(test_results_dir):
         xml_files = glob.glob(os.path.join(test_results_dir, "**", "*.xml"), recursive=True)
@@ -102,54 +177,158 @@ def scan_test_results() -> List[dict]:
                 continue
             try:
                 filename = os.path.basename(path)
-                # Check for standard FitNesse XML suffix: YYYYMMDDHHMMSS_R_W_I_E.xml
-                if "_" in filename and filename.endswith(".xml"):
-                    parts = filename.split("_")
-                    timestamp_str = parts[0]
-                    counts = parts[1].replace(".xml", "").split(" ")
+                if not filename.endswith(".xml"):
+                    continue
                     
-                    # Check for standard results naming
-                    if len(counts) >= 4:
-                        right = int(counts[0])
-                        wrong = int(counts[1])
-                        ignored = int(counts[2])
-                        exceptions = int(counts[3])
-                    else:
-                        parts_dash = parts[1].replace(".xml", "").split("-")
-                        if len(parts_dash) >= 4:
-                            right = int(parts_dash[0])
-                            wrong = int(parts_dash[1])
-                            ignored = int(parts_dash[2])
-                            exceptions = int(parts_dash[3])
-                        else:
-                            continue
+                stem = filename[:-4]
+                parts = stem.split("_")
+                right = wrong = ignored = exceptions = 0
+                timestamp_str = ""
+                with open(path, "rb") as xf:
+                    xml_root = ET.fromstring(xf.read())
 
-                    # Get clean path relative to testResults folder
-                    rel_path = os.path.relpath(path, test_results_dir)
-                    d = os.path.dirname(rel_path).replace(os.sep, ".")
-                    
+                # Standard FitNesse XML format: YYYYMMDDHHMMSS_R_W_I_E.xml
+                if len(parts) >= 5 and parts[0].isdigit() and len(parts[0]) == 14:
+                    timestamp_str = parts[0]
+                    right = int(parts[1])
+                    wrong = int(parts[2])
+                    ignored = int(parts[3])
+                    exceptions = int(parts[4])
+                elif len(parts) == 1 and parts[0].isdigit() and len(parts[0]) == 14:
+                    timestamp_str = parts[0]
+                    counts_el = xml_root.find(".//finalCounts") or xml_root.find(".//counts")
+                    if counts_el is not None:
+                        right = int(counts_el.findtext("right") or 0)
+                        wrong = int(counts_el.findtext("wrong") or 0)
+                        ignored = int(counts_el.findtext("ignores") or 0)
+                        exceptions = int(counts_el.findtext("exceptions") or 0)
+                    else:
+                        continue
+                else:
+                    continue
+
+                rel_path = os.path.relpath(path, test_results_dir)
+                d = os.path.dirname(rel_path).replace(os.sep, ".")
+                clean_name = d.replace("FrontPage.", "")
+                
+                if clean_name and not clean_name.endswith("SuiteSetUp") and not clean_name.endswith("SuiteTearDown"):
                     try:
                         formatted_time = f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:{timestamp_str[12:14]}"
                     except Exception:
                         formatted_time = timestamp_str
 
-                    clean_name = d.replace("FrontPage.", "")
-                    if clean_name and not clean_name.endswith("SuiteSetUp") and not clean_name.endswith("SuiteTearDown"):
-                        results.append({
-                            "name": clean_name,
-                            "timestamp": formatted_time,
-                            "timestamp_raw": timestamp_str,
-                            "right": right,
-                            "wrong": wrong,
-                            "ignored": ignored,
-                            "exceptions": exceptions
-                        })
+                    results.append({
+                        "name": clean_name,
+                        "timestamp": formatted_time,
+                        "timestamp_raw": timestamp_str,
+                        "right": right,
+                        "wrong": wrong,
+                        "ignored": ignored,
+                        "exceptions": exceptions,
+                        "execution_log": extract_execution_log(xml_root) if "." in clean_name else {},
+                    })
             except Exception:
                 pass
-            
+
+    # Deduplicate by page name, preserving only the latest execution record for each test page.
+    seen = {}
+    for r in results:
+        name = r["name"]
+        current = seen.get(name)
+        if current is None or r["timestamp_raw"] > current["timestamp_raw"]:
+            seen[name] = r
+
+    unique_results = list(seen.values())
+
     # Sort results showing the most recently executed tests first
-    results.sort(key=lambda x: x["timestamp_raw"], reverse=True)
-    return results
+    unique_results.sort(key=lambda x: x["timestamp_raw"], reverse=True)
+    return unique_results
+
+def match_request_to_page(req: dict, candidate_pages: List[dict]) -> Optional[dict]:
+    """Match a request/step to the closest active page within a realistic page execution window.
+
+    FitNesse XML timestamps represent the run start for a page, while UI/API steps can be recorded
+    several seconds later as the page executes. We therefore need a wider post-start window than the
+    previous 5-second cap, while still keeping stale records from older runs out of the active page.
+    """
+    try:
+        req_dt = datetime.datetime.strptime(req["timestamp"], "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return None
+
+    closest_page = None
+    min_diff = 999999
+
+    for p in candidate_pages:
+        try:
+            p_dt = datetime.datetime.strptime(p["timestamp_raw"][:14], "%Y%m%d%H%M%S")
+            diff = (req_dt - p_dt).total_seconds()
+            if -60 <= diff <= 120:
+                abs_diff = abs(diff)
+                if abs_diff < min_diff:
+                    min_diff = abs_diff
+                    closest_page = p
+        except Exception:
+            pass
+
+    return closest_page
+
+
+def record_api_request(record: dict) -> None:
+    """Write an API request and its execution steps with the current FitNesse page context."""
+    page_name = os.environ.get("FITNESSE_PAGE_NAME", "").strip()
+    page_path = os.environ.get("FITNESSE_PAGE_PATH", "").strip()
+    path_parts = [part.strip() for part in page_path.split(".") if part.strip()]
+    suite_name = ""
+    if len(path_parts) >= 3:
+        suite_name = path_parts[-2]
+    elif len(path_parts) == 2:
+        suite_name = path_parts[-1]
+
+    request_record = dict(record)
+    if page_name:
+        request_record["page_name"] = page_name
+    if suite_name:
+        request_record["suite_name"] = suite_name
+
+    status_code = request_record.get("status_code", 0)
+    is_success = (
+        request_record.get("wrong", 0) == 0
+        and request_record.get("exceptions", 0) == 0
+        and (request_record.get("right", 0) > 0 or (isinstance(status_code, int) and 200 <= status_code < 400))
+    )
+    step_status_code = 200 if is_success else 500
+    timestamp = request_record.get("timestamp") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    request_record["timestamp"] = timestamp
+
+    add_record({
+        "timestamp": timestamp,
+        "method": "STEP",
+        "url": "Prepare Request Headers & Body",
+        "status_code": 200,
+        "response_time_ms": 0,
+        "request_body": "",
+        "response_body": "",
+        "curl": "",
+        "page_name": page_name,
+        "suite_name": suite_name,
+        "json_file": "",
+    })
+    add_record({
+        "timestamp": timestamp,
+        "method": "STEP",
+        "url": f"Send HTTP {request_record.get('method', 'REQUEST')} Request",
+        "status_code": step_status_code,
+        "response_time_ms": request_record.get("response_time_ms", 0),
+        "request_body": "",
+        "response_body": request_record.get("failure_detail", ""),
+        "curl": "",
+        "page_name": page_name,
+        "suite_name": suite_name,
+        "json_file": "",
+    })
+    add_record(request_record)
+
 
 def trigger_delayed_report() -> None:
     import subprocess
@@ -186,16 +365,24 @@ def generate_html_report() -> None:
     results = scan_test_results()
     active_pages = []
     suite_name = "FITNESSE RUN"
+    suite_summary = None
 
     if results:
-        latest_page = results[0]["name"]
-        suite_name = latest_page.split(".")[0] if "." in latest_page else latest_page
+        latest_ts = max(r["timestamp_raw"] for r in results)
+        latest_dt = datetime.datetime.strptime(latest_ts, "%Y%m%d%H%M%S")
+        cutoff_dt = latest_dt - datetime.timedelta(minutes=20)
+        recent_results = [r for r in results if datetime.datetime.strptime(r["timestamp_raw"], "%Y%m%d%H%M%S") >= cutoff_dt]
 
-        # Filter results for the active parent suite namespace
-        current_suite_pages = [r for r in results if (r["name"].startswith(suite_name + ".") or r["name"] == suite_name) and r["name"] != suite_name]
+        latest_page = recent_results[0]["name"]
+        suite_name = latest_page.split(".")[0] if "." in latest_page else latest_page
+        suite_summary = next((r for r in recent_results if r["name"] == suite_name), None)
+
+        # Filter results for the active parent suite namespace based on the latest run window only.
+        current_suite_pages = [r for r in recent_results if (r["name"].startswith(suite_name + ".") or r["name"] == suite_name) and r["name"] != suite_name]
         if current_suite_pages:
-            # Symmetrically include ALL test pages executed during this session!
             active_pages = current_suite_pages
+        else:
+            active_pages = recent_results[:10]
 
     # Initialize empty request lists on all active pages
     for p in active_pages:
@@ -206,24 +393,21 @@ def generate_html_report() -> None:
     active_requests = []
     for req in recent_history:
         try:
-            req_dt = datetime.datetime.strptime(req["timestamp"], "%Y-%m-%d %H:%M:%S")
-            closest_page = None
-            min_diff = 999999
-            
-            for p in active_pages:
-                try:
-                    p_dt = datetime.datetime.strptime(p["timestamp_raw"][:14], "%Y%m%d%H%M%S")
-                    diff = (p_dt - req_dt).total_seconds()
-                    
-                    # 60s window safely maps both fast API and slower Playwright UI execution steps!
-                    if -5 <= diff <= 60:
-                        abs_diff = abs(diff)
-                        if abs_diff < min_diff:
-                            min_diff = abs_diff
-                            closest_page = p
-                except Exception:
-                    pass
-                    
+            req_page_name = req.get("page_name") or req.get("suite_name")
+            candidate_pages = active_pages
+            if req_page_name:
+                matching_pages = [
+                    p for p in active_pages
+                    if p.get("name") and (
+                        p["name"] == req_page_name
+                        or p["name"].endswith("." + req_page_name)
+                        or req_page_name.endswith("." + p["name"])
+                    )
+                ]
+                if matching_pages:
+                    candidate_pages = matching_pages
+
+            closest_page = match_request_to_page(req, candidate_pages)
             if closest_page:
                 closest_page["requests"].append(req)
                 if req not in active_requests:
@@ -238,6 +422,9 @@ def generate_html_report() -> None:
         latest_name = grouped_pages[0]["name"]
         suite_name = latest_name.split(".")[0] if "." in latest_name else latest_name
 
+    env_label = infer_environment_label_from_requests(active_requests or recent_history)
+    run_started = recent_history[0]["timestamp"] if recent_history else datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    run_ended = recent_history[-1]["timestamp"] if recent_history else run_started
     total_pages = len(grouped_pages)
     passed_pages = sum(1 for p in grouped_pages if p["wrong"] == 0 and p["exceptions"] == 0 and p["right"] > 0)
     failed_pages = total_pages - passed_pages
@@ -245,10 +432,11 @@ def generate_html_report() -> None:
     total_duration_ms = sum(r["response_time_ms"] for r in active_requests)
     formatted_duration = f"{total_duration_ms / 1000:.2f}s"
 
-    total_right = sum(r["right"] for r in active_pages) if active_pages else 0
-    total_wrong = sum(r["wrong"] for r in active_pages) if active_pages else 0
-    total_ignored = sum(r["ignored"] for r in active_pages) if active_pages else 0
-    total_exceptions = sum(r["exceptions"] for r in active_pages) if active_pages else 0
+    summary_pages = [suite_summary] if suite_summary else active_pages
+    total_right = sum(r["right"] for r in summary_pages)
+    total_wrong = sum(r["wrong"] for r in summary_pages)
+    total_ignored = sum(r["ignored"] for r in summary_pages)
+    total_exceptions = sum(r["exceptions"] for r in summary_pages)
 
     if failed_pages > 0:
         status_banner_class = "banner-fail"
@@ -275,7 +463,7 @@ def generate_html_report() -> None:
         page_status_text = "✓ PASSED" if is_page_pass else "✗ FAILED"
         page_status_value = "passed" if is_page_pass else "failed"
 
-        row_display_style = "table-row" if not is_page_pass else "none"
+        row_display_style = "none"
         
         defect_helper = ""
         if not is_page_pass:
@@ -293,6 +481,26 @@ def generate_html_report() -> None:
         requests_sub_html = ""
         if p["requests"]:
             for r_idx, r in enumerate(p["requests"]):
+                if r.get("method") == "VISUAL":
+                    visual_success = isinstance(r.get("status_code"), int) and 200 <= r["status_code"] < 400
+                    visual_status_class = "status-pass" if visual_success else "status-fail"
+                    visual_status_text = "MATCH" if visual_success else "CHANGED"
+                    visual_details_display = "none" if visual_success else "block"
+                    requests_sub_html += f"""
+                    <div class="nested-request-row visual-result-row" style="border-color: {'var(--success)' if visual_success else 'var(--fail)'};">
+                        <div class="nested-request-header" onclick="toggleRequest({idx}, {r_idx})">
+                            <span class="badge badge-visual">VISUAL</span>
+                            <span class="nested-url" title="{html_escape(r.get('url', ''))}">{html_escape(r.get('url', 'Visual comparison'))}</span>
+                            <span class="status-indicator {visual_status_class}">{visual_status_text}</span>
+                        </div>
+                        <div id="req-details-{idx}-{r_idx}" class="nested-request-details visual-result-details" style="display: {visual_details_display};">
+                            <p>{html_escape(r.get('request_body', ''))}</p>
+                            {r.get('response_body', '')}
+                        </div>
+                    </div>
+                    """
+                    continue
+
                 if r["method"] == "SCREENSHOT":
                     # Render a highly customized, gorgeous inline failure screenshot card!
                     requests_sub_html += f"""
@@ -310,14 +518,27 @@ def generate_html_report() -> None:
                     continue
                     
                 if r["method"] == "STEP":
-                    # Render a highly customized, gorgeous Playwright action step card!
+                    is_step_success = isinstance(r.get("status_code"), int) and 200 <= r["status_code"] < 400
+                    step_status_class = "status-pass" if is_step_success else "status-fail"
+                    step_status_text = "PASS" if is_step_success else "FAIL"
+                    step_details = html_escape(r.get("response_body", ""))
+                    step_details_html = ""
+                    if step_details:
+                        step_details_html = f"""
+                        <div id="req-details-{idx}-{r_idx}" class="nested-request-details" style="display: none; border-top: 1px solid var(--border); padding: 14px 20px;">
+                            <strong>Step details</strong>
+                            <pre style="white-space: pre-wrap; margin-top: 8px;"><code>{step_details}</code></pre>
+                        </div>
+                        """
+
                     requests_sub_html += f"""
-                    <div class="nested-request-row" style="border-color: #0284c7; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                        <div class="nested-request-header" style="display: flex; align-items: center; gap: 16px; padding: 14px 20px; cursor: default; user-select: none;">
+                    <div class="nested-request-row" style="border-color: {'#0284c7' if is_step_success else 'var(--fail)'}; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                        <div class="nested-request-header" onclick="toggleRequest({idx}, {r_idx})" style="display: flex; align-items: center; gap: 16px; padding: 14px 20px; cursor: {'pointer' if step_details else 'default'}; user-select: none;">
                             <span class="badge badge-step" style="background: rgba(2, 132, 199, 0.1); color: #0284c7; border: 1px solid rgba(2, 132, 199, 0.2); display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; width: 110px; text-align: center;">⚙ STEP</span>
                             <span class="nested-url" style="color: var(--text-main); font-weight: 600; font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{html_escape(r['url'])}</span>
-                            <span class="nested-time" style="color: var(--success); font-weight: 700; font-size: 12px;">PASS</span>
+                            <span class="status-indicator {step_status_class}">{step_status_text}</span>
                         </div>
+                        {step_details_html}
                     </div>
                     """
                     continue
@@ -370,7 +591,46 @@ def generate_html_report() -> None:
                 </div>
                 """
         else:
-            requests_sub_html = "<div class='no-requests'>No API HTTP requests or UI execution steps were logged for this page run.</div>"
+            execution_log = p.get("execution_log") or {}
+            execution_lines = []
+            seen_lines = set()
+            for line in execution_log.get("lines", []):
+                line = line.strip()
+                upper_line = line.upper()
+                if "HTTP REQUEST:" in upper_line:
+                    display_line = "HTTP request started: " + line.split("HTTP REQUEST:", 1)[1].strip()
+                    severity = "info"
+                elif "HTTP RESPONSE:" in upper_line:
+                    display_line = "HTTP response: " + line.split("HTTP RESPONSE:", 1)[1].strip()
+                    severity = "info"
+                elif "[ERROR]" in upper_line or "TRACEBACK" in upper_line or "EXCEPTION" in upper_line:
+                    display_line = line
+                    severity = "error"
+                else:
+                    continue
+
+                if display_line not in seen_lines:
+                    seen_lines.add(display_line)
+                    execution_lines.append((display_line, severity))
+
+            requests_sub_html = ""
+            for line, severity in execution_lines:
+                requests_sub_html += f"""
+                <div class="nested-request-row" style="border-left: 4px solid {'var(--fail)' if severity == 'error' else '#0284c7'}; padding: 12px 16px;">
+                    <span class="badge {'badge-delete' if severity == 'error' else 'badge-options'}">{severity}</span>
+                    <span class="nested-url" style="white-space: normal; overflow-wrap: anywhere;">{html_escape(line)}</span>
+                </div>
+                """
+
+            exit_code = execution_log.get("exit_code", "")
+            has_response = any("HTTP response:" in line.lower() for line, _ in execution_lines)
+            if exit_code and exit_code != "0" and not has_response:
+                requests_sub_html += f"""
+                <div class="defect-msg">API fixture exited with code {html_escape(exit_code)} before an HTTP response was recorded.</div>
+                """
+
+            if not requests_sub_html:
+                requests_sub_html = "<div class='no-requests'>No API HTTP requests or UI execution steps were logged for this page run.</div>"
 
         json_files = [r.get("json_file", "") for r in p["requests"] if r.get("json_file")]
         download_all_btn = ""
@@ -401,7 +661,7 @@ def generate_html_report() -> None:
             <td colspan="3">
                 <div class="nested-requests-container">
                     <div class="audit-header">
-                        <h3>🔍 Executed API Requests Audit Trail</h3>
+                        <h3>🔍 Execution Steps &amp; Request Details</h3>
                         {download_all_btn}
                     </div>
                     {requests_sub_html}
@@ -834,19 +1094,17 @@ def generate_html_report() -> None:
         }}
         .status-pass {{ background: #dcfce7; color: #15803d; border-color: #bbf7d0; }}
         .status-fail {{ background: #fee2e2; color: #b91c1c; border-color: #fecaca; }}
-        
-        /* Code blocks */
-        .curl-section {{
-            margin-bottom: 24px;
+        .badge-visual {{ background: #cffafe; color: #155e75; }}
+        .visual-result-details > p {{ margin-bottom: 12px; color: var(--text-sub); font-size: 13px; }}
+        .visual-image-gallery {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
         }}
-        .curl-section h4, .body-block h4 {{
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }}
+        .visual-image {{ min-width: 0; margin: 0; }}
+        .visual-image figcaption {{ margin-bottom: 6px; color: var(--text-sub); font-size: 11px; font-weight: 700; }}
+        .visual-image img {{ display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 5px; background: #fff; }}
+
         .code-box {{
             background: var(--code-bg);
             border-radius: 8px;
@@ -1029,8 +1287,8 @@ def generate_html_report() -> None:
             </div>
             <div class="header-meta">
                 <strong>Active Suite:</strong> {html_escape(suite_name) if suite_name else 'N/A'}<br>
-                <strong>Environment:</strong> UAT Testing Portal<br>
-                <strong>Report Generated:</strong> {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}<br>
+                <strong>Environment:</strong> {html_escape(env_label)}<br>
+                <strong>Report Generated:</strong> {run_ended}<br>
                 <strong>Execution Duration:</strong> {formatted_duration}
             </div>
         </header>

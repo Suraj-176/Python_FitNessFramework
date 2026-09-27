@@ -1,13 +1,11 @@
-!1 Swag Labs Login
-
 !define TEST_SYSTEM {slim}
 
-| script | fixtures.UiFixture |
+| script | fixtures.VisualRegressionFixture |
 | start browser |
 | navigate to | ${UI_BASE_URL} |
-| fill field | username | with value | standard_use |
+| fill field | username | with value | standard_user |
 | fill field | password | with value | secret_sauce |
 | click button | loginButton |
 | wait for text | Products | timeout | 10000 |
-| check | verify text present | Products | true |
+| check | capture and compare | swaglabs-inventory-screen | true |
 | close browser |

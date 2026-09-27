@@ -1,0 +1,9 @@
+!define TEST_SYSTEM {slim}
+
+| script | fixtures.VisualRegressionFixture |
+| set update baselines | true |
+| start browser |
+| navigate to | ${UI_BASE_URL} |
+| wait for text | Swag Labs | timeout | 10000 |
+| check | capture and compare | swaglabs-login-screen | true |
+| close browser |

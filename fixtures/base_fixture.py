@@ -9,6 +9,7 @@ from .auth_fixture import AuthFixture
 from .json_utils import extract_json_field
 from core.logger import logger, log_request, log_response
 from core.allure_helper import AllureHelper
+from .ui_fixture import clean_html_text
 class StatusCode(str):
     """
     Status code that acts as both a string (for FitNesse Slim evaluation)
@@ -157,7 +158,7 @@ class BaseRequestFixture:
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         
         try:
-            from core.report_generator import add_record
+            from core.report_generator import record_api_request
             from core.test_data_capture import save_test_data
             
             # Save JSON test data file with sanitization
@@ -184,7 +185,7 @@ class BaseRequestFixture:
             except Exception as json_err:
                 logger.warning(f"[TestData] Failed to save JSON test data: {json_err}")
             
-            add_record({
+            record_api_request({
                 "timestamp": timestamp,
                 "method": method,
                 "url": url,

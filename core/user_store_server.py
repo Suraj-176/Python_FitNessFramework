@@ -5,6 +5,7 @@ import os
 import re
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, unquote
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
@@ -211,8 +212,45 @@ class UserStoreHandler(BaseHTTPRequestHandler):
                 self._send_json(500, {"error": str(error)})
             return
 
+        elif self.path.startswith("/files/testResults/"):
+            try:
+                prefix = "/files/testResults/"
+                relative_path = unquote(self.path.split("?", 1)[0][len(prefix):])
+                path_parts = relative_path.split("/")
+                allowed_folders = {"ui-automation", "visual-regression"}
+                if (
+                    len(path_parts) != 2
+                    or path_parts[0] not in allowed_folders
+                    or not path_parts[1]
+                    or path_parts[1] != os.path.basename(path_parts[1])
+                    or not path_parts[1].lower().endswith(".png")
+                ):
+                    self._send_json(404, {"error": "Screenshot not found"})
+                    return
+                screenshot_path = os.path.join(BASE_DIR, "FitNesseRoot", "files", "testResults", *path_parts)
+                if not os.path.isfile(screenshot_path):
+                    self._send_json(404, {"error": "Screenshot not found"})
+                    return
+
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Length", str(os.path.getsize(screenshot_path)))
+                self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+                self.end_headers()
+                with open(screenshot_path, "rb") as screenshot_file:
+                    self.wfile.write(screenshot_file.read())
+            except Exception as error:
+                self._send_json(500, {"error": str(error)})
+            return
+
         elif self.path == "/report.html":
             try:
+                try:
+                    from core.report_generator import generate_html_report
+                    generate_html_report()
+                except Exception as gen_err:
+                    logger.debug(f"Failed to refresh report dynamically: {gen_err}")
+
                 file_path = os.path.join(BASE_DIR, "FitNesseRoot", "files", "report.html")
                 if os.path.exists(file_path):
                     self.send_response(200)
@@ -264,102 +302,283 @@ class UserStoreHandler(BaseHTTPRequestHandler):
                 self._send_json(500, {"error": str(error)})
             return
 
-        elif self.path == "/framework-logs":
+        elif self.path.startswith("/framework-logs"):
             try:
                 import glob
                 log_dir = os.path.join(BASE_DIR, "logs")
                 log_files = sorted(glob.glob(os.path.join(log_dir, "framework-*.log")), reverse=True)
-                
-                log_content = "No log files found in logs/ directory."
-                log_filename = "N/A"
-                if log_files:
-                    latest_log = log_files[0]
-                    log_filename = os.path.basename(latest_log)
-                    with open(latest_log, "r", encoding="utf-8", errors="ignore") as lf:
-                        log_content = lf.read()
-                        
-                # Wrap in a gorgeous, readable corporate-grade dark log viewer with Auto-Refresh!
+                available_files = [os.path.basename(path) for path in log_files]
+                query_string = self.path.split("?", 1)[1] if "?" in self.path else ""
+                query = parse_qs(query_string)
+                requested_file = query.get("file", [""])[0]
+                log_filename = requested_file if requested_file in available_files else (available_files[0] if available_files else "")
+                log_path = os.path.join(log_dir, log_filename) if log_filename else ""
+                log_content = ""
+                if log_path:
+                    with open(log_path, "r", encoding="utf-8", errors="ignore") as log_file:
+                        log_content = log_file.read()
+
+                if query.get("partial", [""])[0] == "1":
+                    self._send_json(200, {"filename": log_filename or "N/A", "content": log_content})
+                    return
+
+                log_lines = log_content.splitlines()
+                if not log_lines:
+                    log_lines = ["No log files found in logs/ directory." if not log_filename else "The selected log file is empty."]
+
+                def render_log_line(line_number: int, line: str) -> str:
+                    upper_line = line.upper()
+                    if "[ERROR]" in upper_line or "[CRITICAL]" in upper_line:
+                        severity = "error"
+                    elif "[WARNING]" in upper_line or "[WARN]" in upper_line:
+                        severity = "warning"
+                    elif "[DEBUG]" in upper_line:
+                        severity = "debug"
+                    else:
+                        severity = "info"
+                    return f'<div class="log-line level-{severity}" data-level="{severity}"><span class="line-number">{line_number}</span><code>{html.escape(line)}</code></div>'
+
+                log_rows = "".join(render_log_line(number, line) for number, line in enumerate(log_lines, 1))
+                file_options = "".join(
+                    f'<option value="{html.escape(filename, quote=True)}"{" selected" if filename == log_filename else ""}>{html.escape(filename)}</option>'
+                    for filename in available_files
+                )
+
                 html_logs = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>FitNesse Automation - Framework Execution Logs ({log_filename})</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {{ color-scheme: dark; }}
+        * {{ box-sizing: border-box; }}
         body {{
-            background-color: #0f1115;
+            background: #101820;
             color: #e2e8f0;
             font-family: 'Outfit', sans-serif;
             margin: 0;
-            padding: 24px;
+            padding: 22px 26px;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            box-sizing: border-box;
+            height: 100dvh;
+            min-height: 0;
         }}
         header {{
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
-            border-bottom: 1px solid #2e3035;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #33434d;
             padding-bottom: 16px;
         }}
         h1 {{
-            font-size: 20px;
+            font-size: 19px;
             margin: 0;
             font-weight: 800;
-            background: linear-gradient(135deg, #60A5FA 0%, #2563EB 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #f8fafc;
         }}
         .meta {{
             font-size: 13px;
-            color: #94a3b8;
+            color: #a7bac5;
+            margin-top: 5px;
         }}
         .actions {{
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: wrap;
         }}
-        .btn {{
-            background: #1c1d21;
-            border: 1px solid #2e3035;
+        button, select, input {{ font: inherit; }}
+        .control {{
+            min-height: 36px;
+            background: #1c2a34;
+            border: 1px solid #42525c;
             color: #e2e8f0;
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 7px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }}
+        .control:focus {{
+            outline: 2px solid #38bdf8;
+            outline-offset: 1px;
+        }}
+        .log-select {{ min-width: 190px; }}
+        .search-input {{ width: min(260px, 48vw); }}
+        .btn {{
+            min-height: 36px;
+            background: #1c2a34;
+            border: 1px solid #42525c;
+            color: #e2e8f0;
+            padding: 7px 11px;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
-            transition: all 0.15s;
+            transition: background 0.15s, border-color 0.15s;
         }}
         .btn:hover {{
-            background: #2e3035;
-            border-color: #475569;
+            background: #263944;
+            border-color: #647987;
         }}
-        pre {{
-            background: #07080a;
-            border: 1px solid #1c1d21;
-            border-radius: 8px;
-            padding: 20px;
+        .refresh-toggle {{
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-height: 36px;
+            padding: 0 9px;
+            border: 1px solid #42525c;
+            border-radius: 5px;
+            color: #c0ced6;
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+        }}
+        .refresh-toggle input {{ accent-color: #0891b2; }}
+        .log-toolbar {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 9px;
+            color: #a7bac5;
+            font-size: 11px;
+        }}
+        .log-content {{
             flex: 1;
-            overflow-y: auto;
-            overflow-x: auto;
-            margin: 0;
+            min-height: 0;
+            overflow: auto;
+            background: #0b1218;
+            border: 1px solid #293943;
+            border-radius: 6px;
+            scrollbar-color: #50636d #101820;
+        }}
+        .log-line {{
+            display: grid;
+            grid-template-columns: 54px minmax(0, 1fr);
+            gap: 12px;
+            min-height: 27px;
+            padding: 4px 12px 4px 0;
+            border-bottom: 1px solid rgba(100, 116, 139, 0.11);
+            border-left: 3px solid transparent;
+        }}
+        .log-line:hover {{ background: #14232c; }}
+        .log-line[hidden] {{ display: none; }}
+        .log-line code {{
+            align-self: center;
             font-family: 'Fira Code', monospace;
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 11px;
+            line-height: 1.55;
+            color: #d6e1e7;
             white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }}
+        .line-number {{
+            padding-top: 2px;
+            color: #637782;
+            font: 10px/1.6 'Fira Code', monospace;
+            text-align: right;
+            user-select: none;
+        }}
+        .level-error {{ border-left-color: #fb7185; background: rgba(127, 29, 29, 0.12); }}
+        .level-error code {{ color: #fda4af; }}
+        .level-warning {{ border-left-color: #fbbf24; }}
+        .level-warning code {{ color: #fcd34d; }}
+        .level-debug code {{ color: #94a3b8; }}
+        .empty-state {{ padding: 28px; color: #94a3b8; text-align: center; font-size: 13px; }}
+        @media (max-width: 680px) {{
+            body {{ padding: 14px; }}
+            header {{ align-items: flex-start; }}
+            .actions {{ justify-content: flex-start; width: 100%; }}
+            .search-input {{ width: min(210px, 55vw); }}
+            .log-select {{ min-width: 150px; }}
+            .log-line {{ grid-template-columns: 40px minmax(0, 1fr); gap: 8px; }}
         }}
     </style>
     <script>
         var refreshInterval = null;
-        
+
+        function severityForLine(line) {{
+            if (/\\[(ERROR|CRITICAL)\\]/i.test(line)) return "error";
+            if (/\\[(WARN|WARNING)\\]/i.test(line)) return "warning";
+            if (/\\[DEBUG\\]/i.test(line)) return "debug";
+            return "info";
+        }}
+
+        function renderLogLines(content, keepScrollAtBottom) {{
+            var container = document.getElementById("log-box");
+            var wasAtBottom = keepScrollAtBottom || (container.scrollHeight - container.scrollTop - container.clientHeight < 32);
+            var lines = (content || "").split(/\\r?\\n/);
+            if (lines.length && lines[lines.length - 1] === "") lines.pop();
+            container.replaceChildren();
+
+            if (!lines.length) {{
+                var empty = document.createElement("div");
+                empty.className = "empty-state";
+                empty.textContent = "No log entries in this file.";
+                container.appendChild(empty);
+            }} else {{
+                var fragment = document.createDocumentFragment();
+                lines.forEach(function(line, index) {{
+                    var row = document.createElement("div");
+                    row.className = "log-line level-" + severityForLine(line);
+                    row.setAttribute("data-level", severityForLine(line));
+                    var number = document.createElement("span");
+                    number.className = "line-number";
+                    number.textContent = String(index + 1);
+                    var text = document.createElement("code");
+                    text.textContent = line;
+                    row.appendChild(number);
+                    row.appendChild(text);
+                    fragment.appendChild(row);
+                }});
+                container.appendChild(fragment);
+            }}
+
+            applyLogFilters();
+            if (wasAtBottom) container.scrollTop = container.scrollHeight;
+        }}
+
+        function applyLogFilters() {{
+            var query = (document.getElementById("log-search").value || "").toLowerCase();
+            var selectedLevel = document.getElementById("log-level").value;
+            var rows = document.querySelectorAll(".log-line");
+            var visible = 0;
+            rows.forEach(function(row) {{
+                var matchesText = row.textContent.toLowerCase().indexOf(query) !== -1;
+                var matchesLevel = selectedLevel === "all" || row.getAttribute("data-level") === selectedLevel;
+                row.hidden = !(matchesText && matchesLevel);
+                if (!row.hidden) visible++;
+            }});
+            document.getElementById("line-count").textContent = visible + " / " + rows.length + " lines";
+        }}
+
+        function selectLogFile(filename) {{
+            var target = new URL(window.location.href);
+            target.searchParams.set("file", filename);
+            window.location.assign(target.toString());
+        }}
+
+        function downloadLog() {{
+            var text = Array.from(document.querySelectorAll(".log-line:not([hidden]) code"))
+                .map(function(line) {{ return line.textContent; }}).join("\\n");
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(new Blob([text], {{ type: "text/plain;charset=utf-8" }}));
+            link.download = document.getElementById("log-file").value || "framework.log";
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }}
+
         function startAutoRefresh() {{
+            clearInterval(refreshInterval);
             refreshInterval = setInterval(function() {{
-                window.location.reload();
+                refreshLogs(true);
             }}, 3000);
         }}
         
@@ -373,8 +592,25 @@ class UserStoreHandler(BaseHTTPRequestHandler):
             }}
         }}
 
-        function refreshLogs() {{
-            window.location.reload();
+        function refreshLogs(keepScrollAtBottom) {{
+            var filename = document.getElementById("log-file").value;
+            var status = document.getElementById("log-status");
+            fetch("/framework-logs?partial=1&file=" + encodeURIComponent(filename), {{ cache: "no-store" }})
+                .then(function(response) {{
+                    if (!response.ok) throw new Error("HTTP " + response.status);
+                    return response.json();
+                }})
+                .then(function(data) {{
+                    if (data.error) throw new Error(data.error);
+                    if (data.filename && data.filename !== "N/A") {{
+                        document.getElementById("active-log-name").textContent = data.filename;
+                    }}
+                    renderLogLines(data.content, keepScrollAtBottom);
+                    status.textContent = "Updated " + new Date().toLocaleTimeString();
+                }})
+                .catch(function(error) {{
+                    status.textContent = "Refresh failed: " + error.message;
+                }});
         }}
         
         function scrollToBottom() {{
@@ -384,40 +620,53 @@ class UserStoreHandler(BaseHTTPRequestHandler):
             }}
         }}
         
-        window.onload = function() {{
-            scrollToBottom();
-            
-            // Restore auto-refresh checkbox preference from localStorage!
+        document.addEventListener("DOMContentLoaded", function() {{
+            applyLogFilters();
             var autoPref = localStorage.getItem("fitnesse_logs_auto_refresh") !== "false";
-            var chk = document.getElementById("auto-refresh-toggle");
-            if (chk) {{
-                chk.checked = autoPref;
-                if (autoPref) {{
-                    startAutoRefresh();
-                }}
-            }}
-        }};
+            var checkbox = document.getElementById("auto-refresh-toggle");
+            checkbox.checked = autoPref;
+            if (autoPref) startAutoRefresh();
+            scrollToBottom();
+        }});
     </script>
 </head>
 <body>
     <header>
-        <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
             <img src="/logo.png" alt="FitNesse Automation" style="height: 48px; width: auto; object-fit: contain;">
             <div>
-                <h1>📋 FitNesse Automation - Execution Logs</h1>
-                <div class="meta" style="margin-top: 4px;">Viewing active log file: <strong>{log_filename}</strong></div>
+                <h1>Framework Logs</h1>
+                <div class="meta">Daily execution output · <strong id="active-log-name">{html.escape(log_filename or 'N/A')}</strong></div>
             </div>
         </div>
         <div class="actions">
-            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #94a3b8; font-weight: 600; cursor: pointer; margin-right: 12px; user-select: none;">
-                <input type="checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh(this)" checked style="cursor: pointer; width: 14px; height: 14px;">
-                <span>Auto-Refresh (3s)</span>
+            <select id="log-file" class="control log-select" aria-label="Select log file" onchange="selectLogFile(this.value)">
+                {file_options or '<option value="">No log files</option>'}
+            </select>
+            <input id="log-search" class="control search-input" type="search" placeholder="Search log lines" aria-label="Search log lines" oninput="applyLogFilters()">
+            <select id="log-level" class="control" aria-label="Filter severity" onchange="applyLogFilters()">
+                <option value="all">All levels</option>
+                <option value="error">Errors</option>
+                <option value="warning">Warnings</option>
+                <option value="info">Info</option>
+                <option value="debug">Debug</option>
+            </select>
+            <label class="refresh-toggle" title="Refresh the log every 3 seconds">
+                <input type="checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh(this)" checked>
+                <span>Live</span>
             </label>
-            <button class="btn" onclick="refreshLogs()">🔄 Refresh Logs</button>
-            <button class="btn" onclick="scrollToBottom()">⬇ Scroll to Bottom</button>
+            <button class="btn" onclick="refreshLogs(false)" title="Refresh now">Refresh</button>
+            <button class="btn" onclick="downloadLog()" title="Download visible lines">Download</button>
+            <button class="btn" onclick="scrollToBottom()" title="Scroll to latest line">Latest</button>
         </div>
     </header>
-    <pre id="log-box">{html.escape(log_content)}</pre>
+    <div class="log-toolbar">
+        <span id="line-count">{len(log_lines)} lines</span>
+        <span id="log-status">Ready</span>
+    </div>
+    <main id="log-box" class="log-content" aria-label="Framework log entries">
+        {log_rows or '<div class="empty-state">No log entries.</div>'}
+    </main>
 </body>
 </html>"""
                 self.send_response(200)

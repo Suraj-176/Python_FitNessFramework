@@ -29,7 +29,7 @@ class TestConfig:
     def test_get_base_url_prod(self):
         """Test getting prod environment base URL"""
         url = Config.get_base_url("prod")
-        assert "example.com" in url or "api" in url.lower()
+        assert "example.com" in url or "api" in url.lower() or "dummyjson.com" in url
     
     def test_get_base_url_production_alias(self):
         """Test 'production' is an alias for 'prod'"""

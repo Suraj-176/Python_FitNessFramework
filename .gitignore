@@ -24,6 +24,7 @@ logs/
 # FitNesse local run history, logs, and generated HTML reports
 # (keeps your GitHub repository pristine and lightweight!)
 FitNesseRoot/files/testResults/
+FitNesseRoot/files/test_data/
 FitNesseRoot/ErrorLogs/
 FitNesseRoot/files/reports/
 FitNesseRoot/update_history.txt
